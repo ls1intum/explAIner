@@ -9,7 +9,7 @@ services:
     plan: starter # Free tier
     region: frankfurt
     branch: develop # Auto-deploy from develop branch
-    dockerfilePath: ./backend/Dockerfile
+    dockerfilePath: ./backend/Dockerfile.prod
     dockerContext: ./backend
     envVars:
       - key: DATABASE_URL
@@ -20,8 +20,6 @@ services:
         value: development
       - key: PORT
         value: 3001
-    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy
-    startCommand: npm run start:prod
 
   # Backend API for PRD environment
   - type: web
@@ -30,7 +28,7 @@ services:
     plan: starter # Free tier
     region: frankfurt
     branch: main # Auto-deploy from main branch
-    dockerfilePath: ./backend/Dockerfile
+    dockerfilePath: ./backend/Dockerfile.prod
     dockerContext: ./backend
     envVars:
       - key: DATABASE_URL
@@ -41,8 +39,6 @@ services:
         value: production
       - key: PORT
         value: 3001
-    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy
-    startCommand: npm run start:prod
 
   # Frontend for DEV environment
   - type: web
@@ -51,7 +47,7 @@ services:
     plan: starter # Free tier
     region: frankfurt
     branch: develop # Auto-deploy from develop branch
-    dockerfilePath: ./frontend/Dockerfile
+    dockerfilePath: ./frontend/Dockerfile.prod
     dockerContext: ./frontend
     envVars:
       - key: NEXT_PUBLIC_API_URL
@@ -60,8 +56,6 @@ services:
         value: development
       - key: PORT
         value: 3000
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
 
   # Frontend for PRD environment
   - type: web
@@ -70,7 +64,7 @@ services:
     plan: starter # Free tier
     region: frankfurt
     branch: main # Auto-deploy from main branch
-    dockerfilePath: ./frontend/Dockerfile
+    dockerfilePath: ./frontend/Dockerfile.prod
     dockerContext: ./frontend
     envVars:
       - key: NEXT_PUBLIC_API_URL
@@ -79,8 +73,6 @@ services:
         value: production
       - key: PORT
         value: 3000
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
 
 # Database definitions
 databases:
