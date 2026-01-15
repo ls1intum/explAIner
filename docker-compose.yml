@@ -1,0 +1,147 @@
+# Docker Compose file format version
+version: '3.8'
+
+# Project name for this Docker Compose setup (summarizes all containers into a folder with this name)
+name: local-dev
+
+# Define all services (containers) for the application
+services:
+  
+  # PostgreSQL database service (container)
+  db:
+    # Use official PostgreSQL 16 image with Alpine Linux
+    image: postgres:16-alpine
+    
+    # Name the container for easier reference
+    container_name: explainer-db
+    
+    # Automatically restart container unless manually stopped
+    restart: unless-stopped
+    
+    # Environment variables for PostgreSQL configuration
+    environment:
+      # PostgreSQL username (uses .env variable)
+      POSTGRES_USER: ${DB_USER}
+      
+      # PostgreSQL password (uses .env variable)
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      
+      # PostgreSQL database name (uses .env variable)
+      POSTGRES_DB: ${DB_NAME}
+    
+    # Map port 5432 from container to port 5432 on host machine
+    ports:
+      - "5432:5432"
+    
+    # Mount named volume to persist database data even when container stops
+    volumes:
+      # postgres_data volume maps to PostgreSQL's data directory
+      - postgres_data:/var/lib/postgresql/data
+    
+    # Connect this service to the custom network
+    networks:
+      - explainer-network
+
+  # NestJS backend service
+  backend:
+    # Build image from Dockerfile in ./backend directory
+    build:
+      # Path to the backend directory
+      context: ./backend
+      
+      # Name of the Dockerfile to use
+      dockerfile: Dockerfile
+    
+    # Name the container for easier reference
+    container_name: explainer-backend
+    
+    # Automatically restart container unless manually stopped
+    restart: unless-stopped
+    
+    # Ensure database starts before backend
+    depends_on:
+      - db
+    
+    # Environment variables for backend configuration
+    environment:
+      # Database connection string (uses 'db' as hostname because of Docker networking)
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      
+      # Set Node environment to development mode
+      NODE_ENV: development
+    
+    # Map port 3001 from container to port 3001 on host machine
+    ports:
+      - "3001:3001"
+    
+    # Mount volumes for development hot-reloading
+    volumes:
+      # Mount local backend/ directory to container's /app (enables hot-reload)
+      - ./backend:/app
+      
+      # Prevent local node_modules from overwriting container's node_modules
+      - /app/node_modules
+    
+    # Connect this service to the custom network
+    networks:
+      - explainer-network
+
+  # Next.js frontend service
+  frontend:
+    # Build image from Dockerfile in ./frontend directory
+    build:
+      # Path to the frontend directory
+      context: ./frontend
+      
+      # Name of the Dockerfile to use
+      dockerfile: Dockerfile
+    
+    # Name the container for easier reference
+    container_name: explainer-frontend
+    
+    # Automatically restart container unless manually stopped
+    restart: unless-stopped
+    
+    # Ensure backend starts before frontend
+    depends_on:
+      - backend
+    
+    # Environment variables for frontend configuration
+    environment:
+      # API URL that frontend will use to connect to backend
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      
+      # Set Node environment to development mode
+      NODE_ENV: development
+    
+    # Map port 3000 from container to port 3000 on host machine
+    ports:
+      - "3000:3000"
+    
+    # Mount volumes for development hot-reloading
+    volumes:
+      # Mount local frontend/ directory to container's /app (enables hot-reload)
+      - ./frontend:/app
+      
+      # Prevent local node_modules from overwriting container's node_modules
+      - /app/node_modules
+      
+      # Prevent local .next from overwriting container's .next build directory
+      - /app/.next
+    
+    # Connect this service to the custom network
+    networks:
+      - explainer-network
+
+# Define named volumes (persistent storage)
+volumes:
+  # Volume for PostgreSQL data persistence
+  postgres_data:
+    driver: local
+
+# Define custom networks
+networks:
+  # Custom bridge network for inter-container communication
+  explainer-network:
+    # Use bridge driver (default, allows containers to communicate)
+    driver: bridge

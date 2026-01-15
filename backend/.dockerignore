@@ -1,0 +1,14 @@
+# Prevent node_modules from being copied into the Docker image (install fresh)
+node_modules
+
+# Prevent npm debug logs from being copied
+npm-debug.log
+
+# Prevent compiled/build output from being copied (will be generated in container)
+dist
+
+# Prevent environment variables file from being copied (security)
+.env
+
+# Prevent git directory from being copied (not needed in container)
+.git
