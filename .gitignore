@@ -1,0 +1,39 @@
+# Dependency directories
+# Node.js dependencies installed by npm
+node_modules/
+
+# Environment variables (local environment configuration)
+.env
+
+# Environment variable variations
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+# NestJS build output
+backend/dist/
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+
+# Logs
+# npm debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating system files
+# macOS
+.DS_Store
+# windows
+Thumbs.db
+
+# Docker volumes data (if stored locally)
+postgres_data/
+
+# IDE / Editor directories
+# VS Code settings
+.vscode/
