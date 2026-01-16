@@ -4,6 +4,8 @@ node_modules/
 
 # Environment variables (local environment configuration)
 .env
+.env.dev
+.env.prd
 
 # Environment variable variations
 .env.local

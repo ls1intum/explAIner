@@ -45,4 +45,4 @@ EXPOSE 3001
 
 # Run database migrations and start the application
 # Note: DATABASE_URL will be provided by Render at runtime
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
