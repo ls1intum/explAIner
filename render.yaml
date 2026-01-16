@@ -78,14 +78,14 @@ services:
 databases:
   # PostgreSQL for DEV environment
   - name: explainer-postgres-dev
-    plan: starter # Free tier for 90 days, then $7/month
+    plan: free # Free tier with 1GB storage, 1GB RAM, expires after 90 days
     region: frankfurt
     databaseName: explainer_dev
     user: explainer_dev_user
 
   # PostgreSQL for PRD environment
   - name: explainer-postgres-prd
-    plan: starter # Free tier for 90 days, then $7/month
+    plan: free # Free tier with 1GB storage, 1GB RAM, expires after 90 days
     region: frankfurt
     databaseName: explainer_prd
     user: explainer_prd_user
