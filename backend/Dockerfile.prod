@@ -25,11 +25,15 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Set NODE_ENV to production
+ENV NODE_ENV=production
+
 # Copy package files
 COPY package*.json ./
 COPY prisma ./prisma/
+COPY prisma.config.ts ./
 
-# Install only production dependencies
+# Install only production dependencies (includes dotenv for prisma.config.ts)
 RUN npm ci --only=production
 
 # Copy built application from builder stage
