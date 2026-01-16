@@ -44,4 +44,5 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 EXPOSE 3001
 
 # Run database migrations and start the application
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
+# Note: DATABASE_URL will be provided by Render at runtime
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
