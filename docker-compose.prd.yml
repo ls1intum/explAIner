@@ -1,0 +1,68 @@
+name: explainer-prd
+
+services:
+  
+  db:
+    image: postgres:16-alpine
+    container_name: explainer-db-prd
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      # Different port to avoid conflicts with dev environment
+      - "5433:5432"
+    volumes:
+      - postgres_data_prd:/var/lib/postgresql/data
+    networks:
+      - explainer-network-prd
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prd
+    container_name: explainer-backend-prd
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      # 'db' hostname works because of Docker networking
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      NODE_ENV: production
+      PORT: ${BACKEND_PORT}
+    ports:
+      # Different port to avoid conflicts with dev environment
+      - "4001:${BACKEND_PORT}"
+    # No volumes - production build is self-contained
+    networks:
+      - explainer-network-prd
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prd
+    container_name: explainer-frontend-prd
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # Use host port 4001 where backend is exposed
+      NEXT_PUBLIC_API_URL: http://localhost:4001
+      NODE_ENV: production
+    ports:
+      # Different port to avoid conflicts with dev environment
+      - "4000:${FRONTEND_PORT}"
+    # No volumes - production build is self-contained
+    networks:
+      - explainer-network-prd
+
+volumes:
+  postgres_data_prd:
+    driver: local
+    name: explainer-prd-postgres-data
+
+networks:
+  explainer-network-prd:
+    driver: bridge
+    name: explainer-network-prd

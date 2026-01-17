@@ -1,0 +1,71 @@
+name: explainer-dev
+
+services:
+  
+  db:
+    image: postgres:16-alpine
+    container_name: explainer-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - explainer-network-dev
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: explainer-backend-dev
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      # 'db' hostname works because of Docker networking
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      NODE_ENV: development
+      PORT: ${BACKEND_PORT}
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    volumes:
+      # Local directory mounted for hot-reload
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - explainer-network-dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: explainer-frontend-dev
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NODE_ENV: development
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    volumes:
+      # Local directory mounted for hot-reload
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - explainer-network-dev
+
+volumes:
+  postgres_data_dev:
+    driver: local
+    name: explainer-dev-postgres-data
+
+networks:
+  explainer-network-dev:
+    driver: bridge
+    name: explainer-network-dev
