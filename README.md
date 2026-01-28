@@ -1,38 +1,35 @@
 # ExplAIner
-Master Thesis Project
+**Master Thesis Project**
 
-ExplAIner is an LLM-based learning assistant that conducts adaptive learning sessions tailored to each student's knowledge level and goals.
-Using Bloom's and SOLO taxonomies, it delivers AVIVA-structured content through inform-practice cycles that adapt based on student performance, ensuring effective knowledge acquisition through practice-first learning.
+ExplAIner is a LLM-based learning assistant grounded in pedagogical and didactial frameworks (Bloom's Taxonomy, AVIVA Model, SOLO Taxonomy).
+ExplAIner conducts adaptive learning sessions for any learning goal or question through inform-practice cycles that adapt based on student performance.
 
 
 
 ## Quick Start
 
-### Start Environments (DEV / PRD)
-
-**Development (`local-dev`):** Hot-reload enabled, runs on ports 3000/3001/5432  
+**Start/Stop Development (`local-dev`):**
 ```bash
-# Start dev / prd
 docker-compose -f docker-compose.dev.yml --env-file .env.dev up
-docker-compose -f docker-compose.prd.yml --env-file .env.prd up --build
+docker-compose -f docker-compose.dev.yml down
 ```
 
-**Production (`local-prd`):** Production build testing, runs on ports 4000/4001/5433
+**Start/Stop Production (`local-prd`):**
 ```bash
-# Stop dev / prd
-docker-compose -f docker-compose.dev.yml down
+docker-compose -f docker-compose.prd.yml --env-file .env.prd up --build
 docker-compose -f docker-compose.prd.yml down
 ```
 
-### Access
-
+**Access:**
 | Environment | Frontend | Backend | Database |
 |-------------|----------|---------|----------|
 | Development | http://localhost:3000 | http://localhost:3001 | localhost:5432 |
 | Production | http://localhost:4000 | http://localhost:4001 | localhost:5433 |
 
 
-### Setup Aliases (Recommended)
+## Getting Started
+
+**Setup Aliases (Recommended):**
 
 Run `nano ~/.zshrc` and add these 2 lines at the end:
 
@@ -55,19 +52,19 @@ dc-prd logs -f     # View logs
 
 ## Tech Stack
 
-### Backend
+**Backend**
 - **NestJS** - TypeScript framework for scalable server-side applications
 - **Prisma** - Type-safe ORM for PostgreSQL database access
 - **LangChain** - Framework for building LLM-powered applications
 - **PostgreSQL** - Relational database
 
-### Frontend
+**Frontend**
 - **Next.js 14** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS + Radix UI** - Styling and accessible component primitives
 - **Redux Toolkit + RTK Query** - State management and data fetching
 
-### Infrastructure & Testing
+**Infrastructure & Testing**
 - **Docker** - Containerization for dev and production environments
 - **Render** - Deployment platform
 - **Playwright** - End-to-end testing
@@ -83,10 +80,10 @@ dc-prd logs -f     # View logs
 ExplAIner guides students through personalized learning sessions that adapt to their knowledge level and learning objectives. 
 Built on pedagogical and didactical frameworks (BLOOM, AVIVA, SOLO), the application uses a practice-first approach to maximize learning effectiveness.
 
-### Pedagogical Foundation
-- **Bloom's Taxonomy**: Structures learning goals from basic recall to higher-order thinking (Remember → Create)
+### Pedagogical & Didactical Foundation
+- **Bloom's Taxonomy**: Structures learning goals from basic recall to higher-order thinking
+- **AVIVA Model**: 5 stages: Arrive -> Prior Knowledge -> Inform -> Practice -> Assess
 - **SOLO Taxonomy**: Progressively builds understanding from isolated facts to integrated, transferable knowledge
-- **Practice-First Approach**: Questions are generated before content, ensuring targeted and relevant instruction
 
 ### Session Flow
 
