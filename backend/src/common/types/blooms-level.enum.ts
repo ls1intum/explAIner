@@ -1,8 +1,8 @@
 export enum BloomsLevel {
-  REMEMBER = 'remember',
-  UNDERSTAND = 'understand',
-  APPLY = 'apply',
-  ANALYZE = 'analyze',
-  EVALUATE = 'evaluate',
-  CREATE = 'create',
+  REMEMBER = 'Remember',
+  UNDERSTAND = 'Understand',
+  APPLY = 'Apply',
+  ANALYZE = 'Analyze',
+  EVALUATE = 'Evaluate',
+  CREATE = 'Create',
 }
