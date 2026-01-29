@@ -1,13 +1,13 @@
-import { learningGoalsArraySchema, LearningGoalsArray } from '../schemas/learning-goals.schema';
+import { chatResponseSchema, ChatResponse } from '../schemas/chat-response.schema';
 import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util';
 
-export class LearningGoalsParser {
+export class ChatResponseParser {
   /**
-   * Parse and validate learning goals output from AI using Zod schema
+   * Parse and validate chat response output from AI using Zod schema
    * Extracts JSON from markdown code blocks if present
-   * Returns validated array of 3 learning goals
+   * Returns validated chat response
    */
-  parse(text: string): LearningGoalsArray {
+  parse(text: string): ChatResponse {
     try {
       // Extract JSON from markdown code blocks if present
       const jsonText = extractJsonFromMarkdown(text);
@@ -16,14 +16,14 @@ export class LearningGoalsParser {
       const parsed = JSON.parse(jsonText);
 
       // Validate using Zod schema - throws ZodError with detailed messages if invalid
-      const validated = learningGoalsArraySchema.parse(parsed);
+      const validated = chatResponseSchema.parse(parsed);
 
       return validated;
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Failed to parse learning goals: ${error.message}`);
+        throw new Error(`Failed to parse chat response: ${error.message}`);
       }
-      throw new Error('Failed to parse learning goals: Unknown error');
+      throw new Error('Failed to parse chat response: Unknown error');
     }
   }
 }
