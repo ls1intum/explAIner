@@ -1,15 +1,28 @@
 import { Module } from '@nestjs/common';
-import { BlocksService } from './blocks.service';
 import { BlocksController } from './blocks.controller';
-import { InformService } from './inform/inform.service';
-import { InformController } from './inform/inform.controller';
-import { PracticeService } from './practice/practice.service';
-import { PracticeController } from './practice/practice.controller';
-import { SummaryService } from './summary/summary.service';
+import { CheckAnswerService } from './services/check-answer.service';
+import { GenerateSubsequentBlockSequenceService } from './services/generate-subsequent-block-sequence.service';
+import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
+import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
+import { SendMessageService } from './services/send-message.service';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
-  controllers: [BlocksController, InformController, PracticeController],
-  providers: [BlocksService, InformService, PracticeService, SummaryService],
-  exports: [BlocksService, InformService, PracticeService, SummaryService],
+  imports: [AiModule],
+  controllers: [BlocksController],
+  providers: [
+    CheckAnswerService,
+    GenerateSubsequentBlockSequenceService,
+    GenerateSummaryBlockService,
+    GetBlockByOrderIndexService,
+    SendMessageService,
+  ],
+  exports: [
+    CheckAnswerService,
+    GenerateSubsequentBlockSequenceService,
+    GenerateSummaryBlockService,
+    GetBlockByOrderIndexService,
+    SendMessageService,
+  ],
 })
 export class BlocksModule {}

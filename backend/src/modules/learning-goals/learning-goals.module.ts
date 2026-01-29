@@ -1,10 +1,19 @@
 import { Module } from '@nestjs/common';
-import { LearningGoalsService } from './learning-goals.service';
 import { LearningGoalsController } from './learning-goals.controller';
+import { GenerateLearningGoalsService } from './services/generate-learning-goals.service';
+import { GenerateEasierLearningGoalsService } from './services/generate-easier-learning-goals.service';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
+  imports: [AiModule],
   controllers: [LearningGoalsController],
-  providers: [LearningGoalsService],
-  exports: [LearningGoalsService],
+  providers: [
+    GenerateLearningGoalsService,
+    GenerateEasierLearningGoalsService,
+  ],
+  exports: [
+    GenerateLearningGoalsService,
+    GenerateEasierLearningGoalsService,
+  ],
 })
 export class LearningGoalsModule {}
