@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import theme variables defined in themes.css */
+@import './themes.css';
+
+/* Prevent scrolling on the page */
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* STEP 3: Create custom utilities using theme variables */
+  /* Blue-to-purple gradient background */
+  .bg-brand-gradient {
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary)),
+      hsl(var(--accent))
+    );
+  }
+  
+  /* Blue-to-purple gradient text */
+  .text-brand-gradient {
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary)),
+      hsl(var(--accent))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Green gradient background */
+  .bg-success-gradient {
+    background: linear-gradient(
+      to right,
+      hsl(var(--success-start)),
+      hsl(var(--success-end))
+    );
+  }
+  
+  /* Border utilities using secondary color */
+  .border-secondary {
+    border-color: hsl(var(--secondary));
+  }
+  
+  .border-t-secondary {
+    border-top-color: hsl(var(--secondary));
+  }
+}
