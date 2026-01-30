@@ -17,7 +17,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background overflow-hidden">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-6">
         {/* Owlbert Character with Speech Bubble */}
         <div className="relative mb-6 flex flex-col items-center mb-10">
