@@ -114,7 +114,7 @@ export default function LearningGoalPage() {
   });
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-6">
         {/* Owlbert Icon */}
         <div className="mb-6">
