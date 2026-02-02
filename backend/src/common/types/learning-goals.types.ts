@@ -3,13 +3,12 @@ import { BloomsLevel } from './blooms-level.enum';
 /**
  * Learning Goal Type
  *
- * Represents a single learning goal with Bloom's taxonomy level and action verb.
+ * Represents a single learning goal with Bloom's taxonomy level.
  * Used throughout the application for AI-generated learning goals.
  */
 export interface LearningGoal {
   learningGoal: string;
   bloomsLevel: BloomsLevel;
-  actionVerb: string;
 }
 
 /**

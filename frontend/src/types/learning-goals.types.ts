@@ -7,12 +7,11 @@
 /**
  * Learning Goal
  *
- * Represents a single learning goal with Bloom's taxonomy level and action verb.
+ * Represents a single learning goal with Bloom's taxonomy level.
  */
 export interface LearningGoal {
   learningGoal: string;
   bloomsLevel: string;
-  actionVerb: string;
 }
 
 /**

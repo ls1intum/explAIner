@@ -15,7 +15,6 @@ import { BloomsLevel } from '../../../common/types/blooms-level.enum';
 export const learningGoalSchema = z.object({
   learningGoal: z.string().min(1, 'Learning goal must not be empty'),
   bloomsLevel: z.nativeEnum(BloomsLevel),
-  actionVerb: z.string().min(1, 'Action verb must not be empty'),
 });
 
 /**
