@@ -4,17 +4,21 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
-import LearningGoalSelector from '@/components/learning-goals/LearningGoalSelector';
+import LearningGoalCard from '@/components/learning-goals/LearningGoalCard';
+import CustomLearningGoalCard from '@/components/learning-goals/CustomLearningGoalCard';
 import { useAppSelector } from '@/store/hooks';
-import type { LearningGoalPageData } from '@/types/learning-goals.types';
 
 export default function LearningGoalPage() {
   const router = useRouter();
-  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
-  const [customGoal, setCustomGoal] = useState('');
-  
-  // Get learning goals data from Redux
   const pageData = useAppSelector((state) => state.learningGoals.pageData);
+  
+  // State for predefined goals
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+  const [showPredefined, setShowPredefined] = useState(true);
+  
+  // State for custom goal
+  const [customObjective, setCustomObjective] = useState('');
+  const [customBloomsLevel, setCustomBloomsLevel] = useState('Understand');
 
   // Redirect to home if no data is available
   useEffect(() => {
@@ -23,35 +27,91 @@ export default function LearningGoalPage() {
     }
   }, [pageData, router]);
 
+  // Handle toggling between predefined and custom
+  const handleShowPredefined = () => {
+    if (!showPredefined) {
+      setShowPredefined(true);
+    }
+  };
+
+  const handleShowCustom = () => {
+    if (showPredefined) {
+      setShowPredefined(false);
+    }
+  };
+
+  // Handle goal selection
+  const handleSelectGoal = (goalId: string) => {
+    setSelectedGoalId(goalId);
+    setCustomObjective('');
+  };
+
+  const handleCustomObjectiveChange = (objective: string) => {
+    setCustomObjective(objective);
+    if (objective.trim()) {
+      setSelectedGoalId(null);
+    }
+  };
+
+  // Start session handler
   const handleStartSession = () => {
     if (!pageData) return;
 
-    // Get the selected goal
-    const selectedGoal = pageData.goals.find((_, index) => selectedGoalId === index.toString());
-    const finalGoal = customGoal.trim() || selectedGoal?.learningGoal || '';
+    let finalGoal: string;
+    let finalBloomsLevel: string;
+    
+    if (!showPredefined && customObjective.trim()) {
+      // Use custom goal
+      finalGoal = `After this session, you will be able to ${customBloomsLevel} ${customObjective.trim()}.`;
+      finalBloomsLevel = customBloomsLevel;
+    } else {
+      // Use selected predefined goal
+      const selectedGoal = pageData.goals.find((_, index) => selectedGoalId === index.toString());
+      if (!selectedGoal) return;
+      
+      finalGoal = selectedGoal.learningGoal;
+      finalBloomsLevel = selectedGoal.bloomsLevel;
+    }
 
     // TODO: Navigate to session page with selected goal and topic
     console.log('Starting session with:', {
       topic: pageData.topic,
       keywords: pageData.keywords,
       learningGoal: finalGoal,
-      bloomsLevel: selectedGoal?.bloomsLevel,
+      bloomsLevel: finalBloomsLevel,
     });
   };
 
-  const hasSelectedGoal = selectedGoalId !== null || customGoal.trim().length > 0;
+  // Check if start button should be enabled
+  const canStart = showPredefined 
+    ? selectedGoalId !== null 
+    : customObjective.trim().length > 0;
 
   // Show nothing while loading data
   if (!pageData) {
     return null;
   }
 
-  // Transform goals for the selector component
-  const transformedGoals = pageData.goals.map((goal, index) => ({
-    id: index.toString(),
-    goal: goal.learningGoal.replace('After this session, you will be able to ', ''),
-    actionVerb: goal.actionVerb as 'define' | 'explain' | 'analyze',
-  }));
+  // Transform goals to extract objective part
+  const transformedGoals = pageData.goals.map((goal, index) => {
+    const prefix = 'After this session, you will be able to ';
+    let objective = goal.learningGoal;
+    
+    if (objective.startsWith(prefix)) {
+      objective = objective.substring(prefix.length);
+    }
+    
+    const bloomsLevel = goal.bloomsLevel;
+    if (objective.startsWith(bloomsLevel + ' ')) {
+      objective = objective.substring(bloomsLevel.length + 1);
+    }
+    
+    return {
+      id: index.toString(),
+      goal: objective,
+      bloomsLevel: bloomsLevel,
+    };
+  });
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background overflow-hidden">
@@ -77,29 +137,57 @@ export default function LearningGoalPage() {
           Specify the learning goal for your ExplAIner session
         </p>
 
-        {/* Learning Goal Selector */}
-        <div className="w-full max-w-2xl mb-6">
-          <LearningGoalSelector
-            goals={transformedGoals}
-            selectedGoalId={selectedGoalId}
-            onSelectGoal={(goalId) => {
-              setSelectedGoalId(goalId);
-              setCustomGoal(''); // Clear custom goal when selecting a predefined goal
-            }}
-            customGoal={customGoal}
-            onCustomGoalChange={(goal) => {
-              setCustomGoal(goal);
-              if (goal.trim()) {
-                setSelectedGoalId(null); // Clear selected goal when typing custom goal
-              }
-            }}
-          />
+        {/* Learning Goal Selection */}
+        <div className="w-full max-w-2xl mb-6 space-y-4">
+          {/* Predefined Goals Card */}
+          {showPredefined ? (
+            <div className="w-full bg-muted rounded-3xl p-6 space-y-4">
+              <div className="w-full text-center text-muted-foreground font-semibold text-base">
+                Choose learning goal...
+              </div>
+              <div className="space-y-3">
+                {transformedGoals.map((goal) => (
+                  <LearningGoalCard
+                    key={goal.id}
+                    goal={goal.goal}
+                    bloomsLevel={goal.bloomsLevel}
+                    isSelected={selectedGoalId === goal.id}
+                    onClick={() => handleSelectGoal(goal.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={handleShowPredefined}
+              className="w-full bg-muted text-muted-foreground font-semibold text-base py-3 px-5 rounded-3xl hover:bg-muted/80 transition-all text-center"
+            >
+              Choose learning goal...
+            </button>
+          )}
+
+          {/* Custom Goal Card */}
+          {!showPredefined ? (
+            <CustomLearningGoalCard
+              objective={customObjective}
+              bloomsLevel={customBloomsLevel}
+              onObjectiveChange={handleCustomObjectiveChange}
+              onBloomsLevelChange={setCustomBloomsLevel}
+            />
+          ) : (
+            <button
+              onClick={handleShowCustom}
+              className="w-full bg-muted text-muted-foreground font-semibold text-base py-3 px-5 rounded-3xl hover:bg-muted/80 transition-all text-center"
+            >
+              ... or create your own
+            </button>
+          )}
         </div>
 
         {/* Start Button */}
         <button
           onClick={handleStartSession}
-          disabled={!hasSelectedGoal}
+          disabled={!canStart}
           className="w-full max-w-2xl bg-success-gradient text-white font-semibold text-base py-3 px-5 rounded-3xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
         >
           <RocketIcon className="w-5 h-5" />

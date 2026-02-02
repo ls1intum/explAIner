@@ -2,18 +2,12 @@
 
 interface LearningGoalCardProps {
   goal: string;
-  actionVerb: 'define' | 'explain' | 'analyze';
+  bloomsLevel: string;
   isSelected: boolean;
   onClick: () => void;
 }
 
-const actionVerbColors = {
-  define: 'text-primary',
-  explain: 'text-accent',
-  analyze: 'text-primary',
-};
-
-export default function LearningGoalCard({ goal, actionVerb, isSelected, onClick }: LearningGoalCardProps) {
+export default function LearningGoalCard({ goal, bloomsLevel, isSelected, onClick }: LearningGoalCardProps) {
   return (
     <button
       onClick={onClick}
@@ -27,8 +21,8 @@ export default function LearningGoalCard({ goal, actionVerb, isSelected, onClick
     >
       <p className="text-sm text-muted-foreground leading-relaxed">
         After this session, you will be able to{' '}
-        <span className={`font-semibold ${actionVerbColors[actionVerb]}`}>
-          {actionVerb}
+        <span className="font-semibold text-primary">
+          {bloomsLevel}
         </span>{' '}
         {goal}
       </p>
