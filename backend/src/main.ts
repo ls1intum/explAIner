@@ -31,7 +31,6 @@ async function bootstrap() {
   logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   logger.log('🚀 Backend server started successfully');
   logger.log('📡 API: http://localhost:3001/api');
-  logger.log('🌐 CORS: http://localhost:3000');
   logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 bootstrap();
