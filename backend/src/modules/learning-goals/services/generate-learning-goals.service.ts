@@ -22,7 +22,6 @@ export class GenerateLearningGoalsService {
     return goals.map((goal) => ({
       learningGoal: goal.learningGoal,
       bloomsLevel: goal.bloomsLevel as any,
-      actionVerb: goal.actionVerb,
     }));
   }
 }

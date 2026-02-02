@@ -32,20 +32,25 @@ Write all learning goals in English.
 
 CRITICAL REQUIREMENTS:
 1. All 3 goals must be SIMPLER than the original "${originalGoal}"
-2. Each goal MUST start with "After this session, you will be able to" followed by a Bloom's action verb
+2. Each goal MUST follow this EXACT format: "After this session, you will be able to <BloomsLevel> <objective>."
+   - BloomsLevel must be one of: Remember, Understand, Apply, Analyze, Evaluate, Create
+   - The BloomsLevel should appear as a single word directly after "you will be able to"
+   - Example: "After this session, you will be able to Remember the three main components of..."
 3. Focus on FOUNDATIONAL concepts that would help the student understand the topic better
-4. Use LOWER Bloom's taxonomy levels (Remember, Understand) - avoid Apply, Analyse, Evaluate, Create
+4. Use LOWER Bloom's taxonomy levels (Remember, Understand) - avoid Apply, Analyze, Evaluate, Create
 5. Each goal should be distinct and cover different foundational aspects
 6. Goals should be BRIEF (max 25 words)
 
-Bloom's Taxonomy Action Verbs for simpler goals:
-- Remember: identify, list, name, recall, recognize, define, describe, locate, match, state
-- Understand: explain, summarize, interpret, classify, compare, describe, discuss, distinguish, illustrate, paraphrase
+Bloom's Taxonomy Levels for simpler goals:
+- Remember: Basic recall and recognition
+- Understand: Explanation and interpretation
 
 Return ONLY a JSON array with exactly 3 objects:
 [
-  { "learningGoal": "After this session, you will be able to identify...", "bloomsLevel": "Remember", "actionVerb": "identify" },
-  { "learningGoal": "After this session, you will be able to describe...", "bloomsLevel": "Remember", "actionVerb": "describe" },
-  { "learningGoal": "After this session, you will be able to explain...", "bloomsLevel": "Understand", "actionVerb": "explain" }
-]`;
+  { "learningGoal": "After this session, you will be able to Remember the three main components of...", "bloomsLevel": "Remember" },
+  { "learningGoal": "After this session, you will be able to Remember the basic principles of...", "bloomsLevel": "Remember" },
+  { "learningGoal": "After this session, you will be able to Understand how these components work together...", "bloomsLevel": "Understand" }
+]
+
+IMPORTANT: The learningGoal text must include the BloomsLevel word (e.g., "Remember", "Understand") right after "you will be able to".`;
 };

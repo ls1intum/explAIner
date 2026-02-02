@@ -16,7 +16,10 @@ Topic: ${topic}${priorKnowledgeContext}
 Write all learning goals in English.
 
 CRITICAL REQUIREMENTS:
-1. Each goal MUST start with "After this session, you will be able to" followed by a Bloom's action verb
+1. Each goal MUST follow this EXACT format: "After this session, you will be able to <BloomsLevel> <objective>."
+   - BloomsLevel must be one of: Remember, Understand, Apply, Analyze, Evaluate, Create
+   - The BloomsLevel should appear as a single word directly after "you will be able to"
+   - Example: "After this session, you will be able to Remember the three main components of..."
 2. Each goal MUST be UNIQUE and cover a DIFFERENT aspect of the topic
 3. Goals MUST increase in cognitive complexity:
    - Goal 1: Remember level (basic recall, identification)
@@ -26,20 +29,22 @@ CRITICAL REQUIREMENTS:
 5. Do NOT repeat similar content across goals
 6. ${priorKnowledge ? 'SKIP any content the learner already knows based on their prior knowledge. Focus ONLY on new concepts.' : 'Cover the fundamentals if no prior knowledge is indicated.'}
 
-Bloom's Taxonomy Action Verbs (use ONLY these after "you will be able to"):
-- Remember: identify, list, name, recall, recognize, define, describe, locate, match, state
-- Understand: explain, summarize, interpret, classify, compare, describe, discuss, distinguish, illustrate, paraphrase
-- Apply: apply, demonstrate, solve, use, implement, execute, calculate, modify, operate, practice
-- Analyze: analyze, compare, contrast, differentiate, examine, organize, categorize, deconstruct, investigate
+Bloom's Taxonomy Levels:
+- Remember: Basic recall and recognition
+- Understand: Explanation and interpretation
+- Apply: Practical application
+- Analyze: Breaking down and examining
+- Evaluate: Judging and critiquing
+- Create: Producing new work
 
 Return ONLY a JSON array with exactly 3 objects:
 [
-  { "learningGoal": "After this session, you will be able to identify the three main components of...", "bloomsLevel": "Remember", "actionVerb": "identify" },
-  { "learningGoal": "After this session, you will be able to explain how these components work together...", "bloomsLevel": "Understand", "actionVerb": "explain" },
-  { "learningGoal": "After this session, you will be able to apply this knowledge to solve...", "bloomsLevel": "Apply", "actionVerb": "apply" }
+  { "learningGoal": "After this session, you will be able to Remember the three main components of...", "bloomsLevel": "Remember" },
+  { "learningGoal": "After this session, you will be able to Understand how these components work together...", "bloomsLevel": "Understand" },
+  { "learningGoal": "After this session, you will be able to Apply this knowledge to solve...", "bloomsLevel": "Apply" }
 ]
 
-The "actionVerb" field must contain the Bloom's action verb (the word right after "you will be able to").`;
+IMPORTANT: The learningGoal text must include the BloomsLevel word (e.g., "Remember", "Understand") right after "you will be able to".`;
 };
 
 
