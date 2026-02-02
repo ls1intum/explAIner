@@ -15,6 +15,7 @@ export interface Session {
   updatedAt: Date;
 }
 
+// TODO: is this necessary?
 export interface SessionWithBlocks extends Session {
   blocks: Block[];
   learningGoal: LearningGoal;
