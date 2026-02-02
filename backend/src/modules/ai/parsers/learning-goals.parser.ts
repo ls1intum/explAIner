@@ -1,4 +1,5 @@
-import { learningGoalsArraySchema, LearningGoalsArray } from '../schemas/learning-goals.schema';
+import { learningGoalsArraySchema } from '../schemas/learning-goals.schema';
+import { LearningGoalsArray } from '../../../common/types/learning-goals.types';
 import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util';
 
 export class LearningGoalsParser {

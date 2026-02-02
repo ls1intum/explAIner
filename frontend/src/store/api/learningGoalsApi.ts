@@ -1,10 +1,17 @@
 import { baseApi } from "./baseApi";
+import type {
+  LearningGoal,
+  GenerateLearningGoalsRequest,
+} from "@/types/learning-goals.types";
 
-// POST /api/learning-goals
+// Learning Goals API endpoints
 
 export const learningGoalsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createLearningGoal: builder.mutation({
+    generateLearningGoals: builder.mutation<
+      LearningGoal[],
+      GenerateLearningGoalsRequest
+    >({
       query: (body) => ({
         url: "/api/learning-goals",
         method: "POST",
@@ -15,4 +22,4 @@ export const learningGoalsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateLearningGoalMutation } = learningGoalsApi;
+export const { useGenerateLearningGoalsMutation } = learningGoalsApi;

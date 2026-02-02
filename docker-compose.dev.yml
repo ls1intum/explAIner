@@ -30,6 +30,7 @@ services:
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       NODE_ENV: development
       PORT: ${BACKEND_PORT}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     volumes:

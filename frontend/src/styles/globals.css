@@ -5,10 +5,9 @@
 /* Import theme variables defined in themes.css */
 @import './themes.css';
 
-/* Prevent scrolling on the page */
+/* Allow natural scrolling behavior */
 html,
 body {
-  overflow: hidden;
   height: 100%;
   width: 100%;
 }
@@ -56,5 +55,21 @@ body {
   
   .border-t-secondary {
     border-top-color: hsl(var(--secondary));
+  }
+
+  /* Toast slide-in animation */
+  .animate-slideInRight {
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 }

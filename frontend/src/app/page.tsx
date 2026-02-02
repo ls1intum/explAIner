@@ -1,23 +1,70 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
 import TopicOrQuestionInput from '@/components/learning-topic/TopicOrQuestionInput';
 import PriorKnowledgeKeywordsInput from '@/components/learning-topic/PriorKnowledgeKeywordsInput';
+import LoadingScreen from '@/components/layout/LoadingScreen';
+import { useGenerateLearningGoalsMutation } from '@/store/api/learningGoalsApi';
+import { useAppDispatch } from '@/store/hooks';
+import { setLoading } from '@/store/slices/uiSlice';
+import { setLearningGoalsPageData } from '@/store/slices/learningGoalsSlice';
+import { addToast } from '@/store/slices/toastSlice';
 
 export default function Home() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const [topic, setTopic] = useState('');
   const [keywords, setKeywords] = useState('');
   const hasStartedTyping = topic.length > 0;
 
-  const handleStartSession = () => {
-    // TODO: Navigate to session page or trigger session creation
-    console.log('Starting session with:', { topic, keywords });
+  const [generateLearningGoals, { isLoading }] =
+    useGenerateLearningGoalsMutation();
+
+  // Update global loading state
+  useEffect(() => {
+    dispatch(setLoading(isLoading));
+  }, [isLoading, dispatch]);
+
+  const handleStartSession = async () => {
+    try {
+      // Call API to generate learning goals
+      const result = await generateLearningGoals({
+        topic,
+        keywords: keywords.trim() || undefined,
+      }).unwrap();
+
+      // Store learning goals data in Redux
+      dispatch(
+        setLearningGoalsPageData({
+          topic,
+          keywords,
+          goals: result,
+        })
+      );
+
+      // Navigate to learning goal page with clean URL
+      router.push('/learning-goal');
+    } catch (err) {
+      console.error('Failed to generate learning goals:', err);
+      dispatch(
+        addToast({
+          message: 'Failed to generate learning goals. Please try again.',
+          type: 'error',
+        })
+      );
+    }
   };
 
+  // Show loading screen while API call is in progress
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-6">
         {/* Owlbert Character with Speech Bubble */}
         <div className="relative mb-6 flex flex-col items-center mb-10">
@@ -69,7 +116,7 @@ export default function Home() {
               {/* Start Button */}
               <button
                 onClick={handleStartSession}
-                disabled={!topic.trim()}
+                disabled={!topic.trim() || isLoading}
                 className="w-full bg-success-gradient text-white font-semibold text-base py-3 px-5 rounded-3xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
               >
                 <RocketIcon className="w-5 h-5" />

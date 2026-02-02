@@ -1,4 +1,5 @@
 // FONT OPTIONS - Import all fonts
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Montserrat } from "next/font/google";
 import { Outfit } from "next/font/google";
 import { DM_Sans } from "next/font/google";
