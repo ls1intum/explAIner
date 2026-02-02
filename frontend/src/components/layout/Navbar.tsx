@@ -15,12 +15,18 @@ export default function Navbar() {
 
   return (
     <nav className="w-full bg-brand-gradient px-6 py-4">
-      <div className="w-full flex items-center justify-between">
-        {/* Show nothing when loading */}
+      <div className="w-full flex items-center justify-between min-h-[2rem]">
+        {/* Show invisible placeholder when loading to maintain height */}
         {isLoading ? (
           <>
-            <div></div>
-            <div></div>
+            <div className="invisible flex items-center gap-2 text-sm font-medium">
+              <span className="w-5 h-5"></span>
+              <span>Placeholder</span>
+            </div>
+            <div className="invisible flex items-center gap-2 text-sm font-medium">
+              <span className="w-5 h-5"></span>
+              <span>End Session</span>
+            </div>
           </>
         ) : (
           <>
