@@ -7,4 +7,5 @@ export default Joi.object({
   PORT: Joi.number().default(3001),
   DATABASE_URL: Joi.string().required(),
   ANTHROPIC_API_KEY: Joi.string().required(),
+  ANTHROPIC_MODEL: Joi.string().default('claude-sonnet-4-5-20250929'),
 });
