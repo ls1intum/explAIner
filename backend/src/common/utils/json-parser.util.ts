@@ -14,9 +14,24 @@
  */
 export function extractJsonFromMarkdown(text: string): string {
   let jsonText = text.trim();
-  const jsonMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (jsonMatch) {
-    jsonText = jsonMatch[1].trim();
+  
+  // Try to extract from markdown code blocks
+  // Match ```json or just ``` with optional whitespace
+  const codeBlockMatch = jsonText.match(/```(?:json|JSON)?\s*\n?([\s\S]*?)```/);
+  if (codeBlockMatch) {
+    jsonText = codeBlockMatch[1].trim();
   }
-  return jsonText;
+  
+  // Remove any leading/trailing backticks that might remain
+  jsonText = jsonText.replace(/^`+|`+$/g, '').trim();
+  
+  // If text starts with something before {, try to extract just the JSON object/array
+  if (!jsonText.startsWith('{') && !jsonText.startsWith('[')) {
+    const jsonObjectMatch = jsonText.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+    if (jsonObjectMatch) {
+      jsonText = jsonObjectMatch[1];
+    }
+  }
+  
+  return jsonText.trim();
 }
