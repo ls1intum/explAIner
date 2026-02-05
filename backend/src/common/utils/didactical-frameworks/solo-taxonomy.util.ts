@@ -1,17 +1,18 @@
+import { SoloLevel } from '@prisma/client';
+
 /**
  * SOLO (Structure of Observed Learning Outcomes) Taxonomy for Practice Question Design
  *
  * SOLO taxonomy provides a framework for designing practice questions that progressively
  * build understanding from simple recall to complex application.
+ *
+ * Unlike Bloom's focus on cognitive processes, SOLO measures the structural quality of
+ * a learner's response—how many elements they connect and how abstractly they can extend
+ * their understanding.
+ *
+ * This file provides SOLO taxonomy descriptions and helper functions for AI prompts.
+ * SoloLevel enum is imported from Prisma (single source of truth).
  */
-
-// This enum matches the Prisma SoloLevel enum exactly
-export enum SOLOLevel {
-  UNISTRUCTURAL = 'Unistructural',
-  MULTISTRUCTURAL = 'Multistructural',
-  RELATIONAL = 'Relational',
-  EXTENDED_ABSTRACT = 'ExtendedAbstract',
-}
 
 export const SOLO_TAXONOMY_DESCRIPTION = `
 SOLO (Structure of Observed Learning Outcomes) Taxonomy for Multiple Choice Question Design:
@@ -47,20 +48,26 @@ SOLO (Structure of Observed Learning Outcomes) Taxonomy for Multiple Choice Ques
 
 /**
  * Maps Bloom's taxonomy levels to appropriate SOLO levels for practice questions.
+ * 
+ * Mapping guide:
+ * - Remember → Unistructural, Multistructural (single/multiple connections)
+ * - Understand → Multistructural, Relational (multiple separate connections to integrated)
+ * - Apply/Analyze → Relational, Extended Abstract (integrated to generalized)
+ * - Evaluate/Create → Relational, Extended Abstract (generalization to new contexts)
  */
-export function getSOLOLevelsForBlooms(bloomsLevel: string): SOLOLevel[] {
+export function getSOLOLevelsForBlooms(bloomsLevel: string): SoloLevel[] {
   switch (bloomsLevel) {
     case 'Remember':
-      return [SOLOLevel.UNISTRUCTURAL, SOLOLevel.MULTISTRUCTURAL];
+      return [SoloLevel.Unistructural, SoloLevel.Multistructural];
     case 'Understand':
-      return [SOLOLevel.MULTISTRUCTURAL, SOLOLevel.RELATIONAL];
+      return [SoloLevel.Multistructural, SoloLevel.Relational];
     case 'Apply':
     case 'Analyze':
-      return [SOLOLevel.RELATIONAL, SOLOLevel.EXTENDED_ABSTRACT];
+      return [SoloLevel.Relational, SoloLevel.ExtendedAbstract];
     case 'Evaluate':
     case 'Create':
-      return [SOLOLevel.RELATIONAL, SOLOLevel.EXTENDED_ABSTRACT];
+      return [SoloLevel.Relational, SoloLevel.ExtendedAbstract];
     default:
-      return [SOLOLevel.MULTISTRUCTURAL, SOLOLevel.RELATIONAL];
+      return [SoloLevel.Multistructural, SoloLevel.Relational];
   }
 }
