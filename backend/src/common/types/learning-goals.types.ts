@@ -1,10 +1,12 @@
-import { BloomsLevel } from './blooms-level.enum';
+import { BloomsLevel } from '@prisma/client';
 
 /**
  * Learning Goal Type
  *
  * Represents a single learning goal with Bloom's taxonomy level.
  * Used throughout the application for AI-generated learning goals.
+ *
+ * Note: BloomsLevel is imported from Prisma (single source of truth for backend enums).
  */
 export interface LearningGoal {
   learningGoal: string;
