@@ -29,8 +29,7 @@ export class HttpLoggingInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest<Request>();
     const { method, url, body } = request;
 
-    // Add dividing lines to indicate new log flow
-    console.log('─────────────────────────────────────────────────────────────────────────────────');
+    // Add dividing line at start of request flow
     console.log('─────────────────────────────────────────────────────────────────────────────────');
 
     // Log incoming request
@@ -43,11 +42,15 @@ export class HttpLoggingInterceptor implements NestInterceptor {
           // Log response
           const responseBody = formatBody(data);
           this.responseLogger.log(`${method} ${url} ${responseBody}`);
+          // Add dividing line at end of response flow
+          console.log('─────────────────────────────────────────────────────────────────────────────────');
         },
         error: (error) => {
           this.responseLogger.error(
             `${method} ${url} Error: ${error.message}`,
           );
+          // Add dividing line at end of error flow
+          console.log('─────────────────────────────────────────────────────────────────────────────────');
         },
       }),
     );
