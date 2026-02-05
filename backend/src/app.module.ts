@@ -7,7 +7,6 @@ import { AiModule } from './modules/ai/ai.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { LearningGoalsModule } from './modules/learning-goals/learning-goals.module';
 import { BlocksModule } from './modules/blocks/blocks.module';
-import { HealthModule } from './modules/health/health.module';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { HealthModule } from './modules/health/health.module';
     SessionsModule,
     LearningGoalsModule,
     BlocksModule,
-    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
