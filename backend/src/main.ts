@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
+import { ControllerLoggingInterceptor } from './common/interceptors/controller-logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,8 +11,11 @@ async function bootstrap() {
   // Set global API prefix
   app.setGlobalPrefix('api');
   
-  // Enable global logging interceptor
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  // Enable global logging interceptors (order matters: first runs first)
+  app.useGlobalInterceptors(
+    new HttpLoggingInterceptor(),
+    new ControllerLoggingInterceptor(),
+  );
   
   // Enable validation pipe for DTOs
   app.useGlobalPipes(
