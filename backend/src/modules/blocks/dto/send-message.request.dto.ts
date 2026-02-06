@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class GenerateSummaryDto {
+export class SendMessageRequestDto {
   @IsString()
-  sessionId: string;
+  message: string;
 }
