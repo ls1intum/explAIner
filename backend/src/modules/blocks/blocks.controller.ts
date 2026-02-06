@@ -1,23 +1,34 @@
-import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, HttpCode } from '@nestjs/common';
 import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
-import { GenerateSubsequentBlockSequenceService } from './services/generate-subsequent-block-sequence.service';
+import { GenerateBlockSequenceService } from './services/generate-block-sequence.service';
 import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
 import { SendMessageService } from './services/send-message.service';
-import { CheckAnswerService } from './services/check-answer.service';
-import { GenerateSubsequentSequenceDto } from './dto/generate-subsequent-sequence.dto';
-import { GenerateSummaryDto } from './dto/generate-summary.dto';
-import { SendMessageDto } from './dto/send-message.dto';
-import { CheckAnswerDto } from './dto/check-answer.dto';
+import { SubmitAnswerService } from './services/submit-answer.service';
+import { SendMessageRequestDto } from './dto/send-message.request.dto';
+import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
+import { GenerateBlockSequenceResponseDto } from './dto/generate-block-sequence.response.dto';
+import { GenerateSummaryResponseDto } from './dto/generate-summary.response.dto';
 
 @Controller('sessions/:sessionId/blocks')
 export class BlocksController {
   constructor(
-    private readonly getBlockByOrderIndexService: GetBlockByOrderIndexService,
-    private readonly generateSubsequentBlockSequenceService: GenerateSubsequentBlockSequenceService,
+    private readonly generateBlockSequenceService: GenerateBlockSequenceService,
     private readonly generateSummaryBlockService: GenerateSummaryBlockService,
+    private readonly getBlockByOrderIndexService: GetBlockByOrderIndexService,
     private readonly sendMessageService: SendMessageService,
-    private readonly checkAnswerService: CheckAnswerService,
+    private readonly submitAnswerService: SubmitAnswerService,
   ) {}
+
+  @Post('sequence')
+  generateSequence(@Param('sessionId') sessionId: string): Promise<GenerateBlockSequenceResponseDto> {
+    // Mode is automatically detected inside the service based on session state
+    return this.generateBlockSequenceService.generate(sessionId);
+  }
+
+  @Post('summary')
+  generateSummary(@Param('sessionId') sessionId: string): Promise<GenerateSummaryResponseDto> {
+    return this.generateSummaryBlockService.generate(sessionId);
+  }
 
   @Get(':orderIndex')
   getBlock(
@@ -27,37 +38,22 @@ export class BlocksController {
     return this.getBlockByOrderIndexService.getBlock(sessionId, parseInt(orderIndex));
   }
 
-  @Post('next-sequence')
-  generateNextSequence(
-    @Param('sessionId') sessionId: string,
-    @Body() dto: GenerateSubsequentSequenceDto,
-  ) {
-    return this.generateSubsequentBlockSequenceService.generate(dto);
-  }
-
-  @Post('summary')
-  generateSummary(
-    @Param('sessionId') sessionId: string,
-    @Body() dto: GenerateSummaryDto,
-  ) {
-    return this.generateSummaryBlockService.generate(dto);
-  }
-
   @Post(':orderIndex/send-message')
   sendMessage(
     @Param('sessionId') sessionId: string,
     @Param('orderIndex') orderIndex: string,
-    @Body() dto: SendMessageDto,
+    @Body() dto: SendMessageRequestDto,
   ) {
     return this.sendMessageService.send(sessionId, orderIndex, dto);
   }
 
-  @Patch(':orderIndex/check-answer')
-  checkAnswer(
+  @Patch(':orderIndex/submit-answer')
+  @HttpCode(204)
+  submitAnswer(
     @Param('sessionId') sessionId: string,
     @Param('orderIndex') orderIndex: string,
-    @Body() dto: CheckAnswerDto,
-  ) {
-    return this.checkAnswerService.check(sessionId, orderIndex, dto);
+    @Body() dto: SubmitAnswerRequestDto,
+  ): Promise<void> {
+    return this.submitAnswerService.submit(sessionId, orderIndex, dto);
   }
 }
