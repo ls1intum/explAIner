@@ -1,27 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { GenerateLearningGoalsDto } from '../dto/generate-learning-goals.dto';
-import { LearningGoalResponseDto } from '../dto/learning-goal-response.dto';
-import { GenerateLearningGoalsService as AiGenerateLearningGoalsService } from '../../ai/services/generate-learning-goals.service';
+import { GenerateLearningGoalsRequestDto } from '../dto/generate-learning-goals.request.dto';
+import { GenerateLearningGoalsResponseDto } from '../dto/generate-learning-goals.response.dto';
+import { GenerateLearningGoalsChain } from '../../ai/chains/generate-learning-goals.chain';
+import { generateLearningGoalsPrompt } from '../../ai/prompts/generate-learning-goals.prompt';
+import { LogService } from '../../../common/decorators/service-logging.decorator';
 
 @Injectable()
 export class GenerateLearningGoalsService {
   constructor(
-    private aiGenerateLearningGoalsService: AiGenerateLearningGoalsService,
+    private generateLearningGoalsChain: GenerateLearningGoalsChain,
   ) {}
 
+  @LogService()
   async generate(
-    dto: GenerateLearningGoalsDto,
-  ): Promise<LearningGoalResponseDto[]> {
-    // Call AI service to generate learning goals
-    const goals = await this.aiGenerateLearningGoalsService.generate(
-      dto.topic,
-      dto.keywords,
+    dto: GenerateLearningGoalsRequestDto,
+  ): Promise<GenerateLearningGoalsResponseDto> {
+    // Generate prompt
+    const prompt = generateLearningGoalsPrompt({
+      topic: dto.topic,
+      priorKnowledgeKeywords: dto.priorKnowledgeKeywords,
+    });
+
+    // Call chain to generate learning goals
+    const goals = await this.generateLearningGoalsChain.execute(
+      prompt,
+      'generate-learning-goals.prompt.ts',
     );
 
-    // Map to response DTOs
-    return goals.map((goal) => ({
-      learningGoal: goal.learningGoal,
-      bloomsLevel: goal.bloomsLevel as any,
-    }));
+    // Return wrapped response
+    return {
+      learningGoals: goals.map((goal) => ({
+        learningGoal: goal.learningGoal,
+        bloomsLevel: goal.bloomsLevel as any,
+      })),
+    };
   }
 }

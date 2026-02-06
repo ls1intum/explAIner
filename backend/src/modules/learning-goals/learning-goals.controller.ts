@@ -1,8 +1,8 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { GenerateLearningGoalsService } from './services/generate-learning-goals.service';
 import { GenerateEasierLearningGoalsService } from './services/generate-easier-learning-goals.service';
-import { GenerateLearningGoalsDto } from './dto/generate-learning-goals.dto';
-import { GenerateEasierLearningGoalsDto } from './dto/generate-easier-learning-goals.dto';
+import { GenerateLearningGoalsRequestDto } from './dto/generate-learning-goals.request.dto';
+import { GenerateEasierLearningGoalsRequestDto } from './dto/generate-easier-learning-goals.request.dto';
 
 @Controller('learning-goals')
 export class LearningGoalsController {
@@ -12,12 +12,12 @@ export class LearningGoalsController {
   ) {}
 
   @Post()
-  generate(@Body() dto: GenerateLearningGoalsDto) {
+  generate(@Body() dto: GenerateLearningGoalsRequestDto) {
     return this.generateLearningGoalsService.generate(dto);
   }
 
   @Post('easier')
-  generateEasier(@Body() dto: GenerateEasierLearningGoalsDto) {
+  generateEasier(@Body() dto: GenerateEasierLearningGoalsRequestDto) {
     return this.generateEasierLearningGoalsService.generate(dto);
   }
 }
