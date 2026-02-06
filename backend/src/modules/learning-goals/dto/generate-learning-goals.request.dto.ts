@@ -1,10 +1,10 @@
 import { IsString, IsOptional } from 'class-validator';
 
-export class GenerateLearningGoalsDto {
+export class GenerateLearningGoalsRequestDto {
   @IsString()
   topic: string;
 
   @IsOptional()
   @IsString()
-  keywords?: string;
+  priorKnowledgeKeywords?: string;
 }
