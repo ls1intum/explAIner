@@ -1,7 +1,12 @@
-export default function BlockContainer({ children }: { children: React.ReactNode }) {
+'use client';
+
+interface BlockContainerProps {
+  children: React.ReactNode;
+}
+
+export default function BlockContainer({ children }: BlockContainerProps) {
   return (
-    <div>
-      {/* Shared wrapper (animations, spacing) */}
+    <div className="w-full animate-fadeIn">
       {children}
     </div>
   );
