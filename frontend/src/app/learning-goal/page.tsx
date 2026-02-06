@@ -6,10 +6,20 @@ import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
 import LearningGoalCard from '@/components/learning-goals/LearningGoalCard';
 import CustomLearningGoalCard from '@/components/learning-goals/CustomLearningGoalCard';
-import { useAppSelector } from '@/store/hooks';
+import LoadingScreen from '@/components/layout/LoadingScreen';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useCreateSessionMutation } from '@/store/api/sessionsApi';
+import {
+  setCurrentSession,
+  setTotalBlocks,
+  setBlockQueue,
+  setCurrentBlockIndex,
+} from '@/store/slices/sessionSlice';
+import { setLoading } from '@/store/slices/uiSlice';
 
 export default function LearningGoalPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const pageData = useAppSelector((state) => state.learningGoals.pageData);
   
   // State for predefined goals
@@ -19,13 +29,19 @@ export default function LearningGoalPage() {
   // State for custom goal
   const [customObjective, setCustomObjective] = useState('');
   const [customBloomsLevel, setCustomBloomsLevel] = useState('Understand');
-
-  // Redirect to home if no data is available
+  
+  // RTK Query mutation for creating session
+  const [createSession, { isLoading }] = useCreateSessionMutation();
+  
+  // Local loading state to show loading screen
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+  
+  // Reset loading state when component unmounts
   useEffect(() => {
-    if (!pageData) {
-      router.push('/');
-    }
-  }, [pageData, router]);
+    return () => {
+      dispatch(setLoading(false));
+    };
+  }, [dispatch]);
 
   // Handle toggling between predefined and custom
   const handleShowPredefined = () => {
@@ -54,7 +70,7 @@ export default function LearningGoalPage() {
   };
 
   // Start session handler
-  const handleStartSession = () => {
+  const handleStartSession = async () => {
     if (!pageData) return;
 
     let finalGoal: string;
@@ -73,13 +89,39 @@ export default function LearningGoalPage() {
       finalBloomsLevel = selectedGoal.bloomsLevel;
     }
 
-    // TODO: Navigate to session page with selected goal and topic
-    console.log('Starting session with:', {
-      topic: pageData.topic,
-      keywords: pageData.keywords,
-      learningGoal: finalGoal,
-      bloomsLevel: finalBloomsLevel,
-    });
+    try {
+      // Show loading screen
+      setShowLoadingScreen(true);
+      dispatch(setLoading(true));
+
+      // Call createSession API
+      const response = await createSession({
+        topic: pageData.topic,
+        learningGoal: finalGoal,
+        bloomsLevel: finalBloomsLevel,
+        priorKnowledge: pageData.keywords?.trim() || undefined,
+      }).unwrap();
+
+      // Update Redux store with new session data (overwrites old session)
+      dispatch(setCurrentSession(response.session.id));
+      dispatch(setCurrentBlockIndex(0)); // Explicitly set to first block
+      dispatch(setTotalBlocks(response.session.totalBlocks));
+      
+      // Mark first block as viewed and set block queue
+      const blocksWithFirstViewed = response.blocks.map((block, index) => ({
+        ...block,
+        alreadyViewed: index === 0 ? true : block.alreadyViewed,
+      }));
+      dispatch(setBlockQueue(blocksWithFirstViewed));
+
+      // Navigate to session page
+      router.push(`/session/${response.session.id}`);
+    } catch (error) {
+      console.error('Failed to create session:', error);
+      setShowLoadingScreen(false);
+      dispatch(setLoading(false));
+      // TODO: Show error toast/notification
+    }
   };
 
   // Check if start button should be enabled
@@ -90,6 +132,11 @@ export default function LearningGoalPage() {
   // Show nothing while loading data
   if (!pageData) {
     return null;
+  }
+  
+  // Show loading screen while creating session
+  if (showLoadingScreen) {
+    return <LoadingScreen />;
   }
 
   // Transform goals to extract objective part
@@ -143,7 +190,7 @@ export default function LearningGoalPage() {
           {showPredefined ? (
             <div className="w-full bg-muted rounded-3xl p-6 space-y-4">
               <div className="w-full text-center text-muted-foreground font-semibold text-base">
-                Choose learning goal...
+                Choose a learning goal...
               </div>
               <div className="space-y-3">
                 {transformedGoals.map((goal) => (
@@ -162,7 +209,7 @@ export default function LearningGoalPage() {
               onClick={handleShowPredefined}
               className="w-full bg-muted text-muted-foreground font-semibold text-base py-3 px-5 rounded-3xl hover:bg-muted/80 transition-all text-center"
             >
-              Choose learning goal...
+              Choose a learning goal...
             </button>
           )}
 
@@ -179,7 +226,7 @@ export default function LearningGoalPage() {
               onClick={handleShowCustom}
               className="w-full bg-muted text-muted-foreground font-semibold text-base py-3 px-5 rounded-3xl hover:bg-muted/80 transition-all text-center"
             >
-              ... or create your own
+              ... or enter your own learning goal
             </button>
           )}
         </div>
@@ -187,11 +234,11 @@ export default function LearningGoalPage() {
         {/* Start Button */}
         <button
           onClick={handleStartSession}
-          disabled={!canStart}
+          disabled={!canStart || isLoading}
           className="w-full max-w-2xl bg-success-gradient text-white font-semibold text-base py-3 px-5 rounded-3xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
         >
           <RocketIcon className="w-5 h-5" />
-          <span>Let&apos;s Start!</span>
+          <span>{isLoading ? 'Creating session...' : "Let's Start!"}</span>
         </button>
       </main>
     </div>
