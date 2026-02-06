@@ -4,6 +4,8 @@ import sessionReducer from "./slices/sessionSlice";
 import uiReducer from "./slices/uiSlice";
 import learningGoalsReducer from "./slices/learningGoalsSlice";
 import toastReducer from "./slices/toastSlice";
+import { loggingMiddleware } from "./middleware/loggingMiddleware";
+import { syncCurrentBlockMiddleware } from "./middleware/syncCurrentBlockMiddleware";
 
 // Redux store configuration
 
@@ -16,7 +18,10 @@ export const store = configureStore({
     toast: toastReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(baseApi.middleware),
+    getDefaultMiddleware()
+      .concat(baseApi.middleware)
+      .concat(loggingMiddleware)
+      .concat(syncCurrentBlockMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
