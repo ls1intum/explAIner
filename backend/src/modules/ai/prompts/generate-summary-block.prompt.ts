@@ -21,7 +21,7 @@ export const generateSummaryBlockPrompt = ({
     : 'No content';
 
   const practiceResultsSummary = practiceResults.length > 0
-    ? practiceResults.map((p) => `Q: ${p.question} - ${p.isCorrect ? 'Correct ✅' : 'Incorrect ❌'}`).join('\n')
+    ? practiceResults.map((p) => `Q: ${p.question} - ${p.isCorrect ? 'Correct' : 'Incorrect'}`).join('\n')
     : 'No practice';
 
   return `You are ExplAIner. Generate a session summary.
@@ -46,12 +46,16 @@ Create a brief, encouraging summary (2-3 paragraphs) that:
 
 **Guidelines:**
 - Use **bold** for key terms
-- Add 1-2 encouraging emojis (💡, 🎯, ✨, 🎉)
 - Be supportive and motivational
 - Keep it concise but meaningful
 
-Return ONLY a JSON object:
+**CRITICAL FORMAT REQUIREMENT:**
+Return ONLY a pure JSON object. Do NOT wrap it in markdown code blocks or backticks.
+Do NOT include \`\`\`json or \`\`\` before or after the JSON.
+Your response should start with { and end with }
+
+Expected format:
 {
-  "sessionSummary": "Your comprehensive summary here (2-3 paragraphs with **bold** and emojis)..."
+  "sessionSummary": "Your comprehensive summary here (2-3 paragraphs with **bold**)..."
 }`;
 };

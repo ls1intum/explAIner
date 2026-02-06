@@ -1,3 +1,5 @@
+import { BLOOMS_TAXONOMY_DESCRIPTION } from '../../../common/utils/didactical-frameworks/blooms-taxonomy.util';
+
 interface GenerateEasierLearningGoalsPromptParams {
   topic: string;
   originalGoal: string;
@@ -14,14 +16,14 @@ export const generateEasierLearningGoalsPrompt = ({
   coveredContent,
 }: GenerateEasierLearningGoalsPromptParams): string => {
   const wrongAnswersContext = wrongQuestions && wrongQuestions.length > 0
-    ? `\n\nThe student struggled with these questions:\n${wrongQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}`
+    ? `\n\nIMPORTANT - STUDENT STRUGGLES: The student struggled with these practice questions, indicating misconceptions in the following areas:\n${wrongQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n\n')}\n\nThe new learning goals should ADDRESS THESE MISCONCEPTIONS and focus on the FUNDAMENTAL CONCEPTS the student needs to understand before tackling the original goal.`
     : '';
 
   const contentContext = coveredContent
-    ? `\n\nContent that was covered in the session:\n${coveredContent}`
+    ? `\n\nContent already covered in the session:\n${coveredContent.substring(0, 1500)}...`
     : '';
 
-  return `You are an expert instructional designer. A student was working on a learning session but found it too challenging. Generate 3 SIMPLER, more accessible learning goals.
+  return `You are an expert instructional designer. A student was working on a learning session but found it too challenging. Your task is to generate 3 SIMPLER, more accessible learning goals that focus on FOUNDATIONAL CONCEPTS.
 
 ORIGINAL CONTEXT:
 - Topic: ${topic}
@@ -31,21 +33,29 @@ ORIGINAL CONTEXT:
 Write all learning goals in English.
 
 CRITICAL REQUIREMENTS:
-1. All 3 goals must be SIMPLER than the original "${originalGoal}"
+1. All 3 goals MUST be SIMPLER than the original "${originalGoal}"
 2. Each goal MUST follow this EXACT format: "After this session, you will be able to <BloomsLevel> <objective>."
    - BloomsLevel must be one of: Remember, Understand, Apply, Analyze, Evaluate, Create
    - The BloomsLevel should appear as a single word directly after "you will be able to"
    - Example: "After this session, you will be able to Remember the three main components of..."
-3. Focus on FOUNDATIONAL concepts that would help the student understand the topic better
+3. Focus on FOUNDATIONAL concepts that address the student's misconceptions identified in the wrong practice questions
 4. Use LOWER Bloom's taxonomy levels (Remember, Understand) - avoid Apply, Analyze, Evaluate, Create
-5. Each goal should be distinct and cover different foundational aspects
-6. Goals should be BRIEF (max 25 words)
+5. Each goal MUST be UNIQUE and cover a DIFFERENT foundational aspect
+6. Goals should be BRIEF (max 30 words total)
+7. The goals should help the student BUILD UP to the original goal by mastering prerequisites first
 
-Bloom's Taxonomy Levels for simpler goals:
+${BLOOMS_TAXONOMY_DESCRIPTION}
+
+Focus on lower Bloom's levels for simpler goals:
 - Remember: Basic recall and recognition
 - Understand: Explanation and interpretation
 
-Return ONLY a JSON array with exactly 3 objects:
+**CRITICAL FORMAT REQUIREMENT:**
+Return ONLY a pure JSON array. Do NOT wrap it in markdown code blocks or backticks.
+Do NOT include \`\`\`json or \`\`\` before or after the JSON.
+Your response should start with [ and end with ]
+
+Expected format - exactly 3 objects:
 [
   { "learningGoal": "After this session, you will be able to Remember the three main components of...", "bloomsLevel": "Remember" },
   { "learningGoal": "After this session, you will be able to Remember the basic principles of...", "bloomsLevel": "Remember" },
