@@ -29,5 +29,15 @@ Your role is to:
 
 CRITICAL: All responses must be in English.
 
-Keep your responses brief (2-4 sentences typically) but informative. Use **bold** for key terms.`;
+Keep your responses brief (2-4 sentences typically) but informative. Use **bold** for key terms.
+
+**CRITICAL FORMAT REQUIREMENT:**
+Return ONLY a pure JSON object. Do NOT wrap it in markdown code blocks or backticks.
+Do NOT include \`\`\`json or \`\`\` before or after the JSON.
+Your response should start with { and end with }
+
+Expected format:
+{
+  "response": "Your chat response here"
+}`;
 };

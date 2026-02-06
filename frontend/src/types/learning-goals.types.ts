@@ -21,7 +21,36 @@ export interface LearningGoal {
  */
 export interface GenerateLearningGoalsRequest {
   topic: string;
-  keywords?: string;
+  priorKnowledgeKeywords?: string;
+}
+
+/**
+ * Generate Learning Goals Response
+ *
+ * Response containing learning goals wrapped in an object.
+ */
+export interface GenerateLearningGoalsResponse {
+  learningGoals: LearningGoal[];
+}
+
+/**
+ * Generate Easier Learning Goals Request
+ *
+ * Request payload for generating easier learning goals based on session.
+ */
+export interface GenerateEasierLearningGoalsRequest {
+  sessionId: string;
+}
+
+/**
+ * Generate Easier Learning Goals Response
+ *
+ * Response containing topic, priorKnowledgeKeywords, and easier learning goals.
+ */
+export interface GenerateEasierLearningGoalsResponse {
+  topic: string;
+  priorKnowledgeKeywords: string;
+  learningGoals: LearningGoal[];
 }
 
 /**

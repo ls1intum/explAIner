@@ -1,34 +1,36 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
+import { isLogEnabled } from '../../common/config/logging.config';
 
 @Injectable()
 export class AiService {
   private anthropic: Anthropic;
   private readonly logger = new Logger('AI');
+  private readonly model: string;
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('anthropic.apiKey');
+    this.model = this.configService.get<string>('anthropic.model')!;
     this.anthropic = new Anthropic({ apiKey });
   }
 
   /**
    * Call Claude with a prompt and return raw text response
+   * Format: [AI] <prompt name>
    */
   async callClaude(prompt: string, promptSource?: string): Promise<string> {
-    const startTime = Date.now();
-
-    this.logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    this.logger.log('🤖 CLAUDE API CALL');
-    this.logger.log(`Model: claude-sonnet-4-5-20250929`);
-    if (promptSource) {
-      this.logger.log(`Prompt: ${promptSource}`);
+    // Log AI prompt usage
+    if (isLogEnabled('ai')) {
+      const promptName = promptSource 
+        ? promptSource.replace('.prompt.ts', '')
+        : 'unknown-prompt';
+      this.logger.log(promptName);
     }
-    this.logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     try {
       const message = await this.anthropic.messages.create({
-        model: 'claude-sonnet-4-5-20250929',
+        model: this.model,
         max_tokens: 1024,
         messages: [
           {
@@ -46,23 +48,14 @@ export class AiService {
         throw new Error('No text content in Claude response');
       }
 
-      const duration = Date.now() - startTime;
-      const responsePreview = textContent.text.length > 200
-        ? `${textContent.text.substring(0, 200)}...`
-        : textContent.text;
-
-      this.logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      this.logger.log(`✅ CLAUDE RESPONSE [${duration}ms]`);
-      this.logger.log(`Response Preview:\n${responsePreview}`);
-      this.logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-
       return textContent.text;
     } catch (error) {
-      const duration = Date.now() - startTime;
-      this.logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      this.logger.error(`❌ CLAUDE ERROR [${duration}ms]`);
-      this.logger.error(`Error: ${error.message}`);
-      this.logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      if (isLogEnabled('ai')) {
+        const promptName = promptSource 
+          ? promptSource.replace('.prompt.ts', '')
+          : 'unknown-prompt';
+        this.logger.error(`${promptName} Error: ${error.message}`);
+      }
       throw new Error(`Failed to call Claude: ${error.message}`);
     }
   }

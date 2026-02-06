@@ -1,11 +1,13 @@
+import { BLOOMS_TAXONOMY_DESCRIPTION } from '../../../common/utils/didactical-frameworks/blooms-taxonomy.util';
+
 interface GenerateLearningGoalsPromptParams {
   topic: string;
-  priorKnowledge?: string;
+  priorKnowledgeKeywords?: string;
 }
 
-export const generateLearningGoalsPrompt = ({ topic, priorKnowledge }: GenerateLearningGoalsPromptParams): string => {
-  const priorKnowledgeContext = priorKnowledge
-    ? `\n\nIMPORTANT - PRIOR KNOWLEDGE: The learner already knows about: ${priorKnowledge}
+export const generateLearningGoalsPrompt = ({ topic, priorKnowledgeKeywords }: GenerateLearningGoalsPromptParams): string => {
+  const priorKnowledgeContext = priorKnowledgeKeywords
+    ? `\n\nIMPORTANT - PRIOR KNOWLEDGE: The learner already knows about: ${priorKnowledgeKeywords}
 Do NOT include learning goals that cover concepts the learner already knows. Focus on NEW knowledge beyond what they already understand.`
     : '';
 
@@ -27,17 +29,16 @@ CRITICAL REQUIREMENTS:
    - Goal 3: Apply or Analyze level (practical application or analysis)
 4. Each goal MUST be BRIEF (max 30 words total)
 5. Do NOT repeat similar content across goals
-6. ${priorKnowledge ? 'SKIP any content the learner already knows based on their prior knowledge. Focus ONLY on new concepts.' : 'Cover the fundamentals if no prior knowledge is indicated.'}
+6. ${priorKnowledgeKeywords ? 'SKIP any content the learner already knows based on their prior knowledge. Focus ONLY on new concepts.' : 'Cover the fundamentals if no prior knowledge is indicated.'}
 
-Bloom's Taxonomy Levels:
-- Remember: Basic recall and recognition
-- Understand: Explanation and interpretation
-- Apply: Practical application
-- Analyze: Breaking down and examining
-- Evaluate: Judging and critiquing
-- Create: Producing new work
+${BLOOMS_TAXONOMY_DESCRIPTION}
 
-Return ONLY a JSON array with exactly 3 objects:
+**CRITICAL FORMAT REQUIREMENT:**
+Return ONLY a pure JSON array. Do NOT wrap it in markdown code blocks or backticks.
+Do NOT include \`\`\`json or \`\`\` before or after the JSON.
+Your response should start with [ and end with ]
+
+Expected format - exactly 3 objects:
 [
   { "learningGoal": "After this session, you will be able to Remember the three main components of...", "bloomsLevel": "Remember" },
   { "learningGoal": "After this session, you will be able to Understand how these components work together...", "bloomsLevel": "Understand" },

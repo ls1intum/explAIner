@@ -27,7 +27,7 @@ export default function CustomLearningGoalCard({
     <div className="w-full bg-muted rounded-3xl p-6 space-y-4">
       {/* Header */}
       <div className="w-full text-center text-muted-foreground font-semibold text-base">
-        ... or create your own
+        ... or enter your own learning goal
       </div>
       
       {/* Input fields */}

@@ -5,6 +5,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Prisma 7.x: 'url' moved from schema to prisma.config.ts for migrations
 datasource db {
   provider = "postgresql"
 }

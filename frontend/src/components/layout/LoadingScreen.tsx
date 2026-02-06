@@ -3,11 +3,16 @@
 import Image from 'next/image';
 import { LOADING_SCREEN_MESSAGES } from '@/lib/loadingMessages';
 import { getRandomMessage } from '@/lib/utils';
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function LoadingScreen() {
-  // Select a random message once when component mounts
-  const loadingMessage = useMemo(() => getRandomMessage(LOADING_SCREEN_MESSAGES), []);
+  // Start with default message to avoid hydration mismatch on page reload
+  const [loadingMessage, setLoadingMessage] = useState(LOADING_SCREEN_MESSAGES[0]);
+
+  // Select random message only after client-side mount
+  useEffect(() => {
+    setLoadingMessage(getRandomMessage(LOADING_SCREEN_MESSAGES));
+  }, []);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-6 bg-background">

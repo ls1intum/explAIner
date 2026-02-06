@@ -1,7 +1,9 @@
 import { baseApi } from "./baseApi";
 import type {
-  LearningGoal,
   GenerateLearningGoalsRequest,
+  GenerateLearningGoalsResponse,
+  GenerateEasierLearningGoalsRequest,
+  GenerateEasierLearningGoalsResponse,
 } from "@/types/learning-goals.types";
 
 // Learning Goals API endpoints
@@ -9,7 +11,7 @@ import type {
 export const learningGoalsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     generateLearningGoals: builder.mutation<
-      LearningGoal[],
+      GenerateLearningGoalsResponse,
       GenerateLearningGoalsRequest
     >({
       query: (body) => ({
@@ -19,7 +21,21 @@ export const learningGoalsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["LearningGoal"],
     }),
+    generateEasierLearningGoals: builder.mutation<
+      GenerateEasierLearningGoalsResponse,
+      GenerateEasierLearningGoalsRequest
+    >({
+      query: (body) => ({
+        url: "/api/learning-goals/easier",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["LearningGoal"],
+    }),
   }),
 });
 
-export const { useGenerateLearningGoalsMutation } = learningGoalsApi;
+export const { 
+  useGenerateLearningGoalsMutation,
+  useGenerateEasierLearningGoalsMutation,
+} = learningGoalsApi;

@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { BloomsLevel } from '../../../common/types/blooms-level.enum';
+import { BloomsLevel } from '@prisma/client';
 
 /**
  * Learning Goal Zod Schema
  *
- * Validates AI-generated learning goals.
+ * Validates AI-generated learning goals against Prisma's BloomsLevel enum.
  *
  * Aligns with Prisma schema:
  * - Session.learningGoalBloomsLevel: BloomsLevel enum

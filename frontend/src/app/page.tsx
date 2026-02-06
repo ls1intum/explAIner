@@ -33,7 +33,7 @@ export default function Home() {
       // Call API to generate learning goals
       const result = await generateLearningGoals({
         topic,
-        keywords: keywords.trim() || undefined,
+        priorKnowledgeKeywords: keywords.trim() || undefined,
       }).unwrap();
 
       // Store learning goals data in Redux
@@ -41,7 +41,7 @@ export default function Home() {
         setLearningGoalsPageData({
           topic,
           keywords,
-          goals: result,
+          goals: result.learningGoals,
         })
       );
 
