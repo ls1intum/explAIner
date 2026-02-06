@@ -1,0 +1,44 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'prisma/prisma.service';
+import { LogService } from '../../../common/decorators/service-logging.decorator';
+import { UpdateCurrentBlockIndexResponseDto } from '../dto/update-current-block-index.response.dto';
+
+@Injectable()
+export class UpdateCurrentBlockIndexService {
+  constructor(private prisma: PrismaService) {}
+
+  /**
+   * Update current block index for a session
+   * Also marks the block as viewed in the database
+   */
+  @LogService()
+  async updateCurrentBlockIndex(sessionId: string, currentBlockIndex: number): Promise<UpdateCurrentBlockIndexResponseDto> {
+    // Validate session exists
+    const session = await this.prisma.session.findUnique({
+      where: { id: sessionId },
+    });
+
+    if (!session) {
+      throw new NotFoundException(`Session with ID ${sessionId} not found`);
+    }
+
+    // Update current block index
+    await this.prisma.session.update({
+      where: { id: sessionId },
+      data: { currentBlockIndex },
+    });
+
+    // Mark the block as viewed in the database
+    await this.prisma.block.updateMany({
+      where: {
+        sessionId,
+        orderIndex: currentBlockIndex,
+      },
+      data: {
+        alreadyViewed: true,
+      },
+    });
+
+    return { success: true, currentBlockIndex };
+  }
+}

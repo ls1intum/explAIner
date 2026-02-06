@@ -5,10 +5,13 @@ import { GetSessionService } from './services/get-session.service';
 import { DeleteSessionService } from './services/delete-session.service';
 import { ContinueSessionService } from './services/continue-session.service';
 import { SubmitFeedbackService } from './services/submit-feedback.service';
-import { AiModule } from '../ai/ai.module';
+import { SpecifyLearningGoalsService } from './services/specify-learning-goals.service';
+import { UpdateCurrentBlockIndexService } from './services/update-current-block-index.service';
+import { BlocksModule } from '../blocks/blocks.module';
 
+// Sessions Module: Handles session lifecycle (create, continue, get, delete, feedback)
 @Module({
-  imports: [AiModule],
+  imports: [BlocksModule],
   controllers: [SessionsController],
   providers: [
     CreateSessionService,
@@ -16,6 +19,8 @@ import { AiModule } from '../ai/ai.module';
     DeleteSessionService,
     ContinueSessionService,
     SubmitFeedbackService,
+    SpecifyLearningGoalsService,
+    UpdateCurrentBlockIndexService,
   ],
   exports: [
     CreateSessionService,
