@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
 import { LearningGoalsParser } from '../parsers/learning-goals.parser';
-import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
 import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';
 
 /**
- * Chain for generating learning goals
+ * Unified chain for generating learning goals (both normal and easier variants)
  * Orchestrates: Prompt -> AI Call -> Parse -> Validate
  */
 @Injectable()
@@ -14,20 +13,22 @@ export class GenerateLearningGoalsChain {
 
   constructor(private aiService: AiService) {}
 
+  /**
+   * Execute the chain with a custom prompt
+   * @param prompt - The actual prompt string
+   * @param promptFileName - The prompt file name for logging
+   */
   async execute(
-    topic: string,
-    priorKnowledge?: string,
+    prompt: string,
+    promptFileName: string,
   ): Promise<LearningGoalsArray> {
-    // 1. Generate prompt
-    const prompt = generateLearningGoalsPrompt({ topic, priorKnowledge });
-
-    // 2. Call Claude
+    // 1. Call Claude with provided prompt
     const rawResponse = await this.aiService.callClaude(
       prompt,
-      'generate-learning-goals.prompt.ts',
+      promptFileName,
     );
 
-    // 3. Parse and validate response
+    // 2. Parse and validate response
     const learningGoals = this.parser.parse(rawResponse);
 
     return learningGoals;
