@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { LearningGoalDto } from './learning-goal.dto';
 
 /**
@@ -6,5 +7,9 @@ import { LearningGoalDto } from './learning-goal.dto';
  * Returns an array of learning goals wrapped in an object.
  */
 export class GenerateLearningGoalsResponseDto {
+  @ApiProperty({ 
+    description: 'Array of generated learning goals',
+    type: [LearningGoalDto]
+  })
   learningGoals: LearningGoalDto[];
 }
