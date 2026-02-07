@@ -43,7 +43,7 @@ export class GenerateSummaryBlockService {
       return firstMessage;
     });
 
-    // 3. Extract practice results
+    // 3. Extract practice results for AI summary generation
     const practiceBlocks = session.blocks.filter(
       (block) => block.type === BlockType.Practice && block.practiceBlock,
     );
@@ -103,7 +103,6 @@ export class GenerateSummaryBlockService {
         bloomsLevel: session.learningGoalBloomsLevel,
         totalBlocks: session.totalBlocks + 1,
         sessionDuration,
-        allPracticeCorrect: practiceResults.every((p) => p.isCorrect),
       },
     };
   }
