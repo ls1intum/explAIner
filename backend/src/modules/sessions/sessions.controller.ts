@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Patch, Body, Param, Delete } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { CreateSessionService } from './services/create-session.service';
 import { GetSessionService } from './services/get-session.service';
 import { DeleteSessionService } from './services/delete-session.service';
@@ -13,7 +14,9 @@ import { SubmitFeedbackResponseDto } from './dto/submit-feedback.response.dto';
 import { UpdateCurrentBlockIndexRequestDto } from './dto/update-current-block-index.request.dto';
 import { UpdateCurrentBlockIndexResponseDto } from './dto/update-current-block-index.response.dto';
 import { DeleteSessionResponseDto } from './dto/delete-session.response.dto';
+import { CreateSessionResponseDto } from './dto/create-session.response.dto';
 
+@ApiTags('sessions')
 @Controller('sessions')
 export class SessionsController {
   constructor(
@@ -26,21 +29,38 @@ export class SessionsController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new learning session', description: 'Creates a new session with learning goals and initial block sequence (1 inform + 3 practice blocks)' })
+  @ApiBody({ type: CreateSessionRequestDto })
+  @ApiResponse({ status: 201, description: 'Session created successfully', type: CreateSessionResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid request data' })
   create(@Body() dto: CreateSessionRequestDto) {
     return this.createSessionService.create(dto);
   }
 
   @Get(':sessionId')
+  @ApiOperation({ summary: 'Get session by ID', description: 'Retrieves session details with all blocks for rehydrating frontend state' })
+  @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
+  @ApiResponse({ status: 200, description: 'Session found', type: GetSessionResponseDto })
+  @ApiResponse({ status: 404, description: 'Session not found' })
   findOne(@Param('sessionId') sessionId: string): Promise<GetSessionResponseDto> {
     return this.getSessionService.getById(sessionId);
   }
 
   @Delete(':sessionId')
+  @ApiOperation({ summary: 'Delete session', description: 'Deletes a session and all related data if user ends the session before completing it' })
+  @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
+  @ApiResponse({ status: 200, description: 'Session deleted successfully', type: DeleteSessionResponseDto })
+  @ApiResponse({ status: 404, description: 'Session not found' })
   remove(@Param('sessionId') sessionId: string): Promise<DeleteSessionResponseDto> {
     return this.deleteSessionService.delete(sessionId);
   }
 
   @Patch(':sessionId/current-block-index')
+  @ApiOperation({ summary: 'Update current block index', description: 'Updates the current block index (0-based index of the currently / last viewed block by the user) and marks the block as already viewed' })
+  @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
+  @ApiBody({ type: UpdateCurrentBlockIndexRequestDto })
+  @ApiResponse({ status: 200, description: 'Current block index updated successfully', type: UpdateCurrentBlockIndexResponseDto })
+  @ApiResponse({ status: 404, description: 'Session not found' })
   updateCurrentBlockIndex(
     @Param('sessionId') sessionId: string,
     @Body() dto: UpdateCurrentBlockIndexRequestDto,
@@ -52,6 +72,10 @@ export class SessionsController {
   }
 
   @Post(':sessionId/continue')
+  @ApiOperation({ summary: 'Continue session', description: 'Determines next action based on session context (navigate, summary, next-sequence, or prompt-user)' })
+  @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
+  @ApiResponse({ status: 201, description: 'Next action determined', type: ContinueSessionResponseDto })
+  @ApiResponse({ status: 404, description: 'Session not found' })
   continue(
     @Param('sessionId') sessionId: string,
   ): Promise<ContinueSessionResponseDto> {
@@ -59,6 +83,11 @@ export class SessionsController {
   }
 
   @Post(':sessionId/submit-feedback')
+  @ApiOperation({ summary: 'Submit user feedback', description: 'Submits user rating/feedback for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"' })
+  @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
+  @ApiBody({ type: SubmitFeedbackRequestDto })
+  @ApiResponse({ status: 201, description: 'Feedback submitted successfully', type: SubmitFeedbackResponseDto })
+  @ApiResponse({ status: 404, description: 'Session not found' })
   submitFeedback(@Param('sessionId') sessionId: string, @Body() dto: SubmitFeedbackRequestDto): Promise<SubmitFeedbackResponseDto> {
     return this.submitFeedbackService.submit(sessionId, dto);
   }
