@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import Image from 'next/image';
 import type { Block } from '@/types/session.types';
 import { useSubmitFeedbackMutation } from '@/store/api/sessionsApi';
 
@@ -13,7 +12,6 @@ interface SummaryBlockProps {
     bloomsLevel: string;
     totalBlocks: number;
     sessionDuration: number;
-    allPracticeCorrect: boolean;
   };
 }
 
@@ -26,7 +24,7 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
   if (!summaryBlock) return null;
 
   const { sessionSummary } = summaryBlock;
-  const { learningGoal, bloomsLevel, totalBlocks, sessionDuration, allPracticeCorrect } = sessionInfo;
+  const { learningGoal, bloomsLevel, totalBlocks, sessionDuration } = sessionInfo;
 
   // Parse summary content to render with markdown-style formatting (with primary color)
   const renderSummary = (text: string) => {
@@ -51,18 +49,13 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
     return parts.map((part, index) => {
       if (part.toLowerCase() === level.toLowerCase()) {
         return (
-          <span key={index} className="font-semibold text-primary">
+          <span key={index} className="font-semibold text-[#10b981]">
             {part}
           </span>
         );
       }
       return <span key={index}>{part}</span>;
     });
-  };
-
-  // Format Bloom's level for display
-  const formatBloomsLevel = (level: string) => {
-    return level.charAt(0).toUpperCase() + level.slice(1).toLowerCase();
   };
 
   // Feedback emojis with labels
@@ -95,17 +88,14 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-[80%] space-y-6">
-        {/* Title */}
-        <h1 className="text-4xl font-bold text-primary mb-6">Session Complete!</h1>
-
         {/* Main Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border p-8 space-y-6">
           {/* Learning Goal Section */}
-          <div className="bg-muted/50 rounded-xl p-6 space-y-3">
+          <div className="bg-[#10b981]/10 rounded-xl p-6 space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-[#10b981]/20 flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-primary"
+                  className="w-6 h-6 text-[#10b981]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -118,36 +108,13 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
                   />
                 </svg>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  LEARNING GOAL
-                </span>
-                <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                  {formatBloomsLevel(bloomsLevel)}
-                </span>
-              </div>
+              <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                LEARNING GOAL
+              </span>
             </div>
             <p className="text-base text-foreground leading-relaxed">
               {renderLearningGoal(learningGoal, bloomsLevel)}
             </p>
-            {allPracticeCorrect && (
-              <div className="flex items-center gap-2 text-[#10b981]">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-sm font-medium">All practice questions answered correctly!</span>
-              </div>
-            )}
           </div>
 
           {/* Stats Section */}
@@ -155,20 +122,8 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
             {/* Blocks Completed */}
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Image
-                  src="/images/owlbert/blocks.png"
-                  alt="Blocks"
-                  width={32}
-                  height={32}
-                  className="object-contain"
-                  onError={(e) => {
-                    // Fallback to icon if image not found
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                  }}
-                />
                 <svg
-                  className="w-6 h-6 text-primary hidden"
+                  className="w-6 h-6 text-primary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
