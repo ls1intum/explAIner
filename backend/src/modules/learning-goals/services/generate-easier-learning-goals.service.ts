@@ -86,7 +86,7 @@ export class GenerateEasierLearningGoalsService {
     // 6. Return complete response with topic, prior knowledge keywords, and learning goals
     return {
       topic: session.learningTopicOrQuestion,
-      priorKnowledgeKeywords: session.priorKnowledgeKeywords || '',
+      priorKnowledgeKeywords: session.priorKnowledgeKeywords || undefined,
       learningGoals: learningGoals.map((goal) => ({
         learningGoal: goal.learningGoal,
         bloomsLevel: goal.bloomsLevel,

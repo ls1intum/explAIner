@@ -25,7 +25,7 @@ export class CreateSessionService {
         learningTopicOrQuestion: dto.topic,
         learningGoal: dto.learningGoal,
         learningGoalBloomsLevel: dto.bloomsLevel,
-        priorKnowledgeKeywords: dto.priorKnowledgeKeywords || '',
+        priorKnowledgeKeywords: dto.priorKnowledgeKeywords || undefined,
       },
     });
 
@@ -33,7 +33,7 @@ export class CreateSessionService {
     await this.specifyLearningGoalsService.specify(
       session.id,
       dto.topic,
-      dto.priorKnowledgeKeywords || '',
+      dto.priorKnowledgeKeywords || undefined,
       dto.learningGoal,
       dto.bloomsLevel,
     );

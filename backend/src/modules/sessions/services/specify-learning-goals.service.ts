@@ -15,7 +15,7 @@ export class SpecifyLearningGoalsService {
   async specify(
     sessionId: string,
     topic: string,
-    priorKnowledgeKeywords: string,
+    priorKnowledgeKeywords: string | undefined,
     learningGoal: string,
     bloomsLevel: string,
   ): Promise<void> {
