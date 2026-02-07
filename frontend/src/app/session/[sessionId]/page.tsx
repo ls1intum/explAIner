@@ -34,7 +34,6 @@ export default function SessionPage() {
       bloomsLevel: string;
       totalBlocks: number;
       sessionDuration: number;
-      allPracticeCorrect: boolean;
     };
   } | null>(null);
 
@@ -46,8 +45,8 @@ export default function SessionPage() {
 
   // Fetch session data if Redux is empty (page reload/direct URL navigation)
   const needsSessionData = !currentSessionId || currentSessionId !== sessionId;
-  // Don't fetch if currentSessionId was explicitly cleared (null during reset/deletion)
-  const shouldSkip = !needsSessionData || currentSessionId === null;
+  // Only fetch if session data is needed
+  const shouldSkip = !needsSessionData;
   const { data: sessionData, isLoading: isLoadingSession } = useGetSessionQuery(
     sessionId,
     { skip: shouldSkip }
@@ -196,7 +195,7 @@ export default function SessionPage() {
       // Set learning goals page data with easier goals
       dispatch(setLearningGoalsPageData({
         topic: result.topic,
-        keywords: result.priorKnowledgeKeywords,
+        keywords: result.priorKnowledgeKeywords || '',
         goals: result.learningGoals,
       }));
       
