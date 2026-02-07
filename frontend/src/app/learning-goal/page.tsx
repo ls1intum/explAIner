@@ -99,7 +99,7 @@ export default function LearningGoalPage() {
         topic: pageData.topic,
         learningGoal: finalGoal,
         bloomsLevel: finalBloomsLevel,
-        priorKnowledge: pageData.keywords?.trim() || undefined,
+        priorKnowledgeKeywords: pageData.keywords?.trim() || undefined,
       }).unwrap();
 
       // Update Redux store with new session data (overwrites old session)

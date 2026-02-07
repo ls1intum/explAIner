@@ -49,7 +49,7 @@ export interface GenerateEasierLearningGoalsRequest {
  */
 export interface GenerateEasierLearningGoalsResponse {
   topic: string;
-  priorKnowledgeKeywords: string;
+  priorKnowledgeKeywords?: string;
   learningGoals: LearningGoal[];
 }
 
@@ -60,6 +60,6 @@ export interface GenerateEasierLearningGoalsResponse {
  */
 export interface LearningGoalPageData {
   topic: string;
-  keywords: string;
+  keywords?: string;
   goals: LearningGoal[];
 }
