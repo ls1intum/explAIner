@@ -32,13 +32,13 @@ export const blocksApi = baseApi.injectEndpoints({
       {
         sessionId: string;
         orderIndex: number;
-        student_answer_option_indices: number[];
+        studentAnswerOptionIndices: number[];
       }
     >({
-      query: ({ sessionId, orderIndex, student_answer_option_indices }) => ({
+      query: ({ sessionId, orderIndex, studentAnswerOptionIndices }) => ({
         url: `/api/sessions/${sessionId}/blocks/${orderIndex}/submit-answer`,
         method: "PATCH",
-        body: { student_answer_option_indices },
+        body: { studentAnswerOptionIndices },
       }),
     }),
   }),
