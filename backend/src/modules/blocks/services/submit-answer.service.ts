@@ -33,13 +33,13 @@ export class SubmitAnswerService {
     }
 
     const { correctAnswerOptionIndices } = block.practiceBlock;
-    const { student_answer_option_indices } = dto;
+    const { studentAnswerOptionIndices } = dto;
 
     // Calculate correctness for analytics/record-keeping
     const studentAnswerIsCorrect =
-      student_answer_option_indices.length ===
+      studentAnswerOptionIndices.length ===
         correctAnswerOptionIndices.length &&
-      student_answer_option_indices.every((idx) =>
+      studentAnswerOptionIndices.every((idx) =>
         correctAnswerOptionIndices.includes(idx),
       );
 
@@ -47,7 +47,7 @@ export class SubmitAnswerService {
     await this.prisma.practiceBlock.update({
       where: { blockId: block.id },
       data: {
-        studentAnswerOptionIndices: student_answer_option_indices,
+        studentAnswerOptionIndices,
         studentAnswerIsCorrect,
       },
     });

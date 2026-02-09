@@ -70,7 +70,7 @@ export default function PracticeBlock({
       await submitAnswer({
         sessionId,
         orderIndex: block.orderIndex,
-        student_answer_option_indices: selectedOptions,
+        studentAnswerOptionIndices: selectedOptions,
       });
 
       setIsChecked(true);
