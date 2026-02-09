@@ -5,7 +5,7 @@ import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enu
 import { BlockType, SoloLevel } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
-import { GenerateBlockSequenceResponseDto } from '../dto/generate-block-sequence.response.dto';
+import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 
 /**
  * Unified service for generating block sequences (initial or subsequent)

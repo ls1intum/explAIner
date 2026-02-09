@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { GenerateLearningGoalsRequestDto } from '../dto/generate-learning-goals.request.dto';
-import { GenerateLearningGoalsResponseDto } from '../dto/generate-learning-goals.response.dto';
+import { GenerateLearningGoalsRequestDto } from '../dto/request/generate-learning-goals.request.dto';
+import { GenerateLearningGoalsResponseDto } from '../dto/response/generate-learning-goals.response.dto';
 import { GenerateLearningGoalsChain } from '../../ai/chains/generate-learning-goals.chain';
 import { generateLearningGoalsPrompt } from '../../ai/prompts/generate-learning-goals.prompt';
 import { LogService } from '../../../common/decorators/service-logging.decorator';

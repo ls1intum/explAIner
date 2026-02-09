@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { GenerateEasierLearningGoalsRequestDto } from '../dto/generate-easier-learning-goals.request.dto';
-import { GenerateEasierLearningGoalsResponseDto } from '../dto/generate-easier-learning-goals.response.dto';
+import { GenerateEasierLearningGoalsRequestDto } from '../dto/request/generate-easier-learning-goals.request.dto';
+import { GenerateEasierLearningGoalsResponseDto } from '../dto/response/generate-easier-learning-goals.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateLearningGoalsChain } from '../../ai/chains/generate-learning-goals.chain';

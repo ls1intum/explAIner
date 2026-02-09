@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { UpdateCurrentBlockIndexResponseDto } from '../dto/update-current-block-index.response.dto';
+import { UpdateCurrentBlockIndexResponseDto } from '../dto/response/update-current-block-index.response.dto';
 
 @Injectable()
 export class UpdateCurrentBlockIndexService {

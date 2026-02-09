@@ -2,10 +2,10 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { GenerateLearningGoalsService } from './services/generate-learning-goals.service';
 import { GenerateEasierLearningGoalsService } from './services/generate-easier-learning-goals.service';
-import { GenerateLearningGoalsRequestDto } from './dto/generate-learning-goals.request.dto';
-import { GenerateEasierLearningGoalsRequestDto } from './dto/generate-easier-learning-goals.request.dto';
-import { GenerateLearningGoalsResponseDto } from './dto/generate-learning-goals.response.dto';
-import { GenerateEasierLearningGoalsResponseDto } from './dto/generate-easier-learning-goals.response.dto';
+import { GenerateLearningGoalsRequestDto } from './dto/request/generate-learning-goals.request.dto';
+import { GenerateEasierLearningGoalsRequestDto } from './dto/request/generate-easier-learning-goals.request.dto';
+import { GenerateLearningGoalsResponseDto } from './dto/response/generate-learning-goals.response.dto';
+import { GenerateEasierLearningGoalsResponseDto } from './dto/response/generate-easier-learning-goals.response.dto';
 
 @ApiTags('learning-goals')
 @Controller('learning-goals')

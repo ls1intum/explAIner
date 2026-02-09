@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GetBlockResponseDto } from '../dto/get-block-by-order-index.response.dto';
+import { GetBlockResponseDto } from '../dto/response/get-block-by-order-index.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
 @Injectable()

@@ -6,15 +6,15 @@ import { DeleteSessionService } from './services/delete-session.service';
 import { ContinueSessionService } from './services/continue-session.service';
 import { SubmitFeedbackService } from './services/submit-feedback.service';
 import { UpdateCurrentBlockIndexService } from './services/update-current-block-index.service';
-import { CreateSessionRequestDto } from './dto/create-session.request.dto';
-import { GetSessionResponseDto } from './dto/get-session.response.dto';
-import { ContinueSessionResponseDto } from './dto/continue-session.response.dto';
-import { SubmitFeedbackRequestDto } from './dto/submit-feedback.request.dto';
-import { SubmitFeedbackResponseDto } from './dto/submit-feedback.response.dto';
-import { UpdateCurrentBlockIndexRequestDto } from './dto/update-current-block-index.request.dto';
-import { UpdateCurrentBlockIndexResponseDto } from './dto/update-current-block-index.response.dto';
-import { DeleteSessionResponseDto } from './dto/delete-session.response.dto';
-import { CreateSessionResponseDto } from './dto/create-session.response.dto';
+import { CreateSessionRequestDto } from './dto/request/create-session.request.dto';
+import { GetSessionResponseDto } from './dto/response/get-session.response.dto';
+import { ContinueSessionResponseDto } from './dto/response/continue-session.response.dto';
+import { SubmitFeedbackRequestDto } from './dto/request/submit-feedback.request.dto';
+import { SubmitFeedbackResponseDto } from './dto/response/submit-feedback.response.dto';
+import { UpdateCurrentBlockIndexRequestDto } from './dto/request/update-current-block-index.request.dto';
+import { UpdateCurrentBlockIndexResponseDto } from './dto/response/update-current-block-index.response.dto';
+import { DeleteSessionResponseDto } from './dto/response/delete-session.response.dto';
+import { CreateSessionResponseDto } from './dto/response/create-session.response.dto';
 
 @ApiTags('sessions')
 @Controller('sessions')

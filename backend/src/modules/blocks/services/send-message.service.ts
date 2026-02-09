@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateInformBlockChatResponseChain } from '../../ai/chains/generate-inform-block-chat-response.chain';
-import { SendMessageRequestDto } from '../dto/send-message.request.dto';
-import { SendMessageResponseDto } from '../dto/send-message.response.dto';
+import { SendMessageRequestDto } from '../dto/request/send-message.request.dto';
+import { SendMessageResponseDto } from '../dto/response/send-message.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
 @Injectable()

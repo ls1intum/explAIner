@@ -5,12 +5,12 @@ import { GenerateBlockSequenceService } from './services/generate-block-sequence
 import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
 import { SendMessageService } from './services/send-message.service';
 import { SubmitAnswerService } from './services/submit-answer.service';
-import { SendMessageRequestDto } from './dto/send-message.request.dto';
-import { SubmitAnswerRequestDto } from './dto/submit-answer.request.dto';
-import { GenerateBlockSequenceResponseDto } from './dto/generate-block-sequence.response.dto';
-import { GenerateSummaryResponseDto } from './dto/generate-summary.response.dto';
-import { GetBlockResponseDto } from './dto/get-block-by-order-index.response.dto';
-import { SendMessageResponseDto } from './dto/send-message.response.dto';
+import { SendMessageRequestDto } from './dto/request/send-message.request.dto';
+import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto';
+import { GenerateBlockSequenceResponseDto } from './dto/response/generate-block-sequence.response.dto';
+import { GenerateSummaryResponseDto } from './dto/response/generate-summary.response.dto';
+import { GetBlockResponseDto } from './dto/response/get-block-by-order-index.response.dto';
+import { SendMessageResponseDto } from './dto/response/send-message.response.dto';
 
 @ApiTags('blocks')
 @Controller('sessions/:sessionId/blocks')

@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { GenerateSummaryBlockChain } from '../../ai/chains/generate-summary-block.chain';
 import { BlockType } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { GenerateSummaryResponseDto } from '../dto/generate-summary.response.dto';
+import { GenerateSummaryResponseDto } from '../dto/response/generate-summary.response.dto';
 
 @Injectable()
 export class GenerateSummaryBlockService {

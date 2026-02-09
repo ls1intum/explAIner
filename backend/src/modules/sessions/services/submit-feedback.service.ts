@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { SubmitFeedbackRequestDto } from '../dto/submit-feedback.request.dto';
-import { SubmitFeedbackResponseDto } from '../dto/submit-feedback.response.dto';
+import { SubmitFeedbackRequestDto } from '../dto/request/submit-feedback.request.dto';
+import { SubmitFeedbackResponseDto } from '../dto/response/submit-feedback.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ContinueSessionResponseDto } from '../dto/continue-session.response.dto';
+import { ContinueSessionResponseDto } from '../dto/response/continue-session.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { BlockType } from '@prisma/client';
 

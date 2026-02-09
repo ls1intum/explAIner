@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LearningGoalDto } from './learning-goal.dto';
+import { LearningGoalDto } from '../learning-goal.dto';
 
 /**
  * Generate Easier Learning Goals Response DTO

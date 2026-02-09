@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateSessionRequestDto } from '../dto/create-session.request.dto';
+import { CreateSessionRequestDto } from '../dto/request/create-session.request.dto';
 import { SpecifyLearningGoalsService } from './specify-learning-goals.service';
 import { GenerateBlockSequenceService } from '../../blocks/services/generate-block-sequence.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
