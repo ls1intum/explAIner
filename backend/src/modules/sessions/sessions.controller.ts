@@ -7,6 +7,7 @@ import { ContinueSessionService } from './services/continue-session.service';
 import { SubmitFeedbackService } from './services/submit-feedback.service';
 import { UpdateCurrentBlockIndexService } from './services/update-current-block-index.service';
 import { CreateSessionRequestDto } from './dto/request/create-session.request.dto';
+import { ContinueSessionRequestDto } from './dto/request/continue-session.request.dto';
 import { GetSessionResponseDto } from './dto/response/get-session.response.dto';
 import { ContinueSessionResponseDto } from './dto/response/continue-session.response.dto';
 import { SubmitFeedbackRequestDto } from './dto/request/submit-feedback.request.dto';
@@ -74,10 +75,12 @@ export class SessionsController {
   @Post(':sessionId/continue')
   @ApiOperation({ summary: 'Continue session', description: 'Determines next action based on session context (navigate, summary, next-sequence, or prompt-user)' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
+  @ApiBody({ type: ContinueSessionRequestDto })
   @ApiResponse({ status: 201, description: 'Next action determined', type: ContinueSessionResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   continue(
     @Param('sessionId') sessionId: string,
+    @Body() dto: ContinueSessionRequestDto,
   ): Promise<ContinueSessionResponseDto> {
     return this.continueSessionService.continue(sessionId);
   }

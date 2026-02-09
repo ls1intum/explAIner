@@ -7,6 +7,8 @@ import { SendMessageService } from './services/send-message.service';
 import { SubmitAnswerService } from './services/submit-answer.service';
 import { SendMessageRequestDto } from './dto/request/send-message.request.dto';
 import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto';
+import { GenerateBlockSequenceRequestDto } from './dto/request/generate-block-sequence.request.dto';
+import { GenerateSummaryRequestDto } from './dto/request/generate-summary.request.dto';
 import { GenerateBlockSequenceResponseDto } from './dto/response/generate-block-sequence.response.dto';
 import { GenerateSummaryResponseDto } from './dto/response/generate-summary.response.dto';
 import { GetBlockResponseDto } from './dto/response/get-block-by-order-index.response.dto';
@@ -26,9 +28,13 @@ export class BlocksController {
   @Post('sequence')
   @ApiOperation({ summary: 'Generate block sequence', description: 'Generates next block sequence (1 inform + 3 practice blocks). Mode ("INITIAL" for first block sequence, "SUBSEQUENT" for subsequent block sequences) is automatically detected based on session state.' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
+  @ApiBody({ type: GenerateBlockSequenceRequestDto })
   @ApiResponse({ status: 201, description: 'Block sequence generated successfully', type: GenerateBlockSequenceResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
-  generateSequence(@Param('sessionId') sessionId: string): Promise<GenerateBlockSequenceResponseDto> {
+  generateSequence(
+    @Param('sessionId') sessionId: string,
+    @Body() dto: GenerateBlockSequenceRequestDto,
+  ): Promise<GenerateBlockSequenceResponseDto> {
     // Mode is automatically detected inside the service based on session state
     return this.generateBlockSequenceService.generate(sessionId);
   }
@@ -36,9 +42,13 @@ export class BlocksController {
   @Post('summary')
   @ApiOperation({ summary: 'Generate summary block', description: 'Generates a summary block for the session with learning outcomes and performance summary' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
+  @ApiBody({ type: GenerateSummaryRequestDto })
   @ApiResponse({ status: 201, description: 'Summary block generated successfully', type: GenerateSummaryResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
-  generateSummary(@Param('sessionId') sessionId: string): Promise<GenerateSummaryResponseDto> {
+  generateSummary(
+    @Param('sessionId') sessionId: string,
+    @Body() dto: GenerateSummaryRequestDto,
+  ): Promise<GenerateSummaryResponseDto> {
     return this.generateSummaryBlockService.generate(sessionId);
   }
 
