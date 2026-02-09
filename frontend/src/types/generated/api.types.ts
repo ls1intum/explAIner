@@ -15,7 +15,7 @@ export interface paths {
         put?: never;
         /**
          * Generate learning goals
-         * @description Generates learning goals based on topic and prior knowledge using AI
+         * @description Generates learning goals based on topic and optional prior knowledge keywordsusing AI
          */
         post: operations["LearningGoalsController_generate"];
         delete?: never;
@@ -35,7 +35,7 @@ export interface paths {
         put?: never;
         /**
          * Generate easier learning goals
-         * @description Generates easier learning goals based on wrong answers and covered content from an existing session
+         * @description Generates easier learning goals for a new session based on context of existing previous session
          */
         post: operations["LearningGoalsController_generateEasier"];
         delete?: never;
@@ -80,7 +80,7 @@ export interface paths {
         post?: never;
         /**
          * Delete session
-         * @description Deletes a session and all related data (cascade delete)
+         * @description Deletes a session and all related data if user ends the session before completing it
          */
         delete: operations["SessionsController_remove"];
         options?: never;
@@ -103,7 +103,7 @@ export interface paths {
         head?: never;
         /**
          * Update current block index
-         * @description Updates the current block index and marks the block as viewed
+         * @description Updates the current block index (0-based index of the currently / last viewed block by the user) and marks the block as already viewed
          */
         patch: operations["SessionsController_updateCurrentBlockIndex"];
         trace?: never;
@@ -119,7 +119,7 @@ export interface paths {
         put?: never;
         /**
          * Continue session
-         * @description Determines next action based on session flow (navigate, summary, next-sequence, or prompt-user)
+         * @description Determines next action based on session context (navigate, summary, next-sequence, or prompt-user)
          */
         post: operations["SessionsController_continue"];
         delete?: never;
@@ -139,7 +139,7 @@ export interface paths {
         put?: never;
         /**
          * Submit user feedback
-         * @description Submits user rating/feedback for the session (1-5 stars)
+         * @description Submits user rating/feedback for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"
          */
         post: operations["SessionsController_submitFeedback"];
         delete?: never;
@@ -159,7 +159,7 @@ export interface paths {
         put?: never;
         /**
          * Generate block sequence
-         * @description Generates a new block sequence (1 inform + 3 practice blocks). Mode is automatically detected based on session state.
+         * @description Generates next block sequence (1 inform + 3 practice blocks). Mode ("INITIAL" for first block sequence, "SUBSEQUENT" for subsequent block sequences) is automatically detected based on session state.
          */
         post: operations["BlocksController_generateSequence"];
         delete?: never;
@@ -243,7 +243,7 @@ export interface paths {
         head?: never;
         /**
          * Submit answer for practice block
-         * @description Submits student answer for a practice block question and evaluates correctness
+         * @description Persists student answer in database
          */
         patch: operations["BlocksController_submitAnswer"];
         trace?: never;
@@ -266,8 +266,8 @@ export interface components {
         };
         LearningGoalDto: {
             /**
-             * @description The learning goal description
-             * @example Understand the process of photosynthesis
+             * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+             * @example After this session, you will be able to Understand the process of photosynthesis.
              */
             learningGoal: string;
             /**
@@ -282,7 +282,7 @@ export interface components {
             learningGoals: components["schemas"]["LearningGoalDto"][];
         };
         GenerateEasierLearningGoalsRequestDto: {
-            /** @description Session ID to generate easier learning goals for */
+            /** @description Session ID of the existing session to generate easier learning goals for */
             sessionId: string;
         };
         GenerateEasierLearningGoalsResponseDto: {
@@ -296,23 +296,23 @@ export interface components {
              * @example plants, light
              */
             priorKnowledgeKeywords?: string;
-            /** @description Array of easier learning goals generated */
+            /** @description Array of easier learning goals generated for new session */
             learningGoals: components["schemas"]["LearningGoalDto"][];
         };
         CreateSessionRequestDto: {
             /**
-             * @description The learning topic or question to explore
+             * @description The learning topic or question for the session
              * @example Photosynthesis
              */
             topic: string;
             /**
-             * @description Keywords describing prior knowledge (optional)
+             * @description Keywords indicating what the user already knows about the learning topic or question (optional)
              * @example plants, chlorophyll, light energy
              */
             priorKnowledgeKeywords?: string;
             /**
              * @description The specific learning goal for this session
-             * @example Understand the process of photosynthesis in plants
+             * @example After this session, you will be able to Understand the process of photosynthesis in plants.
              */
             learningGoal: string;
             /**
@@ -325,15 +325,15 @@ export interface components {
         SessionInfoDto: {
             /** @description Unique session identifier */
             id: string;
-            /** @description Learning topic */
+            /** @description Learning topic or question */
             topic: string;
-            /** @description Learning goal */
+            /** @description Learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
             learningGoal: string;
             /** @description Bloom's taxonomy level */
             bloomsLevel: string;
-            /** @description Total number of blocks in the session */
+            /** @description Total number of sessions blocks (increases by 4 for each new block sequence) */
             totalBlocks: number;
-            /** @description Current block index (0-based) */
+            /** @description Block index (0-based) of currently / last viewed block by the user */
             currentBlockIndex: number;
         };
         InformBlockMessageDto: {
@@ -400,7 +400,7 @@ export interface components {
         CreateSessionResponseDto: {
             /** @description Session information */
             session: components["schemas"]["SessionInfoDto"];
-            /** @description Initial blocks (1 inform + 3 practice) */
+            /** @description Initial block sequence (1 inform + 3 practice) */
             blocks: components["schemas"]["GetBlockResponseDto"][];
         };
         GetSessionResponseDto: {
@@ -415,15 +415,15 @@ export interface components {
         };
         UpdateCurrentBlockIndexRequestDto: {
             /**
-             * @description The index of the current block being viewed (0-based)
+             * @description The index of the current block being viewed (0-based) by the user
              * @example 2
              */
             currentBlockIndex: number;
         };
         UpdateCurrentBlockIndexResponseDto: {
-            /** @description Whether the block index was successfully updated */
+            /** @description Whether the current block index was successfully updated */
             success: boolean;
-            /** @description The updated current block index */
+            /** @description The updated current block index (0-based) */
             currentBlockIndex: number;
         };
         ContinueSessionResponseDto: {
@@ -441,7 +441,7 @@ export interface components {
         };
         SubmitFeedbackRequestDto: {
             /**
-             * @description User rating for the session (1-5 stars)
+             * @description User rating for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"
              * @example 4
              */
             rating: number;
@@ -449,7 +449,7 @@ export interface components {
         SubmitFeedbackResponseDto: {
             /** @description Whether the feedback was successfully submitted */
             success: boolean;
-            /** @description The submitted rating (1-5) */
+            /** @description The submitted rating (1-5) - 1: "very unhelpful", 5: "very helpful" */
             rating: number;
         };
         GenerateBlockSequenceResponseDto: {
@@ -547,7 +547,7 @@ export interface operations {
                     "application/json": components["schemas"]["GenerateEasierLearningGoalsResponseDto"];
                 };
             };
-            /** @description Session not found */
+            /** @description Previous session not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -663,7 +663,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Block index updated successfully */
+            /** @description Current block index updated successfully */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -891,7 +891,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Answer submitted successfully (no content) */
+            /** @description Answer persisted successfully (no content) */
             204: {
                 headers: {
                     [name: string]: unknown;
