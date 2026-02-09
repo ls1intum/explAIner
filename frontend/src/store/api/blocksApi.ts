@@ -18,7 +18,7 @@ export const blocksApi = baseApi.injectEndpoints({
       { sessionId: string; orderIndex: number; message: string }
     >({
       query: ({ sessionId, orderIndex, message }) => ({
-        url: `/api/sessions/${sessionId}/blocks/${orderIndex}/send-message`,
+        url: `/api/sessions/${sessionId}/blocks/${orderIndex}/messages`,
         method: "POST",
         body: { message },
       }),
@@ -36,7 +36,7 @@ export const blocksApi = baseApi.injectEndpoints({
       }
     >({
       query: ({ sessionId, orderIndex, studentAnswerOptionIndices }) => ({
-        url: `/api/sessions/${sessionId}/blocks/${orderIndex}/submit-answer`,
+        url: `/api/sessions/${sessionId}/blocks/${orderIndex}/student-answer`,
         method: "PATCH",
         body: { studentAnswerOptionIndices },
       }),

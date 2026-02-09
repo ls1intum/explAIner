@@ -55,7 +55,7 @@ export class BlocksController {
     return this.getBlockByOrderIndexService.getBlock(sessionId, parseInt(orderIndex));
   }
 
-  @Post(':orderIndex/send-message')
+  @Post(':orderIndex/messages')
   @ApiOperation({ summary: 'Send message in inform block', description: 'Sends a chat message to an inform block and receives AI response from Owlbert' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
@@ -70,7 +70,7 @@ export class BlocksController {
     return this.sendMessageService.send(sessionId, orderIndex, dto);
   }
 
-  @Patch(':orderIndex/submit-answer')
+  @Patch(':orderIndex/student-answer')
   @HttpCode(204)
   @ApiOperation({ summary: 'Submit answer for practice block', description: 'Persists student answer in database' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })

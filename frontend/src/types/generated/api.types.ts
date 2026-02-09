@@ -208,7 +208,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/sessions/{sessionId}/blocks/{orderIndex}/send-message": {
+    "/api/sessions/{sessionId}/blocks/{orderIndex}/messages": {
         parameters: {
             query?: never;
             header?: never;
@@ -228,7 +228,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/sessions/{sessionId}/blocks/{orderIndex}/submit-answer": {
+    "/api/sessions/{sessionId}/blocks/{orderIndex}/student-answer": {
         parameters: {
             query?: never;
             header?: never;
