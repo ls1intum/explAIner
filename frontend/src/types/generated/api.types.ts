@@ -426,6 +426,7 @@ export interface components {
             /** @description The updated current block index (0-based) */
             currentBlockIndex: number;
         };
+        ContinueSessionRequestDto: Record<string, never>;
         ContinueSessionResponseDto: {
             /**
              * @description Next action to take in the session flow
@@ -452,12 +453,14 @@ export interface components {
             /** @description The submitted rating (1-5) - 1: "very unhelpful", 5: "very helpful" */
             rating: number;
         };
+        GenerateBlockSequenceRequestDto: Record<string, never>;
         GenerateBlockSequenceResponseDto: {
             /** @description Generated inform block */
             informBlock: components["schemas"]["GetBlockResponseDto"];
             /** @description Generated practice blocks (3 blocks) */
             practiceBlocks: components["schemas"]["GetBlockResponseDto"][];
         };
+        GenerateSummaryRequestDto: Record<string, never>;
         GenerateSummaryResponseDto: {
             /** @description Generated summary block */
             block: components["schemas"]["GetBlockResponseDto"];
@@ -691,7 +694,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContinueSessionRequestDto"];
+            };
+        };
         responses: {
             /** @description Next action determined */
             201: {
@@ -755,7 +762,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateBlockSequenceRequestDto"];
+            };
+        };
         responses: {
             /** @description Block sequence generated successfully */
             201: {
@@ -785,7 +796,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateSummaryRequestDto"];
+            };
+        };
         responses: {
             /** @description Summary block generated successfully */
             201: {
