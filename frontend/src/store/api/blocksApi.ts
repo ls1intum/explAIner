@@ -1,16 +1,20 @@
 import { baseApi } from "./baseApi";
-import type { InformBlockMessage } from "@/types/session.types";
+import type { components } from "@/types/generated";
+
+// Type aliases for generated API types
+type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
+type SendMessageResponse = components["schemas"]["SendMessageResponseDto"];
 
 // getBlock, submitAnswer, sendMessage
 
 export const blocksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getBlock: builder.query({
+    getBlock: builder.query<GetBlockResponse, string>({
       query: (blockId: string) => `/api/blocks/${blockId}`,
       providesTags: ["Block"],
     }),
     sendMessage: builder.mutation<
-      { response: string },
+      SendMessageResponse,
       { sessionId: string; orderIndex: number; message: string }
     >({
       query: ({ sessionId, orderIndex, message }) => ({

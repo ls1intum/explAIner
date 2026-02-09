@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import type { Block } from '@/types/session.types';
+import type { Block } from '@/types/domain';
 import { useSubmitFeedbackMutation } from '@/store/api/sessionsApi';
 
 interface SummaryBlockProps {

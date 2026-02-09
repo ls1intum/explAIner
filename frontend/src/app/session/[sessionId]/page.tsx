@@ -14,8 +14,8 @@ import PracticeBlock from '@/components/blocks/PracticeBlock/PracticeBlock';
 import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import BlockContainer from '@/components/blocks/BlockContainer';
 import GoalAdjustmentDialog from '@/components/session/GoalAdjustmentDialog';
-import { BlockType } from '@/types/enums';
-import type { Block } from '@/types/session.types';
+import { BlockType } from '@/types/domain';
+import type { Block } from '@/types/domain';
 
 export default function SessionPage() {
   const params = useParams();

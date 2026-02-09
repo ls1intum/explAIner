@@ -5,7 +5,7 @@ import { ChevronRightIcon } from '@radix-ui/react-icons';
 import { useAppDispatch } from '@/store/hooks';
 import { updatePracticeBlockAnswer } from '@/store/slices/sessionSlice';
 import { useSubmitAnswerMutation } from '@/store/api/blocksApi';
-import type { Block } from '@/types/session.types';
+import type { Block } from '@/types/domain';
 import AnswerOption from './AnswerOption';
 
 interface PracticeBlockProps {

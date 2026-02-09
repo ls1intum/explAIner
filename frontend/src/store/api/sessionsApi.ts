@@ -1,10 +1,17 @@
 import { baseApi } from "./baseApi";
-import type {
-  CreateSessionRequest,
-  CreateSessionResponse,
-  Block,
-  ContinueSessionResponse,
-} from "@/types/session.types";
+import type { components } from "@/types/generated";
+
+// Type aliases for generated API types
+type CreateSessionRequest = components["schemas"]["CreateSessionRequestDto"];
+type CreateSessionResponse = components["schemas"]["CreateSessionResponseDto"];
+type GetSessionResponse = components["schemas"]["GetSessionResponseDto"];
+type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
+type ContinueSessionResponse = components["schemas"]["ContinueSessionResponseDto"];
+type GenerateBlockSequenceResponse = components["schemas"]["GenerateBlockSequenceResponseDto"];
+type GenerateSummaryResponse = components["schemas"]["GenerateSummaryResponseDto"];
+type SubmitFeedbackResponse = components["schemas"]["SubmitFeedbackResponseDto"];
+type UpdateCurrentBlockIndexResponse = components["schemas"]["UpdateCurrentBlockIndexResponseDto"];
+type DeleteSessionResponse = components["schemas"]["DeleteSessionResponseDto"];
 
 // Session CRUD + submitFeedback + block navigation
 
@@ -21,13 +28,13 @@ export const sessionsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Session"],
     }),
-    getSession: builder.query({
+    getSession: builder.query<GetSessionResponse, string>({
       query: (sessionId: string) => `/api/sessions/${sessionId}`,
       providesTags: ["Session"],
     }),
     // Fetch block by orderIndex with caching support
     getBlockByOrderIndex: builder.query<
-      Block,
+      GetBlockResponse,
       { sessionId: string; orderIndex: number }
     >({
       query: ({ sessionId, orderIndex }) =>
@@ -50,7 +57,7 @@ export const sessionsApi = baseApi.injectEndpoints({
     }),
     // Generate next block sequence (mode auto-detected by backend)
     generateNextSequence: builder.mutation<
-      { informBlock: Block; practiceBlocks: Block[] },
+      GenerateBlockSequenceResponse,
       { sessionId: string }
     >({
       query: ({ sessionId }) => ({
@@ -62,16 +69,7 @@ export const sessionsApi = baseApi.injectEndpoints({
     }),
     // Generate summary block
     generateSummary: builder.mutation<
-      {
-        block: Block;
-        sessionInfo: {
-          learningGoal: string;
-          bloomsLevel: string;
-          totalBlocks: number;
-          sessionDuration: number;
-          allPracticeCorrect: boolean;
-        };
-      },
+      GenerateSummaryResponse,
       { sessionId: string }
     >({
       query: ({ sessionId }) => ({
@@ -82,7 +80,7 @@ export const sessionsApi = baseApi.injectEndpoints({
       invalidatesTags: ["Session", "Block"],
     }),
     submitFeedback: builder.mutation<
-      { success: boolean; rating: number },
+      SubmitFeedbackResponse,
       { sessionId: string; rating: number }
     >({
       query: ({ sessionId, rating }) => ({
@@ -94,7 +92,7 @@ export const sessionsApi = baseApi.injectEndpoints({
     }),
     // Update current block index
     updateCurrentBlockIndex: builder.mutation<
-      { success: boolean; currentBlockIndex: number },
+      UpdateCurrentBlockIndexResponse,
       { sessionId: string; currentBlockIndex: number }
     >({
       query: ({ sessionId, currentBlockIndex }) => ({
@@ -106,7 +104,7 @@ export const sessionsApi = baseApi.injectEndpoints({
     }),
     // Delete session and all related data
     deleteSession: builder.mutation<
-      { success: boolean },
+      DeleteSessionResponse,
       { sessionId: string }
     >({
       query: ({ sessionId }) => ({

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { Block } from "@/types/session.types";
+import type { Block } from "@/types/domain";
 
 // Session + block navigation state
 

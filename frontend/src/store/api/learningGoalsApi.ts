@@ -1,10 +1,11 @@
 import { baseApi } from "./baseApi";
-import type {
-  GenerateLearningGoalsRequest,
-  GenerateLearningGoalsResponse,
-  GenerateEasierLearningGoalsRequest,
-  GenerateEasierLearningGoalsResponse,
-} from "@/types/learning-goals.types";
+import type { components } from "@/types/generated";
+
+// Type aliases for generated API types
+type GenerateLearningGoalsRequest = components["schemas"]["GenerateLearningGoalsRequestDto"];
+type GenerateLearningGoalsResponse = components["schemas"]["GenerateLearningGoalsResponseDto"];
+type GenerateEasierLearningGoalsRequest = components["schemas"]["GenerateEasierLearningGoalsRequestDto"];
+type GenerateEasierLearningGoalsResponse = components["schemas"]["GenerateEasierLearningGoalsResponseDto"];
 
 // Learning Goals API endpoints
 
