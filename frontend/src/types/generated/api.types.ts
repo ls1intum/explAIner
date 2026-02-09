@@ -128,7 +128,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/sessions/{sessionId}/submit-feedback": {
+    "/api/sessions/{sessionId}/feedback": {
         parameters: {
             query?: never;
             header?: never;
@@ -137,15 +137,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
         /**
          * Submit user feedback
          * @description Submits user rating/feedback for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"
          */
-        post: operations["SessionsController_submitFeedback"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
+        patch: operations["SessionsController_submitFeedback"];
         trace?: never;
     };
     "/api/sessions/{sessionId}/blocks/sequence": {
@@ -483,7 +483,7 @@ export interface components {
              *       2
              *     ]
              */
-            student_answer_option_indices: number[];
+            studentAnswerOptionIndices: number[];
         };
     };
     responses: never;
@@ -728,7 +728,7 @@ export interface operations {
         };
         responses: {
             /** @description Feedback submitted successfully */
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

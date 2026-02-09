@@ -84,8 +84,8 @@ export const sessionsApi = baseApi.injectEndpoints({
       { sessionId: string; rating: number }
     >({
       query: ({ sessionId, rating }) => ({
-        url: `/api/sessions/${sessionId}/submit-feedback`,
-        method: "POST",
+        url: `/api/sessions/${sessionId}/feedback`,
+        method: "PATCH",
         body: { rating },
       }),
       invalidatesTags: ["Session"],

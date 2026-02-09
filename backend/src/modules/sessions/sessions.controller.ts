@@ -82,11 +82,11 @@ export class SessionsController {
     return this.continueSessionService.continue(sessionId);
   }
 
-  @Post(':sessionId/submit-feedback')
+  @Patch(':sessionId/feedback')
   @ApiOperation({ summary: 'Submit user feedback', description: 'Submits user rating/feedback for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: SubmitFeedbackRequestDto })
-  @ApiResponse({ status: 201, description: 'Feedback submitted successfully', type: SubmitFeedbackResponseDto })
+  @ApiResponse({ status: 200, description: 'Feedback submitted successfully', type: SubmitFeedbackResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   submitFeedback(@Param('sessionId') sessionId: string, @Body() dto: SubmitFeedbackRequestDto): Promise<SubmitFeedbackResponseDto> {
     return this.submitFeedbackService.submit(sessionId, dto);
