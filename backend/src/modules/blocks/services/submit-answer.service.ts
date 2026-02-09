@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { SubmitAnswerRequestDto } from '../dto/request/submit-answer.request.dto';
+import { SubmitAnswerResponseDto } from '../dto/response/submit-answer.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
 @Injectable()
@@ -12,7 +13,7 @@ export class SubmitAnswerService {
     sessionId: string,
     orderIndex: string,
     dto: SubmitAnswerRequestDto,
-  ): Promise<void> {
+  ): Promise<SubmitAnswerResponseDto> {
     const orderIndexNum = parseInt(orderIndex, 10);
 
     // Get the block with practice block data
@@ -52,6 +53,9 @@ export class SubmitAnswerService {
       },
     });
 
-    // No return - HTTP 204 No Content
+    return {
+      success: true,
+      studentAnswerOptionIndices,
+    };
   }
 }

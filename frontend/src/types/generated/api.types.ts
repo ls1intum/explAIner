@@ -488,6 +488,18 @@ export interface components {
              */
             studentAnswerOptionIndices: number[];
         };
+        SubmitAnswerResponseDto: {
+            /** @description Whether the student answer was successfully persisted */
+            success: boolean;
+            /**
+             * @description Array of selected answer option indices (0-based)
+             * @example [
+             *       0,
+             *       2
+             *     ]
+             */
+            studentAnswerOptionIndices: number[];
+        };
     };
     responses: never;
     parameters: never;
@@ -906,12 +918,14 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Answer persisted successfully (no content) */
-            204: {
+            /** @description Answer persisted successfully */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["SubmitAnswerResponseDto"];
+                };
             };
             /** @description Practice block not found */
             404: {

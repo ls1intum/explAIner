@@ -13,6 +13,7 @@ import { GenerateBlockSequenceResponseDto } from './dto/response/generate-block-
 import { GenerateSummaryResponseDto } from './dto/response/generate-summary.response.dto';
 import { GetBlockResponseDto } from './dto/response/get-block-by-order-index.response.dto';
 import { SendMessageResponseDto } from './dto/response/send-message.response.dto';
+import { SubmitAnswerResponseDto } from './dto/response/submit-answer.response.dto';
 
 @ApiTags('blocks')
 @Controller('sessions/:sessionId/blocks')
@@ -81,18 +82,17 @@ export class BlocksController {
   }
 
   @Patch(':orderIndex/student-answer')
-  @HttpCode(204)
   @ApiOperation({ summary: 'Submit answer for practice block', description: 'Persists student answer in database' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
   @ApiBody({ type: SubmitAnswerRequestDto })
-  @ApiResponse({ status: 204, description: 'Answer persisted successfully (no content)' })
+  @ApiResponse({ status: 200, description: 'Answer persisted successfully', type: SubmitAnswerResponseDto })
   @ApiResponse({ status: 404, description: 'Practice block not found' })
   submitAnswer(
     @Param('sessionId') sessionId: string,
     @Param('orderIndex') orderIndex: string,
     @Body() dto: SubmitAnswerRequestDto,
-  ): Promise<void> {
+  ): Promise<SubmitAnswerResponseDto> {
     return this.submitAnswerService.submit(sessionId, orderIndex, dto);
   }
 }
