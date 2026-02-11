@@ -38,7 +38,7 @@ export default function LearningGoalAchievement({ learningGoal, bloomsLevel }: L
           </svg>
         </div>
         <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          LEARNING GOAL
+          LEARNING GOAL ACHIEVED
         </span>
       </div>
       <p className="text-base text-foreground leading-relaxed">
