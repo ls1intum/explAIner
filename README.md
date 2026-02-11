@@ -10,14 +10,14 @@ ExplAIner conducts adaptive learning sessions for any learning goal or question 
 
 **Start/Stop Development (`local-dev`):**
 ```bash
-docker-compose -f docker-compose.dev.yml --env-file .env.dev up
-docker-compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml --env-file .env.dev up --build
+docker compose -f docker-compose.dev.yml down
 ```
 
 **Start/Stop Production (`local-prd`):**
 ```bash
-docker-compose -f docker-compose.prd.yml --env-file .env.prd up --build
-docker-compose -f docker-compose.prd.yml down
+docker compose -f docker-compose.prd.yml --env-file .env.prd up --build
+docker compose -f docker-compose.prd.yml down
 ```
 
 **Access:**
