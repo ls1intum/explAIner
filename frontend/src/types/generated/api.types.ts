@@ -136,16 +136,16 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
         /**
          * Submit user feedback
          * @description Submits user rating/feedback for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"
          */
-        patch: operations["SessionsController_submitFeedback"];
+        put: operations["SessionsController_submitFeedback"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/sessions/{sessionId}/blocks/sequence": {
@@ -236,16 +236,16 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
         /**
          * Submit answer for practice block
          * @description Persists student answer in database
          */
-        patch: operations["BlocksController_submitAnswer"];
+        put: operations["BlocksController_submitAnswer"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }

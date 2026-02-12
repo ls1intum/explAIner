@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Put, Body, Param, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
 import { GenerateBlockSequenceService } from './services/generate-block-sequence.service';
@@ -81,7 +81,7 @@ export class BlocksController {
     return this.sendMessageService.send(sessionId, orderIndex, dto);
   }
 
-  @Patch(':orderIndex/student-answer')
+  @Put(':orderIndex/student-answer')
   @ApiOperation({ summary: 'Submit answer for practice block', description: 'Persists student answer in database' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })

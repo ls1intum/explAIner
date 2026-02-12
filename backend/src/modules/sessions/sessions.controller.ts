@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Put, Body, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { CreateSessionService } from './services/create-session.service';
 import { GetSessionService } from './services/get-session.service';
@@ -85,7 +85,7 @@ export class SessionsController {
     return this.continueSessionService.continue(sessionId);
   }
 
-  @Patch(':sessionId/feedback')
+  @Put(':sessionId/feedback')
   @ApiOperation({ summary: 'Submit user feedback', description: 'Submits user rating/feedback for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: SubmitFeedbackRequestDto })

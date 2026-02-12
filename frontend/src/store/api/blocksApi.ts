@@ -37,7 +37,7 @@ export const blocksApi = baseApi.injectEndpoints({
     >({
       query: ({ sessionId, orderIndex, studentAnswerOptionIndices }) => ({
         url: `/api/sessions/${sessionId}/blocks/${orderIndex}/student-answer`,
-        method: "PATCH",
+        method: "PUT",
         body: { studentAnswerOptionIndices },
       }),
     }),
