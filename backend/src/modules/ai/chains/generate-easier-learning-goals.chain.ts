@@ -3,6 +3,8 @@ import { AiService } from '../ai.service';
 import { LearningGoalsParser } from '../parsers/learning-goals.parser';
 import { generateEasierLearningGoalsPrompt } from '../prompts/generate-easier-learning-goals.prompt';
 import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';
+import { logAiChain } from '../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../common/config/logging.config';
 
 /**
  * Chain for generating easier learning goals
@@ -25,6 +27,11 @@ export class GenerateEasierLearningGoalsChain {
     wrongQuestions?: string[];
     coveredContent?: string;
   }): Promise<LearningGoalsArray> {
+    // Log chain execution
+    if (isLogEnabled('ai')) {
+      logAiChain('generate-easier-learning-goals');
+    }
+
     // 1. Generate prompt from template
     const prompt = generateEasierLearningGoalsPrompt({
       topic: params.topic,
@@ -35,10 +42,7 @@ export class GenerateEasierLearningGoalsChain {
     });
 
     // 2. Call Claude with generated prompt
-    const rawResponse = await this.aiService.callClaude(
-      prompt,
-      'generate-easier-learning-goals.prompt.ts',
-    );
+    const rawResponse = await this.aiService.callClaude(prompt);
 
     // 3. Parse and validate response
     const learningGoals = this.parser.parse(rawResponse);

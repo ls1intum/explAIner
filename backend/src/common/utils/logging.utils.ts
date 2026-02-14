@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 
-const aiLogger = new Logger('AI');
+const aiChainLogger = new Logger('AI-CHAIN');
 
 /**
  * Extract parameter names and their types from method arguments
@@ -71,9 +71,9 @@ export function formatBody(body: any): string {
 }
 
 /**
- * Log AI prompt usage
- * Format: [AI] <prompt name>
+ * Log AI chain execution
+ * Format: [AI - CHAIN] <chain name>
  */
-export function logAiPrompt(promptName: string): void {
-  aiLogger.log(promptName);
+export function logAiChain(chainName: string): void {
+  aiChainLogger.log(chainName);
 }

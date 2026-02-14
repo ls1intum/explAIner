@@ -3,6 +3,8 @@ import { AiService } from '../ai.service';
 import { ChatResponseParser } from '../parsers/chat-response.parser';
 import { generateInformBlockChatResponsePrompt } from '../prompts/generate-inform-block-chat-response.prompt';
 import type { ChatResponse } from '../schemas/chat-response.schema';
+import { logAiChain } from '../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../common/config/logging.config';
 
 /**
  * Chain for generating inform block chat responses
@@ -21,6 +23,11 @@ export class GenerateInformBlockChatResponseChain {
     userMessage: string;
     conversationHistory?: string;
   }): Promise<ChatResponse> {
+    // Log chain execution
+    if (isLogEnabled('ai')) {
+      logAiChain('generate-inform-block-chat-response');
+    }
+
     // 1. Generate prompt with conversation context
     const prompt = generateInformBlockChatResponsePrompt({
       topic: params.topic,
@@ -32,10 +39,7 @@ export class GenerateInformBlockChatResponseChain {
     });
 
     // 2. Call Claude
-    const rawResponse = await this.aiService.callClaude(
-      prompt,
-      'generate-inform-block-chat-response.prompt.ts',
-    );
+    const rawResponse = await this.aiService.callClaude(prompt);
 
     // 3. Parse and validate response
     const chatResponse = this.parser.parse(rawResponse);

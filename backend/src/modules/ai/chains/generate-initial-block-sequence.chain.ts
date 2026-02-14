@@ -4,6 +4,8 @@ import { InitialBlockSequenceParser } from '../parsers/initial-block-sequence.pa
 import { generateInitialBlockSequencePrompt } from '../prompts/generate-initial-block-sequence.prompt';
 import type { InitialBlockSequence } from '../schemas/initial-block-sequence.schema';
 import { SoloLevel } from '@prisma/client';
+import { logAiChain } from '../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../common/config/logging.config';
 
 /**
  * Chain for generating initial block sequence (block_sequence_counter = 0)
@@ -22,6 +24,11 @@ export class GenerateInitialBlockSequenceChain {
     priorKnowledge?: string;
     soloLevels: SoloLevel[];
   }): Promise<InitialBlockSequence> {
+    // Log chain execution
+    if (isLogEnabled('ai')) {
+      logAiChain('generate-initial-block-sequence');
+    }
+
     // 1. Generate prompt for initial block sequence
     const prompt = generateInitialBlockSequencePrompt({
       topic: params.topic,
@@ -32,10 +39,7 @@ export class GenerateInitialBlockSequenceChain {
     });
 
     // 2. Call Claude
-    const rawResponse = await this.aiService.callClaude(
-      prompt,
-      'generate-initial-block-sequence.prompt.ts',
-    );
+    const rawResponse = await this.aiService.callClaude(prompt);
 
     // 3. Parse and validate response
     const blockSequence = this.parser.parse(rawResponse);

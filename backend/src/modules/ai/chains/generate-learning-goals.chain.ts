@@ -3,6 +3,8 @@ import { AiService } from '../ai.service';
 import { LearningGoalsParser } from '../parsers/learning-goals.parser';
 import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
 import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';
+import { logAiChain } from '../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../common/config/logging.config';
 
 /**
  * Chain for generating learning goals
@@ -22,6 +24,11 @@ export class GenerateLearningGoalsChain {
     topic: string;
     priorKnowledgeKeywords?: string;
   }): Promise<LearningGoalsArray> {
+    // Log chain execution
+    if (isLogEnabled('ai')) {
+      logAiChain('generate-learning-goals');
+    }
+
     // 1. Generate prompt from template
     const prompt = generateLearningGoalsPrompt({
       topic: params.topic,
@@ -29,10 +36,7 @@ export class GenerateLearningGoalsChain {
     });
 
     // 2. Call Claude with generated prompt
-    const rawResponse = await this.aiService.callClaude(
-      prompt,
-      'generate-learning-goals.prompt.ts',
-    );
+    const rawResponse = await this.aiService.callClaude(prompt);
 
     // 3. Parse and validate response
     const learningGoals = this.parser.parse(rawResponse);

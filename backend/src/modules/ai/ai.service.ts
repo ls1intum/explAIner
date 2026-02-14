@@ -1,12 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
-import { isLogEnabled } from '../../common/config/logging.config';
 
 @Injectable()
 export class AiService {
   private anthropic: Anthropic;
-  private readonly logger = new Logger('AI');
   private readonly model: string;
 
   constructor(private configService: ConfigService) {
@@ -17,17 +15,8 @@ export class AiService {
 
   /**
    * Call Claude with a prompt and return raw text response
-   * Format: [AI] <prompt name>
    */
-  async callClaude(prompt: string, promptSource?: string): Promise<string> {
-    // Log AI prompt usage
-    if (isLogEnabled('ai')) {
-      const promptName = promptSource 
-        ? promptSource.replace('.prompt.ts', '')
-        : 'unknown-prompt';
-      this.logger.log(promptName);
-    }
-
+  async callClaude(prompt: string): Promise<string> {
     try {
       const message = await this.anthropic.messages.create({
         model: this.model,
@@ -50,12 +39,6 @@ export class AiService {
 
       return textContent.text;
     } catch (error) {
-      if (isLogEnabled('ai')) {
-        const promptName = promptSource 
-          ? promptSource.replace('.prompt.ts', '')
-          : 'unknown-prompt';
-        this.logger.error(`${promptName} Error: ${error.message}`);
-      }
       throw new Error(`Failed to call Claude: ${error.message}`);
     }
   }

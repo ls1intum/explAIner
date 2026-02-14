@@ -5,6 +5,8 @@ import { generateSubsequentBlockSequencePrompt } from '../prompts/generate-subse
 import type { SubsequentBlockSequence } from '../schemas/subsequent-block-sequence.schema';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 import { SoloLevel } from '@prisma/client';
+import { logAiChain } from '../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../common/config/logging.config';
 
 /**
  * Chain for generating subsequent block sequence (block_sequence_counter > 0)
@@ -24,6 +26,11 @@ export class GenerateSubsequentBlockSequenceChain {
     wrongAnswers?: WrongAnswer[];
     soloLevels: SoloLevel[];
   }): Promise<SubsequentBlockSequence> {
+    // Log chain execution
+    if (isLogEnabled('ai')) {
+      logAiChain('generate-subsequent-block-sequence');
+    }
+
     // 1. Generate prompt for subsequent block sequence
     const prompt = generateSubsequentBlockSequencePrompt({
       topic: params.topic,
@@ -35,10 +42,7 @@ export class GenerateSubsequentBlockSequenceChain {
     });
 
     // 2. Call Claude
-    const rawResponse = await this.aiService.callClaude(
-      prompt,
-      'generate-subsequent-block-sequence.prompt.ts',
-    );
+    const rawResponse = await this.aiService.callClaude(prompt);
 
     // 3. Parse and validate response
     const blockSequence = this.parser.parse(rawResponse);

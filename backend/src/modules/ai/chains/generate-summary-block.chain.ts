@@ -3,6 +3,8 @@ import { AiService } from '../ai.service';
 import { SummaryBlockParser } from '../parsers/summary-block.parser';
 import { generateSummaryBlockPrompt } from '../prompts/generate-summary-block.prompt';
 import type { SummaryBlock } from '../schemas/summary-block.schema';
+import { logAiChain } from '../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../common/config/logging.config';
 
 /**
  * Chain for generating summary block
@@ -21,6 +23,11 @@ export class GenerateSummaryBlockChain {
     informContent: string[];
     practiceResults: Array<{ question: string; isCorrect: boolean }>;
   }): Promise<SummaryBlock> {
+    // Log chain execution
+    if (isLogEnabled('ai')) {
+      logAiChain('generate-summary-block');
+    }
+
     // 1. Generate prompt
     const prompt = generateSummaryBlockPrompt({
       topic: params.topic,
@@ -31,10 +38,7 @@ export class GenerateSummaryBlockChain {
     });
 
     // 2. Call Claude
-    const rawResponse = await this.aiService.callClaude(
-      prompt,
-      'generate-summary-block.prompt.ts',
-    );
+    const rawResponse = await this.aiService.callClaude(prompt);
 
     // 3. Parse and validate response
     const summaryBlock = this.parser.parse(rawResponse);
