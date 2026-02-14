@@ -1,36 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { BlockSequenceParser } from '../parsers/block-sequence.parser';
-import { generateBlockSequencePrompt } from '../prompts/generate-block-sequence.prompt';
+import { SubsequentBlockSequenceParser } from '../parsers/subsequent-block-sequence.parser';
+import { generateSubsequentBlockSequencePrompt } from '../prompts/generate-subsequent-block-sequence.prompt';
 import { getSOLOLevelsForBlooms } from '../../../common/utils/didactical-frameworks/solo-taxonomy.util';
-import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
-import type { UnifiedBlockSequence } from '../schemas/block-sequence.schema';
+import type { SubsequentBlockSequence } from '../schemas/subsequent-block-sequence.schema';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 
 /**
- * Chain for generating next block sequence (initial or subsequent)
+ * Chain for generating subsequent block sequence (block_sequence_counter > 0)
  * Orchestrates: Prompt -> AI Call -> Parse -> Validate
  */
 @Injectable()
-export class GenerateBlockSequenceChain {
-  private parser = new BlockSequenceParser();
+export class GenerateSubsequentBlockSequenceChain {
+  private parser = new SubsequentBlockSequenceParser();
 
   constructor(private aiService: AiService) {}
 
   async execute(params: {
-    mode: BlockSequenceMode;
     topic: string;
     learningGoal: string;
     bloomsLevel: string;
     priorKnowledge?: string;
     wrongAnswers?: WrongAnswer[];
-  }): Promise<UnifiedBlockSequence> {
+  }): Promise<SubsequentBlockSequence> {
     // 1. Determine appropriate SOLO levels based on Bloom's level
     const soloLevels = getSOLOLevelsForBlooms(params.bloomsLevel);
     
-    // 2. Generate prompt based on mode
-    const prompt = generateBlockSequencePrompt({
-      mode: params.mode, // "initial" or "subsequent"
+    // 2. Generate prompt for subsequent block sequence
+    const prompt = generateSubsequentBlockSequencePrompt({
       topic: params.topic,
       learningGoal: params.learningGoal,
       bloomsLevel: params.bloomsLevel,
@@ -42,11 +39,11 @@ export class GenerateBlockSequenceChain {
     // 3. Call Claude
     const rawResponse = await this.aiService.callClaude(
       prompt,
-      'generate-block-sequence.prompt.ts',
+      'generate-subsequent-block-sequence.prompt.ts',
     );
 
     // 4. Parse and validate response
-    const blockSequence = this.parser.parse(rawResponse, params.mode);
+    const blockSequence = this.parser.parse(rawResponse);
 
     return blockSequence;
   }

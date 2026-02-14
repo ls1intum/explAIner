@@ -4,8 +4,8 @@ import { SoloLevel } from '@prisma/client';
 /**
  * Practice Block Schema
  * 
+ * Shared schema for practice blocks used in both initial and subsequent block sequences.
  * Contains 3 questions aligned with SOLO taxonomy.
- * Used for both initial and subsequent block sequences.
  */
 
 // Practice question schema

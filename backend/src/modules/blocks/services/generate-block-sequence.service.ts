@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateBlockSequenceChain } from '../../ai/chains/generate-block-sequence.chain';
+import { GenerateInitialBlockSequenceChain } from '../../ai/chains/generate-initial-block-sequence.chain';
+import { GenerateSubsequentBlockSequenceChain } from '../../ai/chains/generate-subsequent-block-sequence.chain';
 import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
 import { BlockType, SoloLevel } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
@@ -17,7 +18,8 @@ import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block
 export class GenerateBlockSequenceService {
   constructor(
     private prisma: PrismaService,
-    private generateBlockSequenceChain: GenerateBlockSequenceChain,
+    private generateInitialBlockSequenceChain: GenerateInitialBlockSequenceChain,
+    private generateSubsequentBlockSequenceChain: GenerateSubsequentBlockSequenceChain,
   ) {}
 
   @LogService()
@@ -91,22 +93,33 @@ export class GenerateBlockSequenceService {
     // 5. Get prior knowledge context
     const priorKnowledge = session.priorKnowledgeKeywords || '';
 
-    // 6. Call unified chain to generate block sequence
-    const blockSequence = await this.generateBlockSequenceChain.execute({
-      mode,
-      topic: session.learningTopicOrQuestion,
-      learningGoal: session.learningGoal,
-      bloomsLevel: session.learningGoalBloomsLevel,
-      priorKnowledge,
-      wrongAnswers: mode === BlockSequenceMode.SUBSEQUENT ? wrongAnswers : undefined,
-    });
+    // 6. Call appropriate chain based on mode
+    const blockSequence = mode === BlockSequenceMode.INITIAL
+      ? await this.generateInitialBlockSequenceChain.execute({
+          topic: session.learningTopicOrQuestion,
+          learningGoal: session.learningGoal,
+          bloomsLevel: session.learningGoalBloomsLevel,
+          priorKnowledge,
+        })
+      : await this.generateSubsequentBlockSequenceChain.execute({
+          topic: session.learningTopicOrQuestion,
+          learningGoal: session.learningGoal,
+          bloomsLevel: session.learningGoalBloomsLevel,
+          priorKnowledge,
+          wrongAnswers,
+        });
 
     // 7. Create inform block with formatted message
-    const content = mode === BlockSequenceMode.INITIAL 
-      ? blockSequence.informBlock.keyFacts || []
-      : blockSequence.informBlock.keyMisconceptions || [];
+    let content: string[];
+    let label: string;
     
-    const label = mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
+    if (mode === BlockSequenceMode.INITIAL) {
+      content = 'keyFacts' in blockSequence.informBlock ? blockSequence.informBlock.keyFacts : [];
+      label = 'KEY FACTS';
+    } else {
+      content = 'keyMisconceptions' in blockSequence.informBlock ? blockSequence.informBlock.keyMisconceptions : [];
+      label = 'KEY MISCONCEPTIONS';
+    }
     
     const formattedMessage = `${blockSequence.informBlock.explanation}
 
