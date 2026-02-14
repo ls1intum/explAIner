@@ -86,28 +86,26 @@ Your response should start with { and end with }
 
 Expected format:
 {
-  "practiceBlock": {
-    "questions": [
-      {
-        "question": "Question testing single concept?",
-        "answerOptions": ["Option A", "Option B", "Option C", "Option D"],
-        "correctAnswerOptionIndices": [2],
-        "soloLevel": "Unistructural"
-      },
-      {
-        "question": "Question testing multiple aspects?",
-        "answerOptions": ["Option A", "Option B", "Option C", "Option D"],
-        "correctAnswerOptionIndices": [0, 3],
-        "soloLevel": "Multistructural"
-      },
-      {
-        "question": "Question requiring integration/application?",
-        "answerOptions": ["Option A", "Option B", "Option C", "Option D"],
-        "correctAnswerOptionIndices": [1],
-        "soloLevel": "Relational"
-      }
-    ]
-  },
+  "practiceBlocks": [
+    {
+      "question": "Question testing single concept?",
+      "answerOptions": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswerOptionIndices": [2],
+      "soloLevel": "Unistructural"
+    },
+    {
+      "question": "Question testing multiple aspects?",
+      "answerOptions": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswerOptionIndices": [0, 3],
+      "soloLevel": "Multistructural"
+    },
+    {
+      "question": "Question requiring integration/application?",
+      "answerOptions": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswerOptionIndices": [1],
+      "soloLevel": "Relational"
+    }
+  ],
   "informBlock": {
     "explanation": "Brief 2-3 sentence explanation with **bold** for key terms that connects the concepts",
     "keyMisconceptions": [
