@@ -22,7 +22,6 @@ export class GenerateInformBlockChatResponseChain {
     conversationHistory?: string;
   }): Promise<ChatResponse> {
     // 1. Generate prompt with conversation context
-    // Appends user message to history (if exists) to maintain context
     const prompt = generateInformBlockChatResponsePrompt({
       topic: params.topic,
       learningGoal: params.learningGoal,
