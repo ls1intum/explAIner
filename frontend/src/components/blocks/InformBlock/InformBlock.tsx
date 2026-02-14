@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import type { Block } from '@/types/domain';
 import { useSendMessageMutation } from '@/store/api/blocksApi';
+import { useAppDispatch } from '@/store/hooks';
+import { updateInformBlockMessages } from '@/store/slices/sessionSlice';
 import { getRandomMessage } from '@/lib/utils';
 import { INFORM_BLOCK_CHAT_LOADING_MESSAGES } from '@/lib/loadingMessages';
 import QuickActionChips from './QuickActionChips';
@@ -20,6 +22,7 @@ export default function InformBlock({
   sessionId,
   onContinue,
 }: InformBlockProps) {
+  const dispatch = useAppDispatch();
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const [localMessages, setLocalMessages] = useState(block.informBlockMessages || []);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -210,6 +213,7 @@ export default function InformBlock({
       blockId: block.id,
       message,
       sender: 'User' as const,
+      timestamp: new Date().toISOString(),
     };
     
     setLocalMessages((prev) => [...prev, userMessage]);
@@ -238,9 +242,20 @@ export default function InformBlock({
         blockId: block.id,
         message: data.response,
         sender: 'Owlbert' as const,
+        timestamp: new Date().toISOString(),
       };
       
-      setLocalMessages((prev) => [...prev, aiMessage]);
+      setLocalMessages((prev) => {
+        const updatedMessages = [...prev, aiMessage];
+        
+        // Update Redux store with new messages
+        dispatch(updateInformBlockMessages({
+          blockId: block.id,
+          messages: updatedMessages,
+        }));
+        
+        return updatedMessages;
+      });
     } catch (error) {
       console.error('Error sending message:', error);
       // Remove the user message on error
