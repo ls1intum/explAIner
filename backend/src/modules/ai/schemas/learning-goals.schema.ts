@@ -18,11 +18,11 @@ export const learningGoalSchema = z.object({
 });
 
 /**
- * Learning Goals Array Schema
+ * Learning Goals Schema
  *
  * Validates exactly 3 learning goals (tuple).
  */
-export const learningGoalsArraySchema = z.tuple([
+export const learningGoalsSchema = z.tuple([
   learningGoalSchema,
   learningGoalSchema,
   learningGoalSchema,

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { LearningGoalsParser } from '../parsers/learning-goals.parser';
+import { Parser } from '../parser/parser';
 import { generateEasierLearningGoalsPrompt } from '../prompts/generate-easier-learning-goals.prompt';
+import { learningGoalsSchema } from '../schemas/learning-goals.schema';
 import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';
 import { logAiChain } from '../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../common/config/logging.config';
@@ -12,7 +13,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
  */
 @Injectable()
 export class GenerateEasierLearningGoalsChain {
-  private parser = new LearningGoalsParser();
+  private parser = new Parser(learningGoalsSchema);
 
   constructor(private aiService: AiService) {}
 

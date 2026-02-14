@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { SummaryBlockParser } from '../parsers/summary-block.parser';
+import { Parser } from '../parser/parser';
 import { generateSummaryBlockPrompt } from '../prompts/generate-summary-block.prompt';
-import type { SummaryBlock } from '../schemas/summary-block.schema';
+import { summaryBlockSchema, type SummaryBlock } from '../schemas/summary-block.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../common/config/logging.config';
 
@@ -12,7 +12,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
  */
 @Injectable()
 export class GenerateSummaryBlockChain {
-  private parser = new SummaryBlockParser();
+  private parser = new Parser(summaryBlockSchema);
 
   constructor(private aiService: AiService) {}
 

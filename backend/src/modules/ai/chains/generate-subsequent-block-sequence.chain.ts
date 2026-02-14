@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { SubsequentBlockSequenceParser } from '../parsers/subsequent-block-sequence.parser';
+import { Parser } from '../parser/parser';
 import { generateSubsequentBlockSequencePrompt } from '../prompts/generate-subsequent-block-sequence.prompt';
-import type { SubsequentBlockSequence } from '../schemas/subsequent-block-sequence.schema';
+import { subsequentBlockSequenceSchema, type SubsequentBlockSequence } from '../schemas/subsequent-block-sequence.schema';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 import { SoloLevel } from '@prisma/client';
 import { logAiChain } from '../../../common/utils/logging.utils';
@@ -14,7 +14,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
  */
 @Injectable()
 export class GenerateSubsequentBlockSequenceChain {
-  private parser = new SubsequentBlockSequenceParser();
+  private parser = new Parser(subsequentBlockSequenceSchema);
 
   constructor(private aiService: AiService) {}
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { InitialBlockSequenceParser } from '../parsers/initial-block-sequence.parser';
+import { Parser } from '../parser/parser';
 import { generateInitialBlockSequencePrompt } from '../prompts/generate-initial-block-sequence.prompt';
-import type { InitialBlockSequence } from '../schemas/initial-block-sequence.schema';
+import { initialBlockSequenceSchema, type InitialBlockSequence } from '../schemas/initial-block-sequence.schema';
 import { SoloLevel } from '@prisma/client';
 import { logAiChain } from '../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../common/config/logging.config';
@@ -13,7 +13,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
  */
 @Injectable()
 export class GenerateInitialBlockSequenceChain {
-  private parser = new InitialBlockSequenceParser();
+  private parser = new Parser(initialBlockSequenceSchema);
 
   constructor(private aiService: AiService) {}
 

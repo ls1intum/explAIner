@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { ChatResponseParser } from '../parsers/chat-response.parser';
+import { Parser } from '../parser/parser';
 import { generateInformBlockChatResponsePrompt } from '../prompts/generate-inform-block-chat-response.prompt';
-import type { ChatResponse } from '../schemas/chat-response.schema';
+import { chatResponseSchema, type ChatResponse } from '../schemas/chat-response.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../common/config/logging.config';
 
@@ -12,7 +12,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
  */
 @Injectable()
 export class GenerateInformBlockChatResponseChain {
-  private parser = new ChatResponseParser();
+  private parser = new Parser(chatResponseSchema);
 
   constructor(private aiService: AiService) {}
 
