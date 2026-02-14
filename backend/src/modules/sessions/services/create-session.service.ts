@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateSessionRequestDto } from '../dto/request/create-session.request.dto';
-import { SpecifyLearningGoalsService } from './specify-learning-goals.service';
 import { GenerateBlockSequenceService } from '../../blocks/services/generate-block-sequence.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
@@ -9,7 +8,6 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 export class CreateSessionService {
   constructor(
     private prisma: PrismaService,
-    private specifyLearningGoalsService: SpecifyLearningGoalsService,
     private generateBlockSequenceService: GenerateBlockSequenceService,
   ) {}
 
@@ -19,7 +17,7 @@ export class CreateSessionService {
    */
   @LogService()
   async create(dto: CreateSessionRequestDto) {
-    // 1. Create initial session
+    // 1. Create initial session with learning goals
     const session = await this.prisma.session.create({
       data: {
         learningTopicOrQuestion: dto.topic,
@@ -29,26 +27,17 @@ export class CreateSessionService {
       },
     });
 
-    // 2. Specify learning goals (updates session with full details)
-    await this.specifyLearningGoalsService.specify(
-      session.id,
-      dto.topic,
-      dto.priorKnowledgeKeywords || undefined,
-      dto.learningGoal,
-      dto.bloomsLevel,
-    );
-
-    // 3. Generate initial block sequence (1 inform + 3 practice blocks)
+    // 2. Generate initial block sequence (1 inform + 3 practice blocks)
     // Mode is auto-detected as INITIAL since session has 0 blocks
     const { informBlock, practiceBlocks } =
       await this.generateBlockSequenceService.generate(session.id);
 
-    // 4. Sort practice blocks by orderIndex to ensure correct order
+    // 3. Sort practice blocks by orderIndex to ensure correct order
     const sortedPracticeBlocks = practiceBlocks.sort(
       (a, b) => a.orderIndex - b.orderIndex
     );
 
-    // 5. Return session with blocks (inform first, then practice blocks in order)
+    // 4. Return session with blocks (inform first, then practice blocks in order)
     return {
       session: {
         id: session.id,
