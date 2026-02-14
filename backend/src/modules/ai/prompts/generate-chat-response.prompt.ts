@@ -1,16 +1,16 @@
-interface GenerateInformBlockChatResponsePromptParams {
+interface GenerateChatResponsePromptParams {
   topic: string;
   learningGoal: string;
   bloomsLevel: string;
   currentBlockContext?: string;
 }
 
-export const generateInformBlockChatResponsePrompt = ({
+export const generateChatResponsePrompt = ({
   topic,
   learningGoal,
   bloomsLevel,
   currentBlockContext,
-}: GenerateInformBlockChatResponsePromptParams): string => {
+}: GenerateChatResponsePromptParams): string => {
   const contextText = currentBlockContext
     ? `\n\nCurrent conversation in this block:\n${currentBlockContext}`
     : '';

@@ -4,7 +4,7 @@ import { GenerateLearningGoalsChain } from './chains/generate-learning-goals.cha
 import { GenerateEasierLearningGoalsChain } from './chains/generate-easier-learning-goals.chain';
 import { GenerateInitialBlockSequenceChain } from './chains/generate-initial-block-sequence.chain';
 import { GenerateSubsequentBlockSequenceChain } from './chains/generate-subsequent-block-sequence.chain';
-import { GenerateInformBlockChatResponseChain } from './chains/generate-inform-block-chat-response.chain';
+import { GenerateChatResponseChain } from './chains/generate-chat-response.chain';
 import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain';
 
 // AI Module: Infrastructure layer providing AI services and chains
@@ -16,7 +16,7 @@ import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain
     GenerateEasierLearningGoalsChain,
     GenerateInitialBlockSequenceChain,
     GenerateSubsequentBlockSequenceChain,
-    GenerateInformBlockChatResponseChain,
+    GenerateChatResponseChain,
     GenerateSummaryBlockChain,
   ],
   exports: [
@@ -25,7 +25,7 @@ import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain
     GenerateEasierLearningGoalsChain,
     GenerateInitialBlockSequenceChain,
     GenerateSubsequentBlockSequenceChain,
-    GenerateInformBlockChatResponseChain,
+    GenerateChatResponseChain,
     GenerateSummaryBlockChain,
   ],
 })

@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
 import { Parser } from '../parser/parser';
-import { generateInformBlockChatResponsePrompt } from '../prompts/generate-inform-block-chat-response.prompt';
+import { generateChatResponsePrompt } from '../prompts/generate-chat-response.prompt';
 import { chatResponseSchema, type ChatResponse } from '../schemas/chat-response.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../common/config/logging.config';
 
 /**
- * Chain for generating inform block chat responses
+ * Chain for generating chat responses
  * Orchestrates: Prompt -> AI Call -> Parse -> Validate
  */
 @Injectable()
-export class GenerateInformBlockChatResponseChain {
+export class GenerateChatResponseChain {
   private parser = new Parser(chatResponseSchema);
 
   constructor(private aiService: AiService) {}
@@ -25,11 +25,11 @@ export class GenerateInformBlockChatResponseChain {
   }): Promise<ChatResponse> {
     // Log chain execution
     if (isLogEnabled('ai')) {
-      logAiChain('generate-inform-block-chat-response');
+      logAiChain('generate-chat-response');
     }
 
     // 1. Generate prompt with conversation context
-    const prompt = generateInformBlockChatResponsePrompt({
+    const prompt = generateChatResponsePrompt({
       topic: params.topic,
       learningGoal: params.learningGoal,
       bloomsLevel: params.bloomsLevel,
