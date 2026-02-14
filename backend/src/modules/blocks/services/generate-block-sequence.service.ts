@@ -7,6 +7,7 @@ import { BlockType, SoloLevel } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
+import { getSOLOLevelsForBlooms } from '../../../common/utils/didactical-frameworks/solo-taxonomy.util';
 
 /**
  * Unified service for generating block sequences (initial or subsequent)
@@ -93,13 +94,17 @@ export class GenerateBlockSequenceService {
     // 5. Get prior knowledge context
     const priorKnowledge = session.priorKnowledgeKeywords || '';
 
-    // 6. Call appropriate chain based on mode
+    // 6. Determine appropriate SOLO levels based on Bloom's level
+    const soloLevels = getSOLOLevelsForBlooms(session.learningGoalBloomsLevel);
+
+    // 7. Call appropriate chain based on mode
     const blockSequence = mode === BlockSequenceMode.INITIAL
       ? await this.generateInitialBlockSequenceChain.execute({
           topic: session.learningTopicOrQuestion,
           learningGoal: session.learningGoal,
           bloomsLevel: session.learningGoalBloomsLevel,
           priorKnowledge,
+          soloLevels,
         })
       : await this.generateSubsequentBlockSequenceChain.execute({
           topic: session.learningTopicOrQuestion,
@@ -107,9 +112,10 @@ export class GenerateBlockSequenceService {
           bloomsLevel: session.learningGoalBloomsLevel,
           priorKnowledge,
           wrongAnswers,
+          soloLevels,
         });
 
-    // 7. Create inform block with formatted message
+    // 8. Create inform block with formatted message
     let content: string[];
     let label: string;
     
@@ -149,7 +155,7 @@ ${blockSequence.informBlock.summary}`;
       },
     });
 
-    // 8. Create 3 practice blocks
+    // 9. Create 3 practice blocks
     const practiceBlocks = await Promise.all(
       blockSequence.practiceBlock.questions.map(async (question, index) => {
         return this.prisma.block.create({
@@ -173,7 +179,7 @@ ${blockSequence.informBlock.summary}`;
       }),
     );
 
-    // 9. Update session total blocks count
+    // 10. Update session total blocks count
     const newTotal = mode === BlockSequenceMode.INITIAL 
       ? 4 
       : session.totalBlocks + 4;
@@ -183,7 +189,7 @@ ${blockSequence.informBlock.summary}`;
       data: { totalBlocks: newTotal },
     });
 
-    // 10. Return all blocks (inform + practice) mapped to DTOs
+    // 11. Return all blocks (inform + practice) mapped to DTOs
     return {
       informBlock: informBlock as any,
       practiceBlocks: practiceBlocks as any,

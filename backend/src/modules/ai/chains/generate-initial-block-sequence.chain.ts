@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
 import { InitialBlockSequenceParser } from '../parsers/initial-block-sequence.parser';
 import { generateInitialBlockSequencePrompt } from '../prompts/generate-initial-block-sequence.prompt';
-import { getSOLOLevelsForBlooms } from '../../../common/utils/didactical-frameworks/solo-taxonomy.util';
 import type { InitialBlockSequence } from '../schemas/initial-block-sequence.schema';
+import { SoloLevel } from '@prisma/client';
 
 /**
  * Chain for generating initial block sequence (block_sequence_counter = 0)
@@ -20,26 +20,24 @@ export class GenerateInitialBlockSequenceChain {
     learningGoal: string;
     bloomsLevel: string;
     priorKnowledge?: string;
+    soloLevels: SoloLevel[];
   }): Promise<InitialBlockSequence> {
-    // 1. Determine appropriate SOLO levels based on Bloom's level
-    const soloLevels = getSOLOLevelsForBlooms(params.bloomsLevel);
-    
-    // 2. Generate prompt for initial block sequence
+    // 1. Generate prompt for initial block sequence
     const prompt = generateInitialBlockSequencePrompt({
       topic: params.topic,
       learningGoal: params.learningGoal,
       bloomsLevel: params.bloomsLevel,
       priorKnowledge: params.priorKnowledge,
-      soloLevels: soloLevels.map(level => level.toString()),
+      soloLevels: params.soloLevels.map(level => level.toString()),
     });
 
-    // 3. Call Claude
+    // 2. Call Claude
     const rawResponse = await this.aiService.callClaude(
       prompt,
       'generate-initial-block-sequence.prompt.ts',
     );
 
-    // 4. Parse and validate response
+    // 3. Parse and validate response
     const blockSequence = this.parser.parse(rawResponse);
 
     return blockSequence;
