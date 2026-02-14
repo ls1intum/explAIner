@@ -4,7 +4,6 @@ import { GenerateEasierLearningGoalsResponseDto } from '../dto/response/generate
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateEasierLearningGoalsChain } from '../../ai/chains/generate-easier-learning-goals.chain';
-import { generateEasierLearningGoalsPrompt } from '../../ai/prompts/generate-easier-learning-goals.prompt';
 import { BlockType } from '@prisma/client';
 
 @Injectable()
@@ -68,8 +67,8 @@ export class GenerateEasierLearningGoalsService {
       )
       .join('\n\n');
 
-    // 4. Generate prompt for easier learning goals
-    const prompt = generateEasierLearningGoalsPrompt({
+    // 4. Call chain with structured params (chain handles prompt generation)
+    const learningGoals = await this.generateEasierLearningGoalsChain.execute({
       topic: session.learningTopicOrQuestion,
       originalGoal: session.learningGoal,
       originalBloomsLevel: session.learningGoalBloomsLevel,
@@ -77,10 +76,7 @@ export class GenerateEasierLearningGoalsService {
       coveredContent: coveredContent.substring(0, 2000), // Limit content length
     });
 
-    // 5. Call chain to generate easier learning goals
-    const learningGoals = await this.generateEasierLearningGoalsChain.execute(prompt);
-
-    // 6. Return complete response with topic, prior knowledge keywords, and learning goals
+    // 5. Return complete response with topic, prior knowledge keywords, and learning goals
     return {
       topic: session.learningTopicOrQuestion,
       priorKnowledgeKeywords: session.priorKnowledgeKeywords || undefined,

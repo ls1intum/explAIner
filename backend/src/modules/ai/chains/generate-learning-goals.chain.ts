@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
 import { LearningGoalsParser } from '../parsers/learning-goals.parser';
+import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
 import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';
 
 /**
@@ -14,17 +15,26 @@ export class GenerateLearningGoalsChain {
   constructor(private aiService: AiService) {}
 
   /**
-   * Execute the chain with the learning goals prompt
-   * @param prompt - The actual prompt string
+   * Execute the chain with structured parameters
+   * @param params - Structured input parameters for generating learning goals
    */
-  async execute(prompt: string): Promise<LearningGoalsArray> {
-    // 1. Call Claude with provided prompt
+  async execute(params: {
+    topic: string;
+    priorKnowledgeKeywords?: string;
+  }): Promise<LearningGoalsArray> {
+    // 1. Generate prompt from template
+    const prompt = generateLearningGoalsPrompt({
+      topic: params.topic,
+      priorKnowledgeKeywords: params.priorKnowledgeKeywords,
+    });
+
+    // 2. Call Claude with generated prompt
     const rawResponse = await this.aiService.callClaude(
       prompt,
       'generate-learning-goals.prompt.ts',
     );
 
-    // 2. Parse and validate response
+    // 3. Parse and validate response
     const learningGoals = this.parser.parse(rawResponse);
 
     return learningGoals;

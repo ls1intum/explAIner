@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { GenerateLearningGoalsRequestDto } from '../dto/request/generate-learning-goals.request.dto';
 import { GenerateLearningGoalsResponseDto } from '../dto/response/generate-learning-goals.response.dto';
 import { GenerateLearningGoalsChain } from '../../ai/chains/generate-learning-goals.chain';
-import { generateLearningGoalsPrompt } from '../../ai/prompts/generate-learning-goals.prompt';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
 @Injectable()
@@ -15,14 +14,11 @@ export class GenerateLearningGoalsService {
   async generate(
     dto: GenerateLearningGoalsRequestDto,
   ): Promise<GenerateLearningGoalsResponseDto> {
-    // Generate prompt
-    const prompt = generateLearningGoalsPrompt({
+    // Call chain with structured params (chain handles prompt generation)
+    const goals = await this.generateLearningGoalsChain.execute({
       topic: dto.topic,
       priorKnowledgeKeywords: dto.priorKnowledgeKeywords,
     });
-
-    // Call chain to generate learning goals
-    const goals = await this.generateLearningGoalsChain.execute(prompt);
 
     // Return wrapped response
     return {
