@@ -1,9 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class UpdateCurrentBlockIndexResponseDto {
-  @ApiProperty({ description: 'Whether the current block index was successfully updated' })
-  success: boolean;
+// Update Current Block Index Response Schema
+const updateCurrentBlockIndexResponseSchema = z.object({
+  success: z.boolean().describe('Whether the current block index was successfully updated'),
+  currentBlockIndex: z.number().describe('The updated current block index (0-based)'),
+});
 
-  @ApiProperty({ description: 'The updated current block index (0-based)' })
-  currentBlockIndex: number;
-}
+export class UpdateCurrentBlockIndexResponseDto extends createZodDto(updateCurrentBlockIndexResponseSchema) {}

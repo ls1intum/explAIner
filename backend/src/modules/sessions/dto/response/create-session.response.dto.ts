@@ -1,26 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { GetBlockResponseDto } from '../../../blocks/dto/response/get-block-by-order-index.response.dto';
+import { SessionInfoDto } from '../session-info.dto';
 
-class SessionInfoDto {
-  @ApiProperty({ description: 'Unique session identifier' })
-  id: string;
-
-  @ApiProperty({ description: 'Learning topic or question' })
-  topic: string;
-
-  @ApiProperty({ description: 'Learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."' })
-  learningGoal: string; 
-
-  @ApiProperty({ description: 'Bloom\'s taxonomy level' })
-  bloomsLevel: string;
-
-  @ApiProperty({ description: 'Total number of sessions blocks (increases by 4 for each new block sequence)' })
-  totalBlocks: number;
-
-  @ApiProperty({ description: 'Block index (0-based) of currently / last viewed block by the user' })
-  currentBlockIndex: number;
-}
-
+/**
+ * Create Session Response DTO
+ *
+ * Wrapper DTO for session creation response.
+ * Note: Kept as class-based DTO since it references other DTOs.
+ */
 export class CreateSessionResponseDto {
   @ApiProperty({ description: 'Session information', type: SessionInfoDto })
   session: SessionInfoDto;

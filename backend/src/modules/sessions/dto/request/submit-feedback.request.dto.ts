@@ -1,15 +1,25 @@
-import { IsInt, Min, Max } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class SubmitFeedbackRequestDto {
-  @ApiProperty({ 
-    description: 'User rating for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"',
-    minimum: 1,
-    maximum: 5,
-    example: 4
-  })
-  @IsInt()
-  @Min(1)
-  @Max(5)
-  rating: number;
-}
+/**
+ * Submit Feedback Request Schema
+ *
+ * Validates user rating (1-5 stars).
+ */
+const submitFeedbackRequestSchema = z.object({
+  rating: z
+    .number()
+    .int()
+    .min(1, 'Rating must be at least 1')
+    .max(5, 'Rating must be at most 5')
+    .describe('User rating for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"'),
+});
+
+/**
+ * Submit Feedback Request DTO
+ *
+ * Request body for submitting session feedback.
+ */
+export class SubmitFeedbackRequestDto extends createZodDto(
+  submitFeedbackRequestSchema,
+) {}

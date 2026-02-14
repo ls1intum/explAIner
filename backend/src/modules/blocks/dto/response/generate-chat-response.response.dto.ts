@@ -1,6 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { chatResponseSchema } from '../../../ai/schemas/chat-response.schema';
 
-export class GenerateChatResponseResponseDto {
-  @ApiProperty({ description: 'AI response from Owlbert' })
-  response: string;
-}
+/**
+ * Generate Chat Response DTO
+ *
+ * Generated from Zod schema - used for both LLM validation and API responses.
+ */
+export class GenerateChatResponseResponseDto extends createZodDto(chatResponseSchema) {}

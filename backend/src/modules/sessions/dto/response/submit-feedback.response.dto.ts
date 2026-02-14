@@ -1,9 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class SubmitFeedbackResponseDto {
-  @ApiProperty({ description: 'Whether the feedback was successfully submitted' })
-  success: boolean;
+// Submit Feedback Response Schema
+const submitFeedbackResponseSchema = z.object({
+  success: z.boolean().describe('Whether the feedback was successfully submitted'),
+  rating: z.number().describe('The submitted rating (1-5) - 1: "very unhelpful", 5: "very helpful"'),
+});
 
-  @ApiProperty({ description: 'The submitted rating (1-5) - 1: "very unhelpful", 5: "very helpful"' })
-  rating: number;
-}
+export class SubmitFeedbackResponseDto extends createZodDto(submitFeedbackResponseSchema) {}

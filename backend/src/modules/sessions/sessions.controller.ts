@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Patch, Put, Body, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import { CreateSessionService } from './services/create-session.service';
 import { GetSessionService } from './services/get-session.service';
 import { DeleteSessionService } from './services/delete-session.service';
@@ -54,7 +55,7 @@ export class SessionsController {
   @ApiOperation({ summary: 'Delete session', description: 'Deletes a session and all related data if user ends the session before completing it' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: DeleteSessionRequestDto })
-  @ApiResponse({ status: 200, description: 'Session deleted successfully', type: DeleteSessionResponseDto })
+  @ZodResponse({ status: 200, description: 'Session deleted successfully', type: DeleteSessionResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   remove(@Param('sessionId') sessionId: string, @Body() dto: DeleteSessionRequestDto): Promise<DeleteSessionResponseDto> {
     return this.deleteSessionService.delete(sessionId);
@@ -64,7 +65,7 @@ export class SessionsController {
   @ApiOperation({ summary: 'Update current block index', description: 'Updates the current block index (0-based index of the currently / last viewed block by the user) and marks the block as already viewed' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: UpdateCurrentBlockIndexRequestDto })
-  @ApiResponse({ status: 200, description: 'Current block index updated successfully', type: UpdateCurrentBlockIndexResponseDto })
+  @ZodResponse({ status: 200, description: 'Current block index updated successfully', type: UpdateCurrentBlockIndexResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   updateCurrentBlockIndex(
     @Param('sessionId') sessionId: string,
@@ -80,7 +81,7 @@ export class SessionsController {
   @ApiOperation({ summary: 'Continue session', description: 'Determines next action based on session context (navigate, summary, next-sequence, or prompt-user)' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: ContinueSessionRequestDto })
-  @ApiResponse({ status: 201, description: 'Next action determined', type: ContinueSessionResponseDto })
+  @ZodResponse({ status: 201, description: 'Next action determined', type: ContinueSessionResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   continue(
     @Param('sessionId') sessionId: string,
@@ -93,7 +94,7 @@ export class SessionsController {
   @ApiOperation({ summary: 'Submit user feedback', description: 'Submits user rating/feedback for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: SubmitFeedbackRequestDto })
-  @ApiResponse({ status: 200, description: 'Feedback submitted successfully', type: SubmitFeedbackResponseDto })
+  @ZodResponse({ status: 200, description: 'Feedback submitted successfully', type: SubmitFeedbackResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   submitFeedback(@Param('sessionId') sessionId: string, @Body() dto: SubmitFeedbackRequestDto): Promise<SubmitFeedbackResponseDto> {
     return this.submitFeedbackService.submit(sessionId, dto);

@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Patch, Put, Body, Param, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ZodResponse } from 'nestjs-zod';
 import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
 import { GenerateBlockSequenceService } from './services/generate-block-sequence.service';
 import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
@@ -59,7 +60,7 @@ export class BlocksController {
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
   @ApiBody({ type: GetBlockByOrderIndexRequestDto })
-  @ApiResponse({ status: 200, description: 'Block found', type: GetBlockResponseDto })
+  @ZodResponse({ status: 200, description: 'Block found', type: GetBlockResponseDto })
   @ApiResponse({ status: 404, description: 'Block not found' })
   getBlock(
     @Param('sessionId') sessionId: string,
@@ -74,7 +75,7 @@ export class BlocksController {
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
   @ApiBody({ type: GenerateChatResponseRequestDto })
-  @ApiResponse({ status: 201, description: 'Message sent and response received', type: GenerateChatResponseResponseDto })
+  @ZodResponse({ status: 201, description: 'Message sent and response received', type: GenerateChatResponseResponseDto })
   @ApiResponse({ status: 404, description: 'Block not found' })
   sendMessage(
     @Param('sessionId') sessionId: string,
@@ -89,7 +90,7 @@ export class BlocksController {
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
   @ApiBody({ type: SubmitAnswerRequestDto })
-  @ApiResponse({ status: 200, description: 'Answer persisted successfully', type: SubmitAnswerResponseDto })
+  @ZodResponse({ status: 200, description: 'Answer persisted successfully', type: SubmitAnswerResponseDto })
   @ApiResponse({ status: 404, description: 'Practice block not found' })
   submitAnswer(
     @Param('sessionId') sessionId: string,

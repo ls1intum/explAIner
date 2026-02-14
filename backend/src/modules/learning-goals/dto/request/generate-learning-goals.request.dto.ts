@@ -1,20 +1,28 @@
-import { IsString, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class GenerateLearningGoalsRequestDto {
-  @ApiProperty({ 
-    description: 'The learning topic or question to generate learninggoals for',
-    example: 'Photosynthesis'
-  })
-  @IsString()
-  topic: string;
+/**
+ * Generate Learning Goals Request Schema
+ *
+ * Validates topic and optional prior knowledge for learning goal generation.
+ */
+const generateLearningGoalsRequestSchema = z.object({
+  topic: z
+    .string()
+    .min(1, 'Topic cannot be empty')
+    .describe('The learning topic or question to generate learning goals for'),
+  
+  priorKnowledgeKeywords: z
+    .string()
+    .optional()
+    .describe('Keywords describing prior knowledge (optional)'),
+});
 
-  @ApiProperty({ 
-    description: 'Keywords describing prior knowledge (optional)',
-    example: 'plants, light, energy',
-    required: false
-  })
-  @IsOptional()
-  @IsString()
-  priorKnowledgeKeywords?: string;
-}
+/**
+ * Generate Learning Goals Request DTO
+ *
+ * Request body for generating learning goals from topic and prior knowledge.
+ */
+export class GenerateLearningGoalsRequestDto extends createZodDto(
+  generateLearningGoalsRequestSchema,
+) {}

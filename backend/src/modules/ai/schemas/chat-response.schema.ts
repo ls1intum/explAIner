@@ -5,11 +5,15 @@ import { z } from 'zod';
  * 
  * This schema defines the structured response for chat messages within
  * an Inform Block. Used when students ask follow-up questions.
+ * Also used to generate DTOs and OpenAPI documentation.
  * 
  * The response is stored in the inform_block_messages table with sender='Owlbert'.
  */
 export const chatResponseSchema = z.object({
-  response: z.string().min(1, 'Response must not be empty'),
+  response: z
+    .string()
+    .min(1, 'Response must not be empty')
+    .describe('AI response from Owlbert'),
 });
 
 // Inferred TypeScript type

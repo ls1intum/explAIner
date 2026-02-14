@@ -253,39 +253,32 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         GenerateLearningGoalsRequestDto: {
-            /**
-             * @description The learning topic or question to generate learninggoals for
-             * @example Photosynthesis
-             */
+            /** @description The learning topic or question to generate learning goals for */
             topic: string;
-            /**
-             * @description Keywords describing prior knowledge (optional)
-             * @example plants, light, energy
-             */
+            /** @description Keywords describing prior knowledge (optional) */
             priorKnowledgeKeywords?: string;
         };
-        LearningGoalDto: {
-            /**
-             * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-             * @example After this session, you will be able to Understand the process of photosynthesis.
-             */
-            learningGoal: string;
-            /**
-             * @description Bloom's taxonomy level for this learning goal
-             * @example Understand
-             * @enum {string}
-             */
-            bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
-        };
-        GenerateLearningGoalsResponseDto: {
+        GenerateLearningGoalsResponseDto_Output: {
             /** @description Array of generated learning goals */
-            learningGoals: components["schemas"]["LearningGoalDto"][];
+            learningGoals: {
+                /**
+                 * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+                 * @example After this session, you will be able to Understand the process of photosynthesis.
+                 */
+                learningGoal: string;
+                /**
+                 * @description Bloom's taxonomy level for this learning goal
+                 * @example Understand
+                 * @enum {string}
+                 */
+                bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+            }[];
         };
         GenerateEasierLearningGoalsRequestDto: {
             /** @description Session ID of the existing session to generate easier learning goals for */
             sessionId: string;
         };
-        GenerateEasierLearningGoalsResponseDto: {
+        GenerateEasierLearningGoalsResponseDto_Output: {
             /**
              * @description The learning topic from the previous session
              * @example Photosynthesis
@@ -297,27 +290,29 @@ export interface components {
              */
             priorKnowledgeKeywords?: string;
             /** @description Array of easier learning goals generated for new session */
-            learningGoals: components["schemas"]["LearningGoalDto"][];
+            learningGoals: {
+                /**
+                 * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+                 * @example After this session, you will be able to Understand the process of photosynthesis.
+                 */
+                learningGoal: string;
+                /**
+                 * @description Bloom's taxonomy level for this learning goal
+                 * @example Understand
+                 * @enum {string}
+                 */
+                bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+            }[];
         };
         CreateSessionRequestDto: {
-            /**
-             * @description The learning topic or question for the session
-             * @example Photosynthesis
-             */
+            /** @description The learning topic or question for the session */
             topic: string;
-            /**
-             * @description Keywords indicating what the user already knows about the learning topic or question (optional)
-             * @example plants, chlorophyll, light energy
-             */
+            /** @description Keywords indicating what the user already knows about the learning topic or question (optional) */
             priorKnowledgeKeywords?: string;
-            /**
-             * @description The specific learning goal for this session
-             * @example After this session, you will be able to Understand the process of photosynthesis in plants.
-             */
+            /** @description The specific learning goal for this session */
             learningGoal: string;
             /**
              * @description Bloom's taxonomy level for the learning goal
-             * @example Understand
              * @enum {string}
              */
             bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
@@ -331,50 +326,10 @@ export interface components {
             learningGoal: string;
             /** @description Bloom's taxonomy level */
             bloomsLevel: string;
-            /** @description Total number of sessions blocks (increases by 4 for each new block sequence) */
+            /** @description Total number of blocks in the session (increases by 4 for each new block sequence) */
             totalBlocks: number;
             /** @description Block index (0-based) of currently / last viewed block by the user */
             currentBlockIndex: number;
-        };
-        InformBlockMessageDto: {
-            /** @description Message ID */
-            id: string;
-            /** @description Block ID this message belongs to */
-            blockId: string;
-            /** @description Message content */
-            message: string;
-            /**
-             * @description Message sender
-             * @enum {string}
-             */
-            sender: "User" | "Owlbert";
-            /**
-             * Format: date-time
-             * @description Message timestamp
-             */
-            timestamp: string;
-        };
-        PracticeBlockDto: {
-            /** @description Block ID */
-            blockId: string;
-            /** @description SOLO taxonomy level */
-            soloLevel: string;
-            /** @description Practice question */
-            question: string;
-            /** @description Available answer options */
-            answerOptions: string[];
-            /** @description Indices of correct answer options */
-            correctAnswerOptionIndices: number[];
-            /** @description Indices of student's selected answer options */
-            studentAnswerOptionIndices: number[];
-            /** @description Whether the student's answer is correct (null if not yet answered) */
-            studentAnswerIsCorrect: Record<string, never> | null;
-        };
-        SummaryBlockDto: {
-            /** @description Block ID */
-            blockId: string;
-            /** @description Session summary content */
-            sessionSummary: string;
         };
         GetBlockResponseDto: {
             /** @description Block ID */
@@ -391,11 +346,51 @@ export interface components {
              */
             type: "Inform" | "Practice" | "Summary";
             /** @description Inform block messages (only for Inform blocks) */
-            informBlockMessages?: components["schemas"]["InformBlockMessageDto"][];
+            informBlockMessages?: {
+                /** @description Message ID */
+                id: string;
+                /** @description Block ID this message belongs to */
+                blockId: string;
+                /** @description Message content */
+                message: string;
+                /**
+                 * @description Message sender
+                 * @enum {string}
+                 */
+                sender: "User" | "Owlbert";
+                /**
+                 * Format: date-time
+                 * @description Message timestamp (ISO 8601 format)
+                 */
+                timestamp: string;
+            }[];
             /** @description Practice block data (only for Practice blocks) */
-            practiceBlock?: components["schemas"]["PracticeBlockDto"];
+            practiceBlock?: {
+                /** @description Block ID */
+                blockId: string;
+                /**
+                 * @description SOLO taxonomy level
+                 * @enum {string}
+                 */
+                soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                /** @description Practice question */
+                question: string;
+                /** @description Available answer options */
+                answerOptions: string[];
+                /** @description Indices of correct answer options */
+                correctAnswerOptionIndices: number[];
+                /** @description Indices of student's selected answer options */
+                studentAnswerOptionIndices: number[];
+                /** @description Whether the student's answer is correct (null if not yet answered) */
+                studentAnswerIsCorrect: boolean | null;
+            };
             /** @description Summary block data (only for Summary blocks) */
-            summaryBlock?: components["schemas"]["SummaryBlockDto"];
+            summaryBlock?: {
+                /** @description Block ID */
+                blockId: string;
+                /** @description Session summary content */
+                sessionSummary: string;
+            };
         };
         CreateSessionResponseDto: {
             /** @description Session information */
@@ -411,25 +406,22 @@ export interface components {
             blocks: components["schemas"]["GetBlockResponseDto"][];
         };
         DeleteSessionRequestDto: Record<string, never>;
-        DeleteSessionResponseDto: {
+        DeleteSessionResponseDto_Output: {
             /** @description Whether the session was successfully deleted */
             success: boolean;
         };
         UpdateCurrentBlockIndexRequestDto: {
-            /**
-             * @description The index of the current block being viewed (0-based) by the user
-             * @example 2
-             */
+            /** @description The index of the current block being viewed (0-based) by the user */
             currentBlockIndex: number;
         };
-        UpdateCurrentBlockIndexResponseDto: {
+        UpdateCurrentBlockIndexResponseDto_Output: {
             /** @description Whether the current block index was successfully updated */
             success: boolean;
             /** @description The updated current block index (0-based) */
             currentBlockIndex: number;
         };
         ContinueSessionRequestDto: Record<string, never>;
-        ContinueSessionResponseDto: {
+        ContinueSessionResponseDto_Output: {
             /**
              * @description Next action to take in the session flow
              * @example navigate
@@ -443,13 +435,10 @@ export interface components {
             nextOrderIndex?: number;
         };
         SubmitFeedbackRequestDto: {
-            /**
-             * @description User rating for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"
-             * @example 4
-             */
+            /** @description User rating for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful" */
             rating: number;
         };
-        SubmitFeedbackResponseDto: {
+        SubmitFeedbackResponseDto_Output: {
             /** @description Whether the feedback was successfully submitted */
             success: boolean;
             /** @description The submitted rating (1-5) - 1: "very unhelpful", 5: "very helpful" */
@@ -463,35 +452,97 @@ export interface components {
             practiceBlocks: components["schemas"]["GetBlockResponseDto"][];
         };
         GenerateSummaryBlockRequestDto: Record<string, never>;
+        SessionStatsDto: {
+            /** @description Learning goal for the session */
+            learningGoal: string;
+            /** @description Bloom's taxonomy level */
+            bloomsLevel: string;
+            /** @description Total number of blocks in the session */
+            totalBlocks: number;
+            /** @description Session duration in minutes */
+            sessionDuration: number;
+        };
         GenerateSummaryBlockResponseDto: {
             /** @description Generated summary block */
             block: components["schemas"]["GetBlockResponseDto"];
-            /** @description Session information for the summary */
-            sessionInfo: components["schemas"]["SessionInfoDto"];
+            /** @description Session statistics for the summary */
+            sessionStats: components["schemas"]["SessionStatsDto"];
         };
         GetBlockByOrderIndexRequestDto: Record<string, never>;
-        GenerateChatResponseRequestDto: {
+        GetBlockResponseDto_Output: {
+            /** @description Block ID */
+            id: string;
+            /** @description Session ID this block belongs to */
+            sessionId: string;
+            /** @description Order index of the block (0-based) */
+            orderIndex: number;
+            /** @description Whether the block has been viewed by the user already */
+            alreadyViewed: boolean;
             /**
-             * @description User message / follow-up question sent in the inform block chat
-             * @example Can you explain more about chloroplasts?
+             * @description Block type
+             * @enum {string}
              */
+            type: "Inform" | "Practice" | "Summary";
+            /** @description Inform block messages (only for Inform blocks) */
+            informBlockMessages?: {
+                /** @description Message ID */
+                id: string;
+                /** @description Block ID this message belongs to */
+                blockId: string;
+                /** @description Message content */
+                message: string;
+                /**
+                 * @description Message sender
+                 * @enum {string}
+                 */
+                sender: "User" | "Owlbert";
+                /**
+                 * Format: date-time
+                 * @description Message timestamp (ISO 8601 format)
+                 */
+                timestamp: string;
+            }[];
+            /** @description Practice block data (only for Practice blocks) */
+            practiceBlock?: {
+                /** @description Block ID */
+                blockId: string;
+                /**
+                 * @description SOLO taxonomy level
+                 * @enum {string}
+                 */
+                soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                /** @description Practice question */
+                question: string;
+                /** @description Available answer options */
+                answerOptions: string[];
+                /** @description Indices of correct answer options */
+                correctAnswerOptionIndices: number[];
+                /** @description Indices of student's selected answer options */
+                studentAnswerOptionIndices: number[];
+                /** @description Whether the student's answer is correct (null if not yet answered) */
+                studentAnswerIsCorrect: boolean | null;
+            };
+            /** @description Summary block data (only for Summary blocks) */
+            summaryBlock?: {
+                /** @description Block ID */
+                blockId: string;
+                /** @description Session summary content */
+                sessionSummary: string;
+            };
+        };
+        GenerateChatResponseRequestDto: {
+            /** @description User message / follow-up question sent in the inform block chat */
             message: string;
         };
-        GenerateChatResponseResponseDto: {
+        GenerateChatResponseResponseDto_Output: {
             /** @description AI response from Owlbert */
             response: string;
         };
         SubmitAnswerRequestDto: {
-            /**
-             * @description Array of selected answer option indices (0-based)
-             * @example [
-             *       0,
-             *       2
-             *     ]
-             */
+            /** @description Array of selected answer option indices (0-based) */
             studentAnswerOptionIndices: number[];
         };
-        SubmitAnswerResponseDto: {
+        SubmitAnswerResponseDto_Output: {
             /** @description Whether the student answer was successfully persisted */
             success: boolean;
             /**
@@ -531,7 +582,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GenerateLearningGoalsResponseDto"];
+                    "application/json": components["schemas"]["GenerateLearningGoalsResponseDto_Output"];
                 };
             };
             /** @description Invalid request data */
@@ -562,7 +613,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GenerateEasierLearningGoalsResponseDto"];
+                    "application/json": components["schemas"]["GenerateEasierLearningGoalsResponseDto_Output"];
                 };
             };
             /** @description Previous session not found */
@@ -661,7 +712,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DeleteSessionResponseDto"];
+                    "application/json": components["schemas"]["DeleteSessionResponseDto_Output"];
                 };
             };
             /** @description Session not found */
@@ -695,7 +746,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UpdateCurrentBlockIndexResponseDto"];
+                    "application/json": components["schemas"]["UpdateCurrentBlockIndexResponseDto_Output"];
                 };
             };
             /** @description Session not found */
@@ -729,7 +780,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ContinueSessionResponseDto"];
+                    "application/json": components["schemas"]["ContinueSessionResponseDto_Output"];
                 };
             };
             /** @description Session not found */
@@ -763,7 +814,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SubmitFeedbackResponseDto"];
+                    "application/json": components["schemas"]["SubmitFeedbackResponseDto_Output"];
                 };
             };
             /** @description Session not found */
@@ -867,7 +918,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetBlockResponseDto"];
+                    "application/json": components["schemas"]["GetBlockResponseDto_Output"];
                 };
             };
             /** @description Block not found */
@@ -903,7 +954,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GenerateChatResponseResponseDto"];
+                    "application/json": components["schemas"]["GenerateChatResponseResponseDto_Output"];
                 };
             };
             /** @description Block not found */
@@ -939,7 +990,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SubmitAnswerResponseDto"];
+                    "application/json": components["schemas"]["SubmitAnswerResponseDto_Output"];
                 };
             };
             /** @description Practice block not found */

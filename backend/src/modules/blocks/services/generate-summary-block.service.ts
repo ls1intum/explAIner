@@ -95,10 +95,10 @@ export class GenerateSummaryBlockService {
       },
     });
 
-    // 9. Return summary block with additional session info mapped to DTO
+    // 9. Return summary block with additional session stats mapped to DTO
     return {
       block: createdSummaryBlock as any,
-      sessionInfo: {
+      sessionStats: {
         learningGoal: session.learningGoal,
         bloomsLevel: session.learningGoalBloomsLevel,
         totalBlocks: session.totalBlocks + 1,

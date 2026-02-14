@@ -39,9 +39,15 @@ export class GetBlockByOrderIndexService {
       orderIndex: block.orderIndex,
       alreadyViewed: block.alreadyViewed,
       type: block.type,
-      informBlockMessages: block.informBlockMessages,
-      practiceBlock: block.practiceBlock,
-      summaryBlock: block.summaryBlock,
-    } as any;
+      informBlockMessages: block.informBlockMessages?.map((msg) => ({
+        id: msg.id,
+        blockId: msg.blockId,
+        message: msg.message,
+        sender: msg.sender,
+        timestamp: msg.timestamp.toISOString(),
+      })),
+      practiceBlock: block.practiceBlock ?? undefined,
+      summaryBlock: block.summaryBlock ?? undefined,
+    };
   }
 }

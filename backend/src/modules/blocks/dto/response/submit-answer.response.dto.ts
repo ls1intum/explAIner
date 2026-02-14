@@ -1,13 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class SubmitAnswerResponseDto {
-  @ApiProperty({ description: 'Whether the student answer was successfully persisted' })
-  success: boolean;
+// Submit Answer Response Schema (API response)
+const submitAnswerResponseSchema = z.object({
+  success: z.boolean().describe('Whether the student answer was successfully persisted'),
+  studentAnswerOptionIndices: z
+    .array(z.number())
+    .describe('Array of selected answer option indices (0-based)')
+    .meta({ example: [0, 2] }),
+});
 
-  @ApiProperty({ 
-    description: 'Array of selected answer option indices (0-based)',
-    type: [Number],
-    example: [0, 2]
-  })
-  studentAnswerOptionIndices: number[];
-}
+export class SubmitAnswerResponseDto extends createZodDto(submitAnswerResponseSchema) {}

@@ -1,17 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class ContinueSessionResponseDto {
-  @ApiProperty({ 
-    description: 'Next action to take in the session flow',
-    enum: ['navigate', 'next-sequence', 'summary', 'prompt-user'],
-    example: 'navigate'
-  })
-  action: 'navigate' | 'next-sequence' | 'summary' | 'prompt-user';
+// Continue Session Response Schema
+const continueSessionResponseSchema = z.object({
+  action: z
+    .enum(['navigate', 'next-sequence', 'summary', 'prompt-user'])
+    .describe('Next action to take in the session flow')
+    .meta({ example: 'navigate' }),
+  nextOrderIndex: z
+    .number()
+    .optional()
+    .describe('Order index to navigate to (only present for "navigate" action)')
+    .meta({ example: 3 }),
+});
 
-  @ApiProperty({ 
-    description: 'Order index to navigate to (only present for "navigate" action)',
-    required: false,
-    example: 3
-  })
-  nextOrderIndex?: number;
-}
+export class ContinueSessionResponseDto extends createZodDto(continueSessionResponseSchema) {}

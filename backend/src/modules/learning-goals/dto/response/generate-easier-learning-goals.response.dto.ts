@@ -1,5 +1,26 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { LearningGoalDto } from '../learning-goal.dto';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
+import { learningGoalSchema } from '../../../ai/schemas/learning-goals.schema';
+
+/**
+ * Generate Easier Learning Goals Response Schema
+ *
+ * API-specific wrapper with session context.
+ */
+const generateEasierLearningGoalsResponseSchema = z.object({
+  topic: z
+    .string()
+    .describe('The learning topic from the previous session')
+    .meta({ example: 'Photosynthesis' }),
+  priorKnowledgeKeywords: z
+    .string()
+    .optional()
+    .describe('Prior knowledge keywords from the previous session')
+    .meta({ example: 'plants, light' }),
+  learningGoals: z
+    .array(learningGoalSchema)
+    .describe('Array of easier learning goals generated for new session'),
+});
 
 /**
  * Generate Easier Learning Goals Response DTO
@@ -7,23 +28,4 @@ import { LearningGoalDto } from '../learning-goal.dto';
  * Returns a wrapped response with full context (topic, priorKnowledgeKeywords)
  * since the client only sends sessionId in the request.
  */
-export class GenerateEasierLearningGoalsResponseDto {
-  @ApiProperty({ 
-    description: 'The learning topic from the previous session',
-    example: 'Photosynthesis'
-  })
-  topic: string;
-
-  @ApiProperty({ 
-    description: 'Prior knowledge keywords from the previous session',
-    example: 'plants, light',
-    required: false
-  })
-  priorKnowledgeKeywords?: string;
-
-  @ApiProperty({ 
-    description: 'Array of easier learning goals generated for new session',
-    type: [LearningGoalDto]
-  })
-  learningGoals: LearningGoalDto[];
-}
+export class GenerateEasierLearningGoalsResponseDto extends createZodDto(generateEasierLearningGoalsResponseSchema) {}

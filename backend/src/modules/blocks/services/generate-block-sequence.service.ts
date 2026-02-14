@@ -157,7 +157,7 @@ ${blockSequence.informBlock.summary}`;
 
     // 9. Create 3 practice blocks
     const practiceBlocks = await Promise.all(
-      blockSequence.practiceBlock.questions.map(async (question, index) => {
+      blockSequence.practiceBlocks.map(async (practiceBlock, index) => {
         return this.prisma.block.create({
           data: {
             sessionId,
@@ -165,10 +165,10 @@ ${blockSequence.informBlock.summary}`;
             type: BlockType.Practice,
             practiceBlock: {
               create: {
-                soloLevel: question.soloLevel as SoloLevel,
-                question: question.question,
-                answerOptions: question.answerOptions,
-                correctAnswerOptionIndices: question.correctAnswerOptionIndices,
+                soloLevel: practiceBlock.soloLevel as SoloLevel,
+                question: practiceBlock.question,
+                answerOptions: practiceBlock.answerOptions,
+                correctAnswerOptionIndices: practiceBlock.correctAnswerOptionIndices,
               },
             },
           },
@@ -191,8 +191,28 @@ ${blockSequence.informBlock.summary}`;
 
     // 11. Return all blocks (inform + practice) mapped to DTOs
     return {
-      informBlock: informBlock as any,
-      practiceBlocks: practiceBlocks as any,
+      informBlock: {
+        id: informBlock.id,
+        sessionId: informBlock.sessionId,
+        orderIndex: informBlock.orderIndex,
+        alreadyViewed: informBlock.alreadyViewed,
+        type: informBlock.type,
+        informBlockMessages: informBlock.informBlockMessages?.map((msg) => ({
+          id: msg.id,
+          blockId: msg.blockId,
+          message: msg.message,
+          sender: msg.sender,
+          timestamp: msg.timestamp.toISOString(),
+        })),
+      },
+      practiceBlocks: practiceBlocks.map((block) => ({
+        id: block.id,
+        sessionId: block.sessionId,
+        orderIndex: block.orderIndex,
+        alreadyViewed: block.alreadyViewed,
+        type: block.type,
+        practiceBlock: block.practiceBlock ?? undefined,
+      })),
     };
   }
 }

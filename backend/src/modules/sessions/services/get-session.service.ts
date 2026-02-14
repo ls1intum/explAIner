@@ -55,7 +55,7 @@ export class GetSessionService {
           blockId: msg.blockId,
           message: msg.message,
           sender: msg.sender,
-          timestamp: msg.timestamp,
+          timestamp: msg.timestamp.toISOString(),
         })),
         practiceBlock: block.practiceBlock
           ? {
