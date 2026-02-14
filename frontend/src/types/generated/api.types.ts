@@ -403,12 +403,14 @@ export interface components {
             /** @description Initial block sequence (1 inform + 3 practice) */
             blocks: components["schemas"]["GetBlockResponseDto"][];
         };
+        GetSessionRequestDto: Record<string, never>;
         GetSessionResponseDto: {
             /** @description Session information */
             session: components["schemas"]["SessionInfoDto"];
             /** @description All blocks in the session */
             blocks: components["schemas"]["GetBlockResponseDto"][];
         };
+        DeleteSessionRequestDto: Record<string, never>;
         DeleteSessionResponseDto: {
             /** @description Whether the session was successfully deleted */
             success: boolean;
@@ -460,21 +462,22 @@ export interface components {
             /** @description Generated practice blocks (3 blocks) */
             practiceBlocks: components["schemas"]["GetBlockResponseDto"][];
         };
-        GenerateSummaryRequestDto: Record<string, never>;
-        GenerateSummaryResponseDto: {
+        GenerateSummaryBlockRequestDto: Record<string, never>;
+        GenerateSummaryBlockResponseDto: {
             /** @description Generated summary block */
             block: components["schemas"]["GetBlockResponseDto"];
             /** @description Session information for the summary */
             sessionInfo: components["schemas"]["SessionInfoDto"];
         };
-        SendMessageRequestDto: {
+        GetBlockByOrderIndexRequestDto: Record<string, never>;
+        GenerateChatResponseRequestDto: {
             /**
              * @description User message / follow-up question sent in the inform block chat
              * @example Can you explain more about chloroplasts?
              */
             message: string;
         };
-        SendMessageResponseDto: {
+        GenerateChatResponseResponseDto: {
             /** @description AI response from Owlbert */
             response: string;
         };
@@ -612,7 +615,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GetSessionRequestDto"];
+            };
+        };
         responses: {
             /** @description Session found */
             200: {
@@ -642,7 +649,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteSessionRequestDto"];
+            };
+        };
         responses: {
             /** @description Session deleted successfully */
             200: {
@@ -810,7 +821,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["GenerateSummaryRequestDto"];
+                "application/json": components["schemas"]["GenerateSummaryBlockRequestDto"];
             };
         };
         responses: {
@@ -820,7 +831,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GenerateSummaryResponseDto"];
+                    "application/json": components["schemas"]["GenerateSummaryBlockResponseDto"];
                 };
             };
             /** @description Session not found */
@@ -844,7 +855,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GetBlockByOrderIndexRequestDto"];
+            };
+        };
         responses: {
             /** @description Block found */
             200: {
@@ -878,7 +893,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SendMessageRequestDto"];
+                "application/json": components["schemas"]["GenerateChatResponseRequestDto"];
             };
         };
         responses: {
@@ -888,7 +903,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SendMessageResponseDto"];
+                    "application/json": components["schemas"]["GenerateChatResponseResponseDto"];
                 };
             };
             /** @description Block not found */

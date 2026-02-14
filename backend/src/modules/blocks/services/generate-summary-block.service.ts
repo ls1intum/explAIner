@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { GenerateSummaryBlockChain } from '../../ai/chains/generate-summary-block.chain';
 import { BlockType } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { GenerateSummaryResponseDto } from '../dto/response/generate-summary.response.dto';
+import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
 
 @Injectable()
 export class GenerateSummaryBlockService {
@@ -13,7 +13,7 @@ export class GenerateSummaryBlockService {
   ) {}
 
   @LogService()
-  async generate(sessionId: string): Promise<GenerateSummaryResponseDto> {
+  async generate(sessionId: string): Promise<GenerateSummaryBlockResponseDto> {
     // 1. Fetch session data with all blocks
     const session = await this.prisma.session.findUnique({
       where: { id: sessionId },

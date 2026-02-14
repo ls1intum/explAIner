@@ -3,16 +3,17 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/s
 import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
 import { GenerateBlockSequenceService } from './services/generate-block-sequence.service';
 import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
-import { SendMessageService } from './services/send-message.service';
+import { GenerateChatResponseService } from './services/generate-chat-response.service';
 import { SubmitAnswerService } from './services/submit-answer.service';
-import { SendMessageRequestDto } from './dto/request/send-message.request.dto';
+import { GenerateChatResponseRequestDto } from './dto/request/generate-chat-response.request.dto';
 import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto';
 import { GenerateBlockSequenceRequestDto } from './dto/request/generate-block-sequence.request.dto';
-import { GenerateSummaryRequestDto } from './dto/request/generate-summary.request.dto';
+import { GenerateSummaryBlockRequestDto } from './dto/request/generate-summary-block.request.dto';
+import { GetBlockByOrderIndexRequestDto } from './dto/request/get-block-by-order-index.request.dto';
 import { GenerateBlockSequenceResponseDto } from './dto/response/generate-block-sequence.response.dto';
-import { GenerateSummaryResponseDto } from './dto/response/generate-summary.response.dto';
+import { GenerateSummaryBlockResponseDto } from './dto/response/generate-summary-block.response.dto';
 import { GetBlockResponseDto } from './dto/response/get-block-by-order-index.response.dto';
-import { SendMessageResponseDto } from './dto/response/send-message.response.dto';
+import { GenerateChatResponseResponseDto } from './dto/response/generate-chat-response.response.dto';
 import { SubmitAnswerResponseDto } from './dto/response/submit-answer.response.dto';
 
 @ApiTags('blocks')
@@ -22,7 +23,7 @@ export class BlocksController {
     private readonly generateBlockSequenceService: GenerateBlockSequenceService,
     private readonly generateSummaryBlockService: GenerateSummaryBlockService,
     private readonly getBlockByOrderIndexService: GetBlockByOrderIndexService,
-    private readonly sendMessageService: SendMessageService,
+    private readonly generateChatResponseService: GenerateChatResponseService,
     private readonly submitAnswerService: SubmitAnswerService,
   ) {}
 
@@ -43,13 +44,13 @@ export class BlocksController {
   @Post('summary')
   @ApiOperation({ summary: 'Generate summary block', description: 'Generates a summary block for the session with learning outcomes and performance summary' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
-  @ApiBody({ type: GenerateSummaryRequestDto })
-  @ApiResponse({ status: 201, description: 'Summary block generated successfully', type: GenerateSummaryResponseDto })
+  @ApiBody({ type: GenerateSummaryBlockRequestDto })
+  @ApiResponse({ status: 201, description: 'Summary block generated successfully', type: GenerateSummaryBlockResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   generateSummary(
     @Param('sessionId') sessionId: string,
-    @Body() dto: GenerateSummaryRequestDto,
-  ): Promise<GenerateSummaryResponseDto> {
+    @Body() dto: GenerateSummaryBlockRequestDto,
+  ): Promise<GenerateSummaryBlockResponseDto> {
     return this.generateSummaryBlockService.generate(sessionId);
   }
 
@@ -57,11 +58,13 @@ export class BlocksController {
   @ApiOperation({ summary: 'Get block by order index', description: 'Retrieves a specific block by its order index within the session' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
+  @ApiBody({ type: GetBlockByOrderIndexRequestDto })
   @ApiResponse({ status: 200, description: 'Block found', type: GetBlockResponseDto })
   @ApiResponse({ status: 404, description: 'Block not found' })
   getBlock(
     @Param('sessionId') sessionId: string,
     @Param('orderIndex') orderIndex: string,
+    @Body() dto: GetBlockByOrderIndexRequestDto,
   ) {
     return this.getBlockByOrderIndexService.getBlock(sessionId, parseInt(orderIndex));
   }
@@ -70,15 +73,15 @@ export class BlocksController {
   @ApiOperation({ summary: 'Send message in inform block', description: 'Sends a chat message to an inform block and receives AI response from Owlbert' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
-  @ApiBody({ type: SendMessageRequestDto })
-  @ApiResponse({ status: 201, description: 'Message sent and response received', type: SendMessageResponseDto })
+  @ApiBody({ type: GenerateChatResponseRequestDto })
+  @ApiResponse({ status: 201, description: 'Message sent and response received', type: GenerateChatResponseResponseDto })
   @ApiResponse({ status: 404, description: 'Block not found' })
   sendMessage(
     @Param('sessionId') sessionId: string,
     @Param('orderIndex') orderIndex: string,
-    @Body() dto: SendMessageRequestDto,
+    @Body() dto: GenerateChatResponseRequestDto,
   ) {
-    return this.sendMessageService.send(sessionId, orderIndex, dto);
+    return this.generateChatResponseService.send(sessionId, orderIndex, dto);
   }
 
   @Put(':orderIndex/student-answer')

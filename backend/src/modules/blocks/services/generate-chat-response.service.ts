@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateInformBlockChatResponseChain } from '../../ai/chains/generate-inform-block-chat-response.chain';
-import { SendMessageRequestDto } from '../dto/request/send-message.request.dto';
-import { SendMessageResponseDto } from '../dto/response/send-message.response.dto';
+import { GenerateChatResponseRequestDto } from '../dto/request/generate-chat-response.request.dto';
+import { GenerateChatResponseResponseDto } from '../dto/response/generate-chat-response.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
 @Injectable()
-export class SendMessageService {
+export class GenerateChatResponseService {
   constructor(
     private prisma: PrismaService,
     private generateChatResponseChain: GenerateInformBlockChatResponseChain,
@@ -16,8 +16,8 @@ export class SendMessageService {
   async send(
     sessionId: string,
     orderIndex: string,
-    dto: SendMessageRequestDto,
-  ): Promise<SendMessageResponseDto> {
+    dto: GenerateChatResponseRequestDto,
+  ): Promise<GenerateChatResponseResponseDto> {
     const orderIndexNum = parseInt(orderIndex, 10);
 
     // Get block and session

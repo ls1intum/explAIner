@@ -15,7 +15,7 @@ export class SessionInfoDto {
   sessionDuration: number;
 }
 
-export class GenerateSummaryResponseDto {
+export class GenerateSummaryBlockResponseDto {
   @ApiProperty({ description: 'Generated summary block', type: GetBlockResponseDto })
   block: GetBlockResponseDto;
 
