@@ -22,10 +22,7 @@ export class GenerateLearningGoalsService {
     });
 
     // Call chain to generate learning goals
-    const goals = await this.generateLearningGoalsChain.execute(
-      prompt,
-      'generate-learning-goals.prompt.ts',
-    );
+    const goals = await this.generateLearningGoalsChain.execute(prompt);
 
     // Return wrapped response
     return {

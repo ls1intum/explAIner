@@ -3,7 +3,7 @@ import { GenerateEasierLearningGoalsRequestDto } from '../dto/request/generate-e
 import { GenerateEasierLearningGoalsResponseDto } from '../dto/response/generate-easier-learning-goals.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateLearningGoalsChain } from '../../ai/chains/generate-learning-goals.chain';
+import { GenerateEasierLearningGoalsChain } from '../../ai/chains/generate-easier-learning-goals.chain';
 import { generateEasierLearningGoalsPrompt } from '../../ai/prompts/generate-easier-learning-goals.prompt';
 import { BlockType } from '@prisma/client';
 
@@ -11,7 +11,7 @@ import { BlockType } from '@prisma/client';
 export class GenerateEasierLearningGoalsService {
   constructor(
     private prisma: PrismaService,
-    private generateLearningGoalsChain: GenerateLearningGoalsChain,
+    private generateEasierLearningGoalsChain: GenerateEasierLearningGoalsChain,
   ) {}
 
   @LogService()
@@ -78,10 +78,7 @@ export class GenerateEasierLearningGoalsService {
     });
 
     // 5. Call chain to generate easier learning goals
-    const learningGoals = await this.generateLearningGoalsChain.execute(
-      prompt,
-      'generate-easier-learning-goals.prompt.ts',
-    );
+    const learningGoals = await this.generateEasierLearningGoalsChain.execute(prompt);
 
     // 6. Return complete response with topic, prior knowledge keywords, and learning goals
     return {

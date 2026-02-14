@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AiService } from './ai.service';
 import { GenerateLearningGoalsChain } from './chains/generate-learning-goals.chain';
+import { GenerateEasierLearningGoalsChain } from './chains/generate-easier-learning-goals.chain';
 import { GenerateBlockSequenceChain } from './chains/generate-block-sequence.chain';
 import { GenerateInformBlockChatResponseChain } from './chains/generate-inform-block-chat-response.chain';
 import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain';
@@ -11,6 +12,7 @@ import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain
   providers: [
     AiService,
     GenerateLearningGoalsChain,
+    GenerateEasierLearningGoalsChain,
     GenerateBlockSequenceChain,
     GenerateInformBlockChatResponseChain,
     GenerateSummaryBlockChain,
@@ -18,6 +20,7 @@ import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain
   exports: [
     AiService,
     GenerateLearningGoalsChain,
+    GenerateEasierLearningGoalsChain,
     GenerateBlockSequenceChain,
     GenerateInformBlockChatResponseChain,
     GenerateSummaryBlockChain,
