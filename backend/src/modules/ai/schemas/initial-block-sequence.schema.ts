@@ -1,6 +1,29 @@
 import { z } from 'zod';
-import { initialInformBlockSchema } from './initial-inform-block.schema';
 import { practiceBlockSchema } from './practice-block.schema';
+
+/**
+ * Initial Inform Block Schema
+ * 
+ * Used when block_sequence_counter = 0. Also used to generate DTOs and OpenAPI documentation.
+ * Structure: explanation -> keyFacts -> summary
+ */
+export const initialInformBlockSchema = z.object({
+  explanation: z
+    .string()
+    .min(1, 'Explanation must not be empty')
+    .describe('Detailed explanation of the topic'),
+  keyFacts: z
+    .array(z.string().min(1))
+    .min(2)
+    .max(4, 'Must have 2-4 key facts')
+    .describe('Key facts (2-4 items)'),
+  summary: z
+    .string()
+    .min(1, 'Summary must not be empty')
+    .describe('Brief summary of the explanation'),
+});
+
+export type InitialInformBlock = z.infer<typeof initialInformBlockSchema>;
 
 /**
  * Initial Block Sequence Schema
@@ -10,7 +33,6 @@ import { practiceBlockSchema } from './practice-block.schema';
  * - 1 x Inform Block: explanation, keyFacts, summary
  * - 3 x Practice Block: questions aligned with SOLO taxonomy
  */
-
 export const initialBlockSequenceSchema = z.object({
   informBlock: initialInformBlockSchema.describe('Initial inform block content'),
   practiceBlocks: z
@@ -20,8 +42,6 @@ export const initialBlockSequenceSchema = z.object({
 });
 
 // Re-export types for convenience
-export type { InitialInformBlock } from './initial-inform-block.schema';
 export type { PracticeBlock } from './practice-block.schema';
 
-// Inferred TypeScript type
 export type InitialBlockSequence = z.infer<typeof initialBlockSequenceSchema>;
