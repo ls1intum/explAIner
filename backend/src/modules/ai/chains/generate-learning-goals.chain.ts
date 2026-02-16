@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { Parser } from '../parser/parser';
+import { Parser } from '../ai.parser';
 import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
 import { learningGoalsSchema } from '../schemas/learning-goals.schema';
 import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';

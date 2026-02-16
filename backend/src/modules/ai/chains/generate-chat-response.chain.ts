@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { Parser } from '../parser/parser';
+import { Parser } from '../ai.parser';
 import { generateChatResponsePrompt } from '../prompts/generate-chat-response.prompt';
 import { chatResponseSchema, type ChatResponse } from '../schemas/chat-response.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';

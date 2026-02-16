@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { Parser } from '../parser/parser';
+import { Parser } from '../ai.parser';
 import { generateSubsequentBlockSequencePrompt } from '../prompts/generate-subsequent-block-sequence.prompt';
 import { subsequentBlockSequenceSchema, type SubsequentBlockSequence } from '../schemas/subsequent-block-sequence.schema';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';

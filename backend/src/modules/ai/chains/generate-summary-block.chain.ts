@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { Parser } from '../parser/parser';
+import { Parser } from '../ai.parser';
 import { generateSummaryBlockPrompt } from '../prompts/generate-summary-block.prompt';
 import { summaryBlockSchema, type SummaryBlock } from '../schemas/summary-block.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';

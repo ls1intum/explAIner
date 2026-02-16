@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AiService } from '../ai.service';
-import { Parser } from '../parser/parser';
+import { Parser } from '../ai.parser';
 import { generateInitialBlockSequencePrompt } from '../prompts/generate-initial-block-sequence.prompt';
 import { initialBlockSequenceSchema, type InitialBlockSequence } from '../schemas/initial-block-sequence.schema';
 import { SoloLevel } from '@prisma/client';
