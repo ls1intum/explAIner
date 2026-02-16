@@ -1,16 +1,14 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { learningGoalSchema } from '../../../ai/schemas/learning-goals.schema';
+import { learningGoalsSchema } from '../../../ai/schemas/learning-goals.schema';
 
 /**
  * Generate Learning Goals Response Schema
  *
- * API-specific wrapper for learning goals array.
+ * API-specific wrapper for learning goals array (exactly 3 goals).
  */
 const generateLearningGoalsResponseSchema = z.object({
-  learningGoals: z
-    .array(learningGoalSchema)
-    .describe('Array of generated learning goals'),
+  learningGoals: learningGoalsSchema.describe('Array of exactly 3 generated learning goals'),
 });
 
 /**

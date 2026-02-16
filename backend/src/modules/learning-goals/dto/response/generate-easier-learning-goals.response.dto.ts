@@ -1,6 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { learningGoalSchema } from '../../../ai/schemas/learning-goals.schema';
+import { learningGoalsSchema } from '../../../ai/schemas/learning-goals.schema';
 
 /**
  * Generate Easier Learning Goals Response Schema
@@ -17,9 +17,7 @@ const generateEasierLearningGoalsResponseSchema = z.object({
     .optional()
     .describe('Prior knowledge keywords from the previous session')
     .meta({ example: 'plants, light' }),
-  learningGoals: z
-    .array(learningGoalSchema)
-    .describe('Array of easier learning goals generated for new session'),
+  learningGoals: learningGoalsSchema.describe('Array of exactly 3 easier learning goals generated for new session'),
 });
 
 /**
