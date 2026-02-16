@@ -70,7 +70,7 @@ export class ContinueSessionService {
       if (nextUnansweredBlock) {
         return {
           action: 'navigate',
-          nextOrderIndex: nextUnansweredBlock.orderIndex,
+          targetBlockIndex: nextUnansweredBlock.orderIndex,
         };
       }
     }

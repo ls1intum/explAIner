@@ -7,7 +7,7 @@ const continueSessionResponseSchema = z.object({
     .enum(['navigate', 'next-sequence', 'summary', 'prompt-user'])
     .describe('Next action to take in the session flow')
     .meta({ example: 'navigate' }),
-  nextOrderIndex: z
+  targetBlockIndex: z
     .number()
     .optional()
     .describe('Order index to navigate to (only present for "navigate" action)')
