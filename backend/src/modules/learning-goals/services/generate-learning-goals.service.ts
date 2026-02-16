@@ -20,12 +20,9 @@ export class GenerateLearningGoalsService {
       priorKnowledgeKeywords: dto.priorKnowledgeKeywords,
     });
 
-    // Return wrapped response
+    // Return wrapped response (chain already returns correct tuple structure)
     return {
-      learningGoals: goals.map((goal) => ({
-        learningGoal: goal.learningGoal,
-        bloomsLevel: goal.bloomsLevel as any,
-      })),
+      learningGoals: goals,
     };
   }
 }

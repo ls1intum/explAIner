@@ -76,14 +76,11 @@ export class GenerateEasierLearningGoalsService {
       coveredContent: coveredContent.substring(0, 2000), // Limit content length
     });
 
-    // 5. Return complete response with topic, prior knowledge keywords, and learning goals
+    // 5. Return complete response (chain already returns correct tuple structure)
     return {
       topic: session.learningTopicOrQuestion,
       priorKnowledgeKeywords: session.priorKnowledgeKeywords || undefined,
-      learningGoals: learningGoals.map((goal) => ({
-        learningGoal: goal.learningGoal,
-        bloomsLevel: goal.bloomsLevel,
-      })),
+      learningGoals: learningGoals,
     };
   }
 }
