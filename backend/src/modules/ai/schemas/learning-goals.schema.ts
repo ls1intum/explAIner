@@ -13,7 +13,7 @@ import { BloomsLevel } from '@prisma/client';
  * Database constraint:
  * - bloomsLevel must be one of: Remember, Understand, Apply, Analyze, Evaluate, Create
  */
-export const learningGoalSchema = z.object({
+const learningGoalSchema = z.object({
   learningGoal: z
     .string()
     .min(1, 'Learning goal must not be empty')
