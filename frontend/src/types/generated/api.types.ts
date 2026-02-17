@@ -259,20 +259,48 @@ export interface components {
             priorKnowledgeKeywords?: string;
         };
         GenerateLearningGoalsResponseDto_Output: {
-            /** @description Array of generated learning goals */
-            learningGoals: {
-                /**
-                 * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-                 * @example After this session, you will be able to Understand the process of photosynthesis.
-                 */
-                learningGoal: string;
-                /**
-                 * @description Bloom's taxonomy level for this learning goal
-                 * @example Understand
-                 * @enum {string}
-                 */
-                bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
-            }[];
+            /** @description Array of exactly 3 generated learning goals */
+            learningGoals: [
+                {
+                    /**
+                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+                     * @example After this session, you will be able to Understand the process of photosynthesis.
+                     */
+                    learningGoal: string;
+                    /**
+                     * @description Bloom's taxonomy level for this learning goal
+                     * @example Understand
+                     * @enum {string}
+                     */
+                    bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+                },
+                {
+                    /**
+                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+                     * @example After this session, you will be able to Understand the process of photosynthesis.
+                     */
+                    learningGoal: string;
+                    /**
+                     * @description Bloom's taxonomy level for this learning goal
+                     * @example Understand
+                     * @enum {string}
+                     */
+                    bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+                },
+                {
+                    /**
+                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+                     * @example After this session, you will be able to Understand the process of photosynthesis.
+                     */
+                    learningGoal: string;
+                    /**
+                     * @description Bloom's taxonomy level for this learning goal
+                     * @example Understand
+                     * @enum {string}
+                     */
+                    bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+                }
+            ];
         };
         GenerateEasierLearningGoalsRequestDto: {
             /** @description Session ID of the existing session to generate easier learning goals for */
@@ -289,20 +317,48 @@ export interface components {
              * @example plants, light
              */
             priorKnowledgeKeywords?: string;
-            /** @description Array of easier learning goals generated for new session */
-            learningGoals: {
-                /**
-                 * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-                 * @example After this session, you will be able to Understand the process of photosynthesis.
-                 */
-                learningGoal: string;
-                /**
-                 * @description Bloom's taxonomy level for this learning goal
-                 * @example Understand
-                 * @enum {string}
-                 */
-                bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
-            }[];
+            /** @description Array of exactly 3 easier learning goals generated for new session */
+            learningGoals: [
+                {
+                    /**
+                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+                     * @example After this session, you will be able to Understand the process of photosynthesis.
+                     */
+                    learningGoal: string;
+                    /**
+                     * @description Bloom's taxonomy level for this learning goal
+                     * @example Understand
+                     * @enum {string}
+                     */
+                    bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+                },
+                {
+                    /**
+                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+                     * @example After this session, you will be able to Understand the process of photosynthesis.
+                     */
+                    learningGoal: string;
+                    /**
+                     * @description Bloom's taxonomy level for this learning goal
+                     * @example Understand
+                     * @enum {string}
+                     */
+                    bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+                },
+                {
+                    /**
+                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
+                     * @example After this session, you will be able to Understand the process of photosynthesis.
+                     */
+                    learningGoal: string;
+                    /**
+                     * @description Bloom's taxonomy level for this learning goal
+                     * @example Understand
+                     * @enum {string}
+                     */
+                    bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+                }
+            ];
         };
         CreateSessionRequestDto: {
             /** @description The learning topic or question for the session */
@@ -432,7 +488,7 @@ export interface components {
              * @description Order index to navigate to (only present for "navigate" action)
              * @example 3
              */
-            nextOrderIndex?: number;
+            targetBlockIndex?: number;
         };
         SubmitFeedbackRequestDto: {
             /** @description User rating for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful" */
