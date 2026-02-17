@@ -5,7 +5,7 @@ import { GenerateEasierLearningGoalsChain } from './chains/generate-easier-learn
 import { GenerateInitialBlockSequenceChain } from './chains/generate-initial-block-sequence.chain';
 import { GenerateSubsequentBlockSequenceChain } from './chains/generate-subsequent-block-sequence.chain';
 import { GenerateChatResponseChain } from './chains/generate-chat-response.chain';
-import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain';
+import { GenerateSessionSummaryChain } from './chains/generate-session-summary.chain';
 
 // AI Module: Infrastructure layer providing AI services and chains
 // No controllers - this is not a feature module, but infrastructure used by other modules
@@ -17,7 +17,7 @@ import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain
     GenerateInitialBlockSequenceChain,
     GenerateSubsequentBlockSequenceChain,
     GenerateChatResponseChain,
-    GenerateSummaryBlockChain,
+    GenerateSessionSummaryChain,
   ],
   exports: [
     LlmService,
@@ -26,7 +26,7 @@ import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain
     GenerateInitialBlockSequenceChain,
     GenerateSubsequentBlockSequenceChain,
     GenerateChatResponseChain,
-    GenerateSummaryBlockChain,
+    GenerateSessionSummaryChain,
   ],
 })
 export class AiModule {}

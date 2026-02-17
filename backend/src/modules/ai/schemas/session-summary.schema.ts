@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 /**
- * Summary Block Schema
+ * Session Summary Schema
  *
  * This schema defines the content for a Summary Block that is displayed
  * at the end of a learning session. Also used to generate DTOs and OpenAPI documentation.
  * The summary is stored in the summary_blocks table.
  */
-export const summaryBlockSchema = z.object({
+export const sessionSummarySchema = z.object({
   sessionSummary: z
     .string()
     .min(1, 'Session summary must not be empty')
@@ -15,4 +15,4 @@ export const summaryBlockSchema = z.object({
 });
 
 // Inferred TypeScript type
-export type SummaryBlock = z.infer<typeof summaryBlockSchema>;
+export type SessionSummary = z.infer<typeof sessionSummarySchema>;

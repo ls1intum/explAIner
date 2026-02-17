@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateSummaryBlockChain } from '../../ai/chains/generate-summary-block.chain';
+import { GenerateSessionSummaryChain } from '../../ai/chains/generate-session-summary.chain';
 import { BlockType } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
@@ -9,7 +9,7 @@ import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summar
 export class GenerateSummaryBlockService {
   constructor(
     private prisma: PrismaService,
-    private generateSummaryBlockChain: GenerateSummaryBlockChain,
+    private generateSessionSummaryChain: GenerateSessionSummaryChain,
   ) {}
 
   @LogService()
@@ -58,7 +58,7 @@ export class GenerateSummaryBlockService {
     ); // in minutes
 
     // 5. Call chain to generate summary
-    const summaryBlock = await this.generateSummaryBlockChain.execute({
+    const summaryBlock = await this.generateSessionSummaryChain.execute({
       topic: session.learningTopicOrQuestion,
       learningGoal: session.learningGoal,
       bloomsLevel: session.learningGoalBloomsLevel,

@@ -1,4 +1,4 @@
-interface GenerateSummaryBlockPromptParams {
+interface GenerateSessionSummaryPromptParams {
   topic: string;
   learningGoal: string;
   bloomsLevel: string;
@@ -9,13 +9,13 @@ interface GenerateSummaryBlockPromptParams {
   }>;
 }
 
-export const generateSummaryBlockPrompt = ({
+export const generateSessionSummaryPrompt = ({
   topic,
   learningGoal,
   bloomsLevel,
   informContent,
   practiceResults,
-}: GenerateSummaryBlockPromptParams): string => {
+}: GenerateSessionSummaryPromptParams): string => {
   const contentSummary = informContent.length > 0
     ? informContent.map((content, i) => `Block ${i + 1}: ${content.substring(0, 300)}...`).join('\n---\n')
     : 'No content';

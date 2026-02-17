@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
-import { generateSummaryBlockPrompt } from '../prompts/generate-summary-block.prompt';
-import { summaryBlockSchema, type SummaryBlock } from '../schemas/summary-block.schema';
+import { generateSessionSummaryPrompt } from '../prompts/generate-session-summary.prompt';
+import { sessionSummarySchema, type SessionSummary } from '../schemas/session-summary.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../common/config/logging.config';
 
 /**
- * Chain for generating summary block
+ * Chain for generating session summary
  * Orchestrates: Prompt -> AI Call -> Parse -> Validate
  */
 @Injectable()
-export class GenerateSummaryBlockChain {
-  private parser = new Parser(summaryBlockSchema);
+export class GenerateSessionSummaryChain {
+  private parser = new Parser(sessionSummarySchema);
 
   constructor(private llmService: LlmService) {}
 
@@ -22,14 +22,14 @@ export class GenerateSummaryBlockChain {
     bloomsLevel: string;
     informContent: string[];
     practiceResults: Array<{ question: string; isCorrect: boolean }>;
-  }): Promise<SummaryBlock> {
+  }): Promise<SessionSummary> {
     // Log chain execution
     if (isLogEnabled('ai')) {
-      logAiChain('generate-summary-block');
+      logAiChain('generate-session-summary');
     }
 
     // 1. Generate prompt
-    const prompt = generateSummaryBlockPrompt({
+    const prompt = generateSessionSummaryPrompt({
       topic: params.topic,
       learningGoal: params.learningGoal,
       bloomsLevel: params.bloomsLevel,
@@ -41,8 +41,8 @@ export class GenerateSummaryBlockChain {
     const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response
-    const summaryBlock = this.parser.parse(rawResponse);
+    const sessionSummary = this.parser.parse(rawResponse);
 
-    return summaryBlock;
+    return sessionSummary;
   }
 }
