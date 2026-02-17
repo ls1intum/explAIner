@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AiService } from '../ai.service';
-import { Parser } from '../ai.parser';
+import { LlmService } from '../llm.service';
+import { Parser } from '../llm.parser';
 import { generateSummaryBlockPrompt } from '../prompts/generate-summary-block.prompt';
 import { summaryBlockSchema, type SummaryBlock } from '../schemas/summary-block.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';
@@ -14,7 +14,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
 export class GenerateSummaryBlockChain {
   private parser = new Parser(summaryBlockSchema);
 
-  constructor(private aiService: AiService) {}
+  constructor(private llmService: LlmService) {}
 
   async execute(params: {
     topic: string;
@@ -38,7 +38,7 @@ export class GenerateSummaryBlockChain {
     });
 
     // 2. Call Claude
-    const rawResponse = await this.aiService.callClaude(prompt);
+    const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response
     const summaryBlock = this.parser.parse(rawResponse);

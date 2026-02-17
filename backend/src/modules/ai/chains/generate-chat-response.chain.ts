@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AiService } from '../ai.service';
-import { Parser } from '../ai.parser';
+import { LlmService } from '../llm.service';
+import { Parser } from '../llm.parser';
 import { generateChatResponsePrompt } from '../prompts/generate-chat-response.prompt';
 import { chatResponseSchema, type ChatResponse } from '../schemas/chat-response.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';
@@ -14,7 +14,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
 export class GenerateChatResponseChain {
   private parser = new Parser(chatResponseSchema);
 
-  constructor(private aiService: AiService) {}
+  constructor(private llmService: LlmService) {}
 
   async execute(params: {
     topic: string;
@@ -39,7 +39,7 @@ export class GenerateChatResponseChain {
     });
 
     // 2. Call Claude
-    const rawResponse = await this.aiService.callClaude(prompt);
+    const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response
     const chatResponse = this.parser.parse(rawResponse);

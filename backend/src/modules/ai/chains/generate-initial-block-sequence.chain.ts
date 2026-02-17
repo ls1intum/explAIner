@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AiService } from '../ai.service';
-import { Parser } from '../ai.parser';
+import { LlmService } from '../llm.service';
+import { Parser } from '../llm.parser';
 import { generateInitialBlockSequencePrompt } from '../prompts/generate-initial-block-sequence.prompt';
 import { initialBlockSequenceSchema, type InitialBlockSequence } from '../schemas/initial-block-sequence.schema';
 import { SoloLevel } from '@prisma/client';
@@ -15,7 +15,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
 export class GenerateInitialBlockSequenceChain {
   private parser = new Parser(initialBlockSequenceSchema);
 
-  constructor(private aiService: AiService) {}
+  constructor(private llmService: LlmService) {}
 
   async execute(params: {
     topic: string;
@@ -39,7 +39,7 @@ export class GenerateInitialBlockSequenceChain {
     });
 
     // 2. Call Claude
-    const rawResponse = await this.aiService.callClaude(prompt);
+    const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response
     const blockSequence = this.parser.parse(rawResponse);

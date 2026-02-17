@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AiService } from './ai.service';
+import { LlmService } from './llm.service';
 import { GenerateLearningGoalsChain } from './chains/generate-learning-goals.chain';
 import { GenerateEasierLearningGoalsChain } from './chains/generate-easier-learning-goals.chain';
 import { GenerateInitialBlockSequenceChain } from './chains/generate-initial-block-sequence.chain';
@@ -11,7 +11,7 @@ import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain
 // No controllers - this is not a feature module, but infrastructure used by other modules
 @Module({
   providers: [
-    AiService,
+    LlmService,
     GenerateLearningGoalsChain,
     GenerateEasierLearningGoalsChain,
     GenerateInitialBlockSequenceChain,
@@ -20,7 +20,7 @@ import { GenerateSummaryBlockChain } from './chains/generate-summary-block.chain
     GenerateSummaryBlockChain,
   ],
   exports: [
-    AiService,
+    LlmService,
     GenerateLearningGoalsChain,
     GenerateEasierLearningGoalsChain,
     GenerateInitialBlockSequenceChain,

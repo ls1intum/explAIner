@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { extractJsonFromMarkdown } from '../../common/utils/json-parser.util';
 
 /**
- * Generic parser for AI outputs
+ * Generic parser for LLM outputs
  * Extracts JSON from markdown, parses, and validates using provided Zod schema
  */
 export class Parser<T> {
@@ -14,8 +14,8 @@ export class Parser<T> {
   }
 
   /**
-   * Parse and validate AI output using the configured Zod schema
-   * @param text Raw AI output (may contain markdown code blocks)
+   * Parse and validate LLM output using the configured Zod schema
+   * @param text Raw LLM output (may contain markdown code blocks)
    * @returns Validated parsed object
    */
   parse(text: string): T {

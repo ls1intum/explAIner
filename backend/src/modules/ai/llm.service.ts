@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 
 @Injectable()
-export class AiService {
+export class LlmService {
   private anthropic: Anthropic;
   private readonly model: string;
 

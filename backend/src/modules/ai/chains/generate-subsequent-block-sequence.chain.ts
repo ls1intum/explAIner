@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AiService } from '../ai.service';
-import { Parser } from '../ai.parser';
+import { LlmService } from '../llm.service';
+import { Parser } from '../llm.parser';
 import { generateSubsequentBlockSequencePrompt } from '../prompts/generate-subsequent-block-sequence.prompt';
 import { subsequentBlockSequenceSchema, type SubsequentBlockSequence } from '../schemas/subsequent-block-sequence.schema';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
@@ -16,7 +16,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
 export class GenerateSubsequentBlockSequenceChain {
   private parser = new Parser(subsequentBlockSequenceSchema);
 
-  constructor(private aiService: AiService) {}
+  constructor(private llmService: LlmService) {}
 
   async execute(params: {
     topic: string;
@@ -42,7 +42,7 @@ export class GenerateSubsequentBlockSequenceChain {
     });
 
     // 2. Call Claude
-    const rawResponse = await this.aiService.callClaude(prompt);
+    const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response
     const blockSequence = this.parser.parse(rawResponse);

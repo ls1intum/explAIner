@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AiService } from '../ai.service';
-import { Parser } from '../ai.parser';
+import { LlmService } from '../llm.service';
+import { Parser } from '../llm.parser';
 import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
 import { learningGoalsSchema } from '../schemas/learning-goals.schema';
 import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';
@@ -15,7 +15,7 @@ import { isLogEnabled } from '../../../common/config/logging.config';
 export class GenerateLearningGoalsChain {
   private parser = new Parser(learningGoalsSchema);
 
-  constructor(private aiService: AiService) {}
+  constructor(private llmService: LlmService) {}
 
   /**
    * Execute the chain with structured parameters
@@ -37,7 +37,7 @@ export class GenerateLearningGoalsChain {
     });
 
     // 2. Call Claude with generated prompt
-    const rawResponse = await this.aiService.callClaude(prompt);
+    const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response
     const learningGoals = this.parser.parse(rawResponse);
