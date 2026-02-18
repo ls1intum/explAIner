@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateEasierLearningGoalsPrompt } from '../prompts/generate-easier-learning-goals.prompt';
@@ -6,7 +6,6 @@ import {
   learningGoalsSchema,
   type LearningGoals,
 } from '../../../../domain/schemas/learning-goals/learning-goals.schema';
-import { logAiChain } from '../../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../../config/logging.config';
 
 /**
@@ -14,6 +13,7 @@ import { isLogEnabled } from '../../../../config/logging.config';
  */
 @Injectable()
 export class GenerateEasierLearningGoalsChain {
+  private readonly logger = new Logger('AI-CHAIN');
   private parser: Parser<LearningGoals>;
 
   constructor(private llmService: LlmService) {
@@ -36,7 +36,7 @@ export class GenerateEasierLearningGoalsChain {
   }): Promise<LearningGoals> {
     // Log chain execution
     if (isLogEnabled('ai')) {
-      logAiChain('generate-easier-learning-goals');
+      this.logger.log('generate-easier-learning-goals');
     }
 
     // 1. Generate prompt from template

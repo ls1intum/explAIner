@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateBlockSequencePrompt } from '../prompts/generate-block-sequence.prompt';
@@ -11,7 +11,6 @@ import {
 } from '../../../../domain/schemas/blocks/block-sequence.schema';
 import type { WrongAnswer } from '../../../../domain/schemas/blocks/practice/practice-block.schema';
 import { SoloLevel } from '@prisma/client';
-import { logAiChain } from '../../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../../config/logging.config';
 
 /** Union return type for block sequence chain (initial or subsequent). */
@@ -23,6 +22,8 @@ export type AIGeneratedBlockSequence = AIGeneratedBlockSequenceInitial | AIGener
  */
 @Injectable()
 export class GenerateBlockSequenceChain {
+  private readonly logger = new Logger('AI-CHAIN');
+
   constructor(private llmService: LlmService) {}
 
   async execute(params: {
@@ -35,7 +36,7 @@ export class GenerateBlockSequenceChain {
     soloLevels: SoloLevel[];
   }): Promise<AIGeneratedBlockSequence> {
     if (isLogEnabled('ai')) {
-      logAiChain(`generate-block-sequence-${params.mode}`);
+      this.logger.log(`generate-block-sequence-${params.mode}`);
     }
 
     const prompt = generateBlockSequencePrompt({

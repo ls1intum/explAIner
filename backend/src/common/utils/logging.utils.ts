@@ -1,7 +1,3 @@
-import { Logger } from '@nestjs/common';
-
-const aiChainLogger = new Logger('AI-CHAIN');
-
 /**
  * Extract parameter names and their types from method arguments
  */
@@ -68,12 +64,4 @@ export function formatBody(body: any): string {
   
   const sanitized = sanitizeAndTruncate(body);
   return JSON.stringify(sanitized);
-}
-
-/**
- * Log AI chain execution
- * Format: [AI - CHAIN] <chain name>
- */
-export function logAiChain(chainName: string): void {
-  aiChainLogger.log(chainName);
 }

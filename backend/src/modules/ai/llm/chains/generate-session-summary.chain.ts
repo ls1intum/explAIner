@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateSessionSummaryPrompt } from '../prompts/generate-session-summary.prompt';
@@ -6,7 +6,6 @@ import {
   sessionSummarySchema,
   type SessionSummary,
 } from '../../../../domain/schemas/blocks/summary/summary-block.schema';
-import { logAiChain } from '../../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../../config/logging.config';
 
 /**
@@ -14,6 +13,7 @@ import { isLogEnabled } from '../../../../config/logging.config';
  */
 @Injectable()
 export class GenerateSessionSummaryChain {
+  private readonly logger = new Logger('AI-CHAIN');
   private parser: Parser<SessionSummary>;
 
   constructor(private llmService: LlmService) {
@@ -31,7 +31,7 @@ export class GenerateSessionSummaryChain {
     practiceResults: Array<{ question: string; isCorrect: boolean }>;
   }): Promise<SessionSummary> {
     if (isLogEnabled('ai')) {
-      logAiChain('generate-session-summary');
+      this.logger.log('generate-session-summary');
     }
 
     // 1. Generate prompt

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateChatResponsePrompt } from '../prompts/generate-chat-response.prompt';
@@ -6,7 +6,6 @@ import {
   followUpAnswerMessageSchema,
   type FollowUpAnswerMessage,
 } from '../../../../domain/schemas/blocks/inform/inform-block-messages/follow_up_answer-message.schema';
-import { logAiChain } from '../../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../../config/logging.config';
 
 /**
@@ -14,6 +13,7 @@ import { isLogEnabled } from '../../../../config/logging.config';
  */
 @Injectable()
 export class GenerateChatResponseChain {
+  private readonly logger = new Logger('AI-CHAIN');
   private parser: Parser<FollowUpAnswerMessage>;
 
   constructor(private llmService: LlmService) {
@@ -31,7 +31,7 @@ export class GenerateChatResponseChain {
     conversationHistory?: string;
   }): Promise<FollowUpAnswerMessage> {
     if (isLogEnabled('ai')) {
-      logAiChain('generate-chat-response');
+      this.logger.log('generate-chat-response');
     }
 
     // 1. Generate prompt with conversation context
