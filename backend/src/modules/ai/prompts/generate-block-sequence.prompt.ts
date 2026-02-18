@@ -1,4 +1,4 @@
-import { SOLO_TAXONOMY_DESCRIPTION } from '../../../common/utils/didactical-frameworks/solo-taxonomy.util';
+import { SOLO_TAXONOMY_DESCRIPTION } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
 import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 

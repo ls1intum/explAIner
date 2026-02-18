@@ -6,7 +6,7 @@ import { BlockType, SoloLevel } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
-import { getSOLOLevelsForBlooms } from '../../../common/utils/didactical-frameworks/solo-taxonomy.util';
+import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
 import { extractWrongAnswersFromLastSequence } from '../../../common/utils/block.utils';
 
 
