@@ -1,4 +1,4 @@
-import { learningGoalsSchema } from '../../../common/schemas/learning-goals/learning-goals.schema';
+import { learningGoalsSchema } from '../../../domain/schemas/learning-goals/learning-goals.schema';
 
 /**
  * Learning Goals Schema

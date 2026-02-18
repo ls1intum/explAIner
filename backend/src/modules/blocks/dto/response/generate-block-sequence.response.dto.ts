@@ -1,5 +1,5 @@
 import { createZodDto } from 'nestjs-zod';
-import { blockSequenceSchema } from '../../../../common/schemas/blocks/block-sequence.schema';
+import { blockSequenceSchema } from '../../../../domain/schemas/blocks/block-sequence.schema';
 
 /**
  * Generate Block Sequence Response DTO

@@ -1,6 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { informBlockMessageSchema } from '../../../../common/schemas/blocks/inform-block.schema';
+import { informBlockMessageSchema } from '../../../../domain/schemas/blocks/inform-block.schema';
 
 /**
  * Generate Chat Response Request Schema

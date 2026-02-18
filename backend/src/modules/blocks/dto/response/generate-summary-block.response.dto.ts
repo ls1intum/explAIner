@@ -1,6 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { summaryBlockSchema } from '../../../../common/schemas/blocks/summary-block.schema';
+import { summaryBlockSchema } from '../../../../domain/schemas/blocks/summary-block.schema';
 
 /**
  * Generate Summary Block Response Schema

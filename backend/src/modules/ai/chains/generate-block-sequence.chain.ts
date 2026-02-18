@@ -7,7 +7,7 @@ import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enu
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 import { SoloLevel } from '@prisma/client';
 import { logAiChain } from '../../../common/utils/logging.utils';
-import { isLogEnabled } from '../../../common/config/logging.config';
+import { isLogEnabled } from '../../../config/logging.config';
 import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util';
 
 /**

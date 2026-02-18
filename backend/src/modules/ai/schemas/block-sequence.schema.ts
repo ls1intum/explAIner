@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { practiceBlockContentSchema } from '../../../common/schemas/blocks/practice-block.schema';
+import { practiceBlockContentSchema } from '../../../domain/schemas/blocks/practice-block.schema';
 
 /**
  * Unified Inform Block Schema for AI Generation

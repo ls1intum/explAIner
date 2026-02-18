@@ -4,7 +4,7 @@ import { Parser } from '../llm.parser';
 import { generateChatResponsePrompt } from '../prompts/generate-chat-response.prompt';
 import { chatResponseSchema, type ChatResponse } from '../schemas/chat-response.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';
-import { isLogEnabled } from '../../../common/config/logging.config';
+import { isLogEnabled } from '../../../config/logging.config';
 
 /**
  * Chain for generating chat responses

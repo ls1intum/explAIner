@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { summaryBlockContentSchema } from '../../../common/schemas/blocks/summary-block.schema';
+import { summaryBlockContentSchema } from '../../../domain/schemas/blocks/summary-block.schema';
 
 /**
  * Session Summary Schema (AI-specific)

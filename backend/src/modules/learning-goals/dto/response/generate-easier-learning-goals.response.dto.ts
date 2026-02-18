@@ -1,6 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { learningGoalsSchema } from '../../../../common/schemas/learning-goals/learning-goals.schema';
+import { learningGoalsSchema } from '../../../../domain/schemas/learning-goals/learning-goals.schema';
 
 /**
  * Generate Easier Learning Goals Response Schema

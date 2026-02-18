@@ -1,5 +1,5 @@
 import { createZodDto } from 'nestjs-zod';
-import { sessionSchema } from '../../../../common/schemas/sessions/session.schema';
+import { sessionSchema } from '../../../../domain/schemas/sessions/session.schema';
 
 /**
  * Create Session Response DTO

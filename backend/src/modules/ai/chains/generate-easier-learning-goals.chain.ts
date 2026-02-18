@@ -5,7 +5,7 @@ import { generateEasierLearningGoalsPrompt } from '../prompts/generate-easier-le
 import { learningGoalsSchema } from '../schemas/learning-goals.schema';
 import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';
 import { logAiChain } from '../../../common/utils/logging.utils';
-import { isLogEnabled } from '../../../common/config/logging.config';
+import { isLogEnabled } from '../../../config/logging.config';
 
 /**
  * Chain for generating easier learning goals

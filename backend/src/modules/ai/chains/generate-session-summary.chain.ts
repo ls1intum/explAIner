@@ -4,7 +4,7 @@ import { Parser } from '../llm.parser';
 import { generateSessionSummaryPrompt } from '../prompts/generate-session-summary.prompt';
 import { sessionSummarySchema, type SessionSummary } from '../schemas/session-summary.schema';
 import { logAiChain } from '../../../common/utils/logging.utils';
-import { isLogEnabled } from '../../../common/config/logging.config';
+import { isLogEnabled } from '../../../config/logging.config';
 
 /**
  * Chain for generating session summary

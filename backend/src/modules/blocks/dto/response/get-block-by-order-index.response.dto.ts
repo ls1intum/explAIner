@@ -1,4 +1,4 @@
-import { blockSchema } from '../../../../common/schemas/blocks/block.schema';
+import { blockSchema } from '../../../../domain/schemas/blocks/block.schema';
 
 /**
  * Get Block Response DTO
