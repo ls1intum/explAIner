@@ -12,9 +12,14 @@ import { isLogEnabled } from '../../../config/logging.config';
  */
 @Injectable()
 export class GenerateChatResponseChain {
-  private parser = new Parser(chatResponseSchema);
+  private parser: Parser<ChatResponse>;
 
-  constructor(private llmService: LlmService) {}
+  constructor(private llmService: LlmService) {
+    this.parser = new Parser(chatResponseSchema, async (error: string) => {
+      const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
+      return this.llmService.callClaude(fixPrompt);
+    });
+  }
 
   async execute(params: {
     topic: string;
@@ -41,8 +46,8 @@ export class GenerateChatResponseChain {
     // 2. Call Claude
     const rawResponse = await this.llmService.callClaude(prompt);
 
-    // 3. Parse and validate response
-    const chatResponse = this.parser.parse(rawResponse);
+    // 3. Parse and validate response (with retry on schema/parse failure)
+    const chatResponse = await this.parser.parseWithRetry(rawResponse);
 
     return chatResponse;
   }

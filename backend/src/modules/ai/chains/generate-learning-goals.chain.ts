@@ -13,9 +13,14 @@ import { isLogEnabled } from '../../../config/logging.config';
  */
 @Injectable()
 export class GenerateLearningGoalsChain {
-  private parser = new Parser(learningGoalsSchema);
+  private parser: Parser<LearningGoalsArray>;
 
-  constructor(private llmService: LlmService) {}
+  constructor(private llmService: LlmService) {
+    this.parser = new Parser(learningGoalsSchema, async (error: string) => {
+      const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
+      return this.llmService.callClaude(fixPrompt);
+    });
+  }
 
   /**
    * Execute the chain with structured parameters
@@ -39,8 +44,8 @@ export class GenerateLearningGoalsChain {
     // 2. Call Claude with generated prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
-    // 3. Parse and validate response
-    const learningGoals = this.parser.parse(rawResponse);
+    // 3. Parse and validate response (with retry on schema/parse failure)
+    const learningGoals = await this.parser.parseWithRetry(rawResponse);
 
     return learningGoals;
   }

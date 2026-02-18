@@ -16,8 +16,6 @@ import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util'
  */
 @Injectable()
 export class GenerateBlockSequenceChain {
-  private parser = new Parser(aiGeneratedBlockSequenceSchema);
-
   constructor(private llmService: LlmService) {}
 
   async execute(params: {
@@ -51,8 +49,13 @@ export class GenerateBlockSequenceChain {
     // 3. Transform keyFacts/keyMisconceptions to keyPoints before validation
     const transformedResponse = this.transformResponse(rawResponse, params.mode);
 
-    // 4. Parse and validate response
-    const blockSequence = this.parser.parse(transformedResponse);
+    // 4. Parse and validate (retry sends error to LLM and re-transforms the new raw response)
+    const parser = new Parser(aiGeneratedBlockSequenceSchema, async (error: string) => {
+      const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
+      const raw = await this.llmService.callClaude(fixPrompt);
+      return this.transformResponse(raw, params.mode);
+    });
+    const blockSequence = await parser.parseWithRetry(transformedResponse);
 
     return blockSequence;
   }
