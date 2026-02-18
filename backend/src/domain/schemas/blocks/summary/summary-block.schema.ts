@@ -4,15 +4,18 @@ import { baseBlockSchema } from '../base-block.schema';
 
 /** Content schema derived from Prisma; optional refinement for non-empty summary. */
 export const summaryBlockContentSchema = SummaryBlockSchema.extend({
-  sessionSummary: SummaryBlockSchema.shape.sessionSummary.min(1, 'Summary must not be empty'),
+  blockId: SummaryBlockSchema.shape.blockId.describe('Block ID'),
+  sessionSummary: SummaryBlockSchema.shape.sessionSummary
+    .min(1, 'Summary must not be empty')
+    .describe('Session summary content'),
 });
 
 /**
  * Summary Block Schema – block with type Summary and session summary content.
  */
 export const summaryBlockSchema = baseBlockSchema.extend({
-  type: z.literal('Summary'),
-  content: summaryBlockContentSchema,
+  type: z.literal('Summary').describe('Block type'),
+  content: summaryBlockContentSchema.describe('Summary block content'),
 });
 
 export type SummaryBlockContent = z.infer<typeof summaryBlockContentSchema>;

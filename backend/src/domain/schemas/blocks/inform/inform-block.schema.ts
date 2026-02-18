@@ -7,16 +7,19 @@ const isoDateStringSchema = z.string();
 
 /** Message schema derived from Prisma; timestamp as ISO string for API/OpenAPI compatibility. */
 export const informBlockMessageSchema = InformBlockMessageSchema.omit({ timestamp: true }).extend({
-  message: InformBlockMessageSchema.shape.message.min(1, 'Message must not be empty'),
-  timestamp: isoDateStringSchema,
+  id: InformBlockMessageSchema.shape.id.describe('Message ID'),
+  blockId: InformBlockMessageSchema.shape.blockId.describe('Block ID this message belongs to'),
+  message: InformBlockMessageSchema.shape.message.min(1, 'Message must not be empty').describe('Message content'),
+  sender: InformBlockMessageSchema.shape.sender.describe('Message sender'),
+  timestamp: isoDateStringSchema.describe('Message timestamp (ISO 8601 format)'),
 });
 
 /**
  * Inform Block Schema – block with type Inform and array of messages.
  */
 export const informBlockSchema = baseBlockSchema.extend({
-  type: z.literal('Inform'),
-  content: z.array(informBlockMessageSchema),
+  type: z.literal('Inform').describe('Block type'),
+  content: z.array(informBlockMessageSchema).describe('Inform block messages'),
 });
 
 export type InformBlockMessage = z.infer<typeof informBlockMessageSchema>;

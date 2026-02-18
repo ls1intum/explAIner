@@ -350,12 +350,16 @@ export interface components {
             bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
         };
         CreateSessionResponseDto: {
-            /** @description Unique session identifier */
+            /** Format: uuid */
             id: string;
+            /** @description Total number of blocks in the session */
+            totalBlocks: number;
+            /** @description Current block index (0-based) */
+            currentBlockIndex: number;
             /** @description Learning topic or question */
             topic: string;
             /** @description Prior knowledge keywords */
-            priorKnowledge?: string;
+            priorKnowledge?: string | null;
             /** @description Selected learning goal */
             learningGoal: {
                 /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
@@ -366,13 +370,12 @@ export interface components {
                  */
                 bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
             };
-            /** @description Total number of blocks in the session */
-            totalBlocks: number;
-            /** @description Current block index (0-based) */
-            currentBlockIndex: number;
             /** @description All blocks in the session */
             blocks: ({
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 id: string;
                 /** @description Session ID this block belongs to */
                 sessionId: string;
@@ -387,25 +390,28 @@ export interface components {
                 type: "Inform";
                 /** @description Inform block messages */
                 content: {
-                    /** @description Message ID */
-                    id: string;
-                    /** @description Block ID this message belongs to */
-                    blockId: string;
-                    /** @description Message content */
-                    message: string;
                     /**
                      * @description Message sender
                      * @enum {string}
                      */
                     sender: "User" | "Owlbert";
                     /**
-                     * Format: date-time
-                     * @description Message timestamp (ISO 8601 format)
+                     * Format: uuid
+                     * @description Message ID
                      */
+                    id: string;
+                    /** @description Block ID this message belongs to */
+                    blockId: string;
+                    /** @description Message content */
+                    message: string;
+                    /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];
             } | {
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 id: string;
                 /** @description Session ID this block belongs to */
                 sessionId: string;
@@ -420,13 +426,13 @@ export interface components {
                 type: "Practice";
                 /** @description Practice block content */
                 content: {
-                    /** @description Block ID */
-                    blockId: string;
                     /**
                      * @description SOLO taxonomy level
                      * @enum {string}
                      */
                     soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                    /** @description Block ID */
+                    blockId: string;
                     /** @description Practice question */
                     question: string;
                     /** @description Available answer options */
@@ -439,7 +445,10 @@ export interface components {
                     studentAnswerIsCorrect: boolean | null;
                 };
             } | {
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 id: string;
                 /** @description Session ID this block belongs to */
                 sessionId: string;
@@ -463,12 +472,16 @@ export interface components {
         };
         GetSessionRequestDto: Record<string, never>;
         GetSessionResponseDto: {
-            /** @description Unique session identifier */
+            /** Format: uuid */
             id: string;
+            /** @description Total number of blocks in the session */
+            totalBlocks: number;
+            /** @description Current block index (0-based) */
+            currentBlockIndex: number;
             /** @description Learning topic or question */
             topic: string;
             /** @description Prior knowledge keywords */
-            priorKnowledge?: string;
+            priorKnowledge?: string | null;
             /** @description Selected learning goal */
             learningGoal: {
                 /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
@@ -479,13 +492,12 @@ export interface components {
                  */
                 bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
             };
-            /** @description Total number of blocks in the session */
-            totalBlocks: number;
-            /** @description Current block index (0-based) */
-            currentBlockIndex: number;
             /** @description All blocks in the session */
             blocks: ({
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 id: string;
                 /** @description Session ID this block belongs to */
                 sessionId: string;
@@ -500,25 +512,28 @@ export interface components {
                 type: "Inform";
                 /** @description Inform block messages */
                 content: {
-                    /** @description Message ID */
-                    id: string;
-                    /** @description Block ID this message belongs to */
-                    blockId: string;
-                    /** @description Message content */
-                    message: string;
                     /**
                      * @description Message sender
                      * @enum {string}
                      */
                     sender: "User" | "Owlbert";
                     /**
-                     * Format: date-time
-                     * @description Message timestamp (ISO 8601 format)
+                     * Format: uuid
+                     * @description Message ID
                      */
+                    id: string;
+                    /** @description Block ID this message belongs to */
+                    blockId: string;
+                    /** @description Message content */
+                    message: string;
+                    /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];
             } | {
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 id: string;
                 /** @description Session ID this block belongs to */
                 sessionId: string;
@@ -533,13 +548,13 @@ export interface components {
                 type: "Practice";
                 /** @description Practice block content */
                 content: {
-                    /** @description Block ID */
-                    blockId: string;
                     /**
                      * @description SOLO taxonomy level
                      * @enum {string}
                      */
                     soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                    /** @description Block ID */
+                    blockId: string;
                     /** @description Practice question */
                     question: string;
                     /** @description Available answer options */
@@ -552,7 +567,10 @@ export interface components {
                     studentAnswerIsCorrect: boolean | null;
                 };
             } | {
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 id: string;
                 /** @description Session ID this block belongs to */
                 sessionId: string;
@@ -617,7 +635,10 @@ export interface components {
         GenerateBlockSequenceResponseDto: {
             /** @description Inform block introducing new content */
             informBlock: {
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 id: string;
                 /** @description Session ID this block belongs to */
                 sessionId: string;
@@ -632,28 +653,31 @@ export interface components {
                 type: "Inform";
                 /** @description Inform block messages */
                 content: {
-                    /** @description Message ID */
-                    id: string;
-                    /** @description Block ID this message belongs to */
-                    blockId: string;
-                    /** @description Message content */
-                    message: string;
                     /**
                      * @description Message sender
                      * @enum {string}
                      */
                     sender: "User" | "Owlbert";
                     /**
-                     * Format: date-time
-                     * @description Message timestamp (ISO 8601 format)
+                     * Format: uuid
+                     * @description Message ID
                      */
+                    id: string;
+                    /** @description Block ID this message belongs to */
+                    blockId: string;
+                    /** @description Message content */
+                    message: string;
+                    /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];
             };
-            /** @description Exactly 3 practice blocks for reinforcement */
+            /** @description Exactly 3 practice blocks */
             practiceBlocks: [
                 {
-                    /** @description Block ID */
+                    /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
                     id: string;
                     /** @description Session ID this block belongs to */
                     sessionId: string;
@@ -668,13 +692,13 @@ export interface components {
                     type: "Practice";
                     /** @description Practice block content */
                     content: {
-                        /** @description Block ID */
-                        blockId: string;
                         /**
                          * @description SOLO taxonomy level
                          * @enum {string}
                          */
                         soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                        /** @description Block ID */
+                        blockId: string;
                         /** @description Practice question */
                         question: string;
                         /** @description Available answer options */
@@ -688,7 +712,10 @@ export interface components {
                     };
                 },
                 {
-                    /** @description Block ID */
+                    /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
                     id: string;
                     /** @description Session ID this block belongs to */
                     sessionId: string;
@@ -703,13 +730,13 @@ export interface components {
                     type: "Practice";
                     /** @description Practice block content */
                     content: {
-                        /** @description Block ID */
-                        blockId: string;
                         /**
                          * @description SOLO taxonomy level
                          * @enum {string}
                          */
                         soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                        /** @description Block ID */
+                        blockId: string;
                         /** @description Practice question */
                         question: string;
                         /** @description Available answer options */
@@ -723,7 +750,10 @@ export interface components {
                     };
                 },
                 {
-                    /** @description Block ID */
+                    /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
                     id: string;
                     /** @description Session ID this block belongs to */
                     sessionId: string;
@@ -738,13 +768,13 @@ export interface components {
                     type: "Practice";
                     /** @description Practice block content */
                     content: {
-                        /** @description Block ID */
-                        blockId: string;
                         /**
                          * @description SOLO taxonomy level
                          * @enum {string}
                          */
                         soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                        /** @description Block ID */
+                        blockId: string;
                         /** @description Practice question */
                         question: string;
                         /** @description Available answer options */
@@ -763,7 +793,10 @@ export interface components {
         GenerateSummaryBlockResponseDto: {
             /** @description Generated summary block */
             summaryBlock: {
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 id: string;
                 /** @description Session ID this block belongs to */
                 sessionId: string;

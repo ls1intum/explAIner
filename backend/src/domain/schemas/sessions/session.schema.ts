@@ -16,6 +16,9 @@ export const sessionSchema = SessionSchema.pick({
   priorKnowledge: SessionSchema.shape.priorKnowledgeKeywords.optional().describe('Prior knowledge keywords'),
   learningGoal: learningGoalSchema.describe('Selected learning goal'),
   blocks: z.array(blockSchema).describe('All blocks in the session'),
+  // Re-specify picked keys only to add .describe() for OpenAPI; validation still uses Prisma schemas.
+  totalBlocks: SessionSchema.shape.totalBlocks.describe('Total number of blocks in the session'),
+  currentBlockIndex: SessionSchema.shape.currentBlockIndex.describe('Current block index (0-based)'),
 });
 
 export type Session = z.infer<typeof sessionSchema>;
