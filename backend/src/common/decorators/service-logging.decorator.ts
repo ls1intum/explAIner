@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { isLogEnabled } from '../config/logging.config';
+import { isLogEnabled } from '../../config/logging.config';
 import { extractParamNames } from '../utils/logging.utils';
 
 /**

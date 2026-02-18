@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { isLogEnabled } from '../config/logging.config';
+import { isLogEnabled } from '../../config/logging.config';
 
 /**
  * Controller Logging Interceptor
