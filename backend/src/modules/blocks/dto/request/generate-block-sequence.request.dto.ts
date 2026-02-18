@@ -1,2 +1,6 @@
-// Empty DTO on purpose, all endpoints must define an explicit request & response DTO for consistency in OpenAPI (Swagger) documentation
+/**
+ * Empty request body — no input parameters required for this endpoint.
+ * This file exists intentionally to maintain a consistent request/response DTO
+ * pattern across all endpoints in the OpenAPI (Swagger) documentation.
+ */
 export class GenerateBlockSequenceRequestDto {}

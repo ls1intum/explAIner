@@ -1,5 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { followUpAnswerMessageSchema } from '../../../../domain/schemas/blocks/inform/inform-block-messages/follow_up_answer-message.schema';
 
-/** Response when students ask follow-up questions in inform blocks. */
+/**
+ * Response body returning the LLM response to a follow-up question in an inform block.
+ */
 export class GenerateChatResponseResponseDto extends createZodDto(followUpAnswerMessageSchema) {}

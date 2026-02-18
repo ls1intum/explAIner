@@ -2,8 +2,7 @@ import { createZodDto } from 'nestjs-zod';
 import { generateEasierLearningGoalsResponseSchema } from '../../../../domain/schemas/learning-goals/learning-goals.schema';
 
 /**
- * Returns a wrapped response with full context (topic, priorKnowledgeKeywords)
- * since the client only sends sessionId in the request.
+ * Response body returning generated easier learning goals with full context (topic, priorKnowledgeKeywords).
  */
 export class GenerateEasierLearningGoalsResponseDto extends createZodDto(
   generateEasierLearningGoalsResponseSchema,
