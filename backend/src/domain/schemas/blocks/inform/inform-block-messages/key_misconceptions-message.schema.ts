@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+/////////////////////////////////////////
+// LLM PARSER SCHEMAS
+/////////////////////////////////////////
+
 /**
  * Key Misconceptions Message Schema – subsequent block-sequence inform block (AI output).
  * Used when parsing block sequence with mode subsequent.

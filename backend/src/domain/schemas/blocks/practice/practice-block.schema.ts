@@ -2,6 +2,10 @@ import { z } from 'zod';
 import { PracticeBlockSchema } from '../../../../../prisma/generated/zod';
 import { baseBlockSchema } from '../base-block.schema';
 
+/////////////////////////////////////////
+// DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
+/////////////////////////////////////////
+
 /** Wrong-answer context for subsequent block sequence generation (addressing misconceptions). */
 export const wrongAnswerSchema = z.object({
   question: z.string(),
@@ -10,7 +14,7 @@ export const wrongAnswerSchema = z.object({
 });
 export type WrongAnswer = z.infer<typeof wrongAnswerSchema>;
 
-/** Content schema derived from Prisma; optional refinement for non-empty question. */
+/** Content schema derived from Prisma; refinement for non-empty question. */
 export const practiceBlockContentSchema = PracticeBlockSchema.extend({
   blockId: PracticeBlockSchema.shape.blockId.describe('Block ID'),
   soloLevel: PracticeBlockSchema.shape.soloLevel.describe('SOLO taxonomy level'),
@@ -39,3 +43,26 @@ export const practiceBlockSchema = baseBlockSchema.extend({
 
 export type PracticeBlockContent = z.infer<typeof practiceBlockContentSchema>;
 export type PracticeBlock = z.infer<typeof practiceBlockSchema>;
+
+/////////////////////////////////////////
+// DTO SCHEMAS (REQUEST / RESPONSE)
+/////////////////////////////////////////
+
+/** Array of selected answer option indices (0-based); at least one required. Reused for submit-answer. */
+const studentAnswerOptionIndicesSchema = z
+  .array(z.number().int())
+  .min(1, 'At least one answer option must be selected')
+  .describe('Array of selected answer option indices (0-based)');
+
+/** Request: submit practice block answer. */
+export const submitAnswerRequestSchema = z.object({
+  studentAnswerOptionIndices: studentAnswerOptionIndicesSchema,
+});
+export type SubmitAnswerRequest = z.infer<typeof submitAnswerRequestSchema>;
+
+/** Response after persisting student answer. */
+export const submitAnswerResponseSchema = z.object({
+  success: z.boolean().describe('Whether the student answer was successfully persisted'),
+  studentAnswerOptionIndices: z.array(z.number()).describe('Array of selected answer option indices (0-based)').meta({ example: [0, 2] }),
+});
+export type SubmitAnswerResponse = z.infer<typeof submitAnswerResponseSchema>;

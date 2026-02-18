@@ -1,9 +1,13 @@
 import { z } from 'zod';
 import { BloomsLevelSchema } from '../../../../prisma/generated/zod';
 
+/////////////////////////////////////////
+// DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
+/////////////////////////////////////////
+
 /**
- * Learning Goal Schema
- * Single learning goal with Bloom's taxonomy level. Used across AI validation, DTOs, and API responses.
+ * Learning Goal Schema – single learning goal with Bloom's taxonomy level.
+ * Used across AI validation, DTOs, and API responses.
  */
 export const learningGoalSchema = z.object({
   learningGoal: z
@@ -13,5 +17,4 @@ export const learningGoalSchema = z.object({
   bloomsLevel: BloomsLevelSchema.describe("Bloom's taxonomy level for this learning goal"),
 });
 
-// Inferred TypeScript type
 export type LearningGoal = z.infer<typeof learningGoalSchema>;

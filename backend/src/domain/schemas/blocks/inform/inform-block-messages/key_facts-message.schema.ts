@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+/////////////////////////////////////////
+// LLM PARSER SCHEMAS
+/////////////////////////////////////////
+
 /**
  * Key Facts Message Schema – first message in the initial block-sequence inform block (AI output).
  * Used when parsing block sequence with mode initial.

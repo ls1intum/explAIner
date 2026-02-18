@@ -2,7 +2,11 @@ import { z } from 'zod';
 import { SummaryBlockSchema } from '../../../../../prisma/generated/zod';
 import { baseBlockSchema } from '../base-block.schema';
 
-/** Content schema derived from Prisma; optional refinement for non-empty summary. */
+/////////////////////////////////////////
+// DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
+/////////////////////////////////////////
+
+/** Content schema derived from Prisma; refinement for non-empty summary. */
 export const summaryBlockContentSchema = SummaryBlockSchema.extend({
   blockId: SummaryBlockSchema.shape.blockId.describe('Block ID'),
   sessionSummary: SummaryBlockSchema.shape.sessionSummary
@@ -24,6 +28,10 @@ export type SummaryBlock = z.infer<typeof summaryBlockSchema>;
 /** Session summary only – used by AI summary chain and DTOs. */
 export const sessionSummarySchema = summaryBlockContentSchema.pick({ sessionSummary: true });
 export type SessionSummary = z.infer<typeof sessionSummarySchema>;
+
+/////////////////////////////////////////
+// DTO SCHEMAS (REQUEST / RESPONSE)
+/////////////////////////////////////////
 
 /** Response shape for generate-summary-block endpoint. */
 export const GenerateSummaryBlockResponseSchema = z.object({

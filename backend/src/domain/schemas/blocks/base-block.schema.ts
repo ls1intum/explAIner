@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { BlockSchema } from '../../../../prisma/generated/zod';
 
+/////////////////////////////////////////
+// DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
+/////////////////////////////////////////
+
 /**
  * Base Block Schema – common fields shared by all block types (no type discriminator).
  */

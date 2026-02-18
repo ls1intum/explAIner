@@ -2,6 +2,10 @@ import { z } from 'zod';
 import { InformBlockMessageSchema } from '../../../../../prisma/generated/zod';
 import { baseBlockSchema } from '../base-block.schema';
 
+/////////////////////////////////////////
+// DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
+/////////////////////////////////////////
+
 /** ISO 8601 date string – avoids z.date() so schema is JSON-Schema compatible. */
 const isoDateStringSchema = z.string();
 

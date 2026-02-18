@@ -5,6 +5,10 @@ import { practiceBlockContentSchema } from './practice/practice-block.schema';
 import { keyFactsMessageSchema } from './inform/inform-block-messages/key_facts-message.schema';
 import { keyMisconceptionsMessageSchema } from './inform/inform-block-messages/key_misconceptions-message.schema';
 
+/////////////////////////////////////////
+// DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
+/////////////////////////////////////////
+
 /** Block sequence generation mode: initial (keyFacts) or subsequent (keyMisconceptions). */
 export const blockSequenceModeSchema = z.enum(['initial', 'subsequent']);
 export type BlockSequenceMode = z.infer<typeof blockSequenceModeSchema>;
@@ -18,6 +22,10 @@ export const blockSequenceSchema = z.object({
   practiceBlocks: z.tuple([practiceBlockSchema, practiceBlockSchema, practiceBlockSchema]).describe('Exactly 3 practice blocks'),
 });
 export type BlockSequence = z.infer<typeof blockSequenceSchema>;
+
+/////////////////////////////////////////
+// LLM PARSER SCHEMAS
+/////////////////////////////////////////
 
 /** Practice block question shape for AI generation (no blockId, no student answers). */
 export const parseSchemaPracticeBlockQuestion = practiceBlockContentSchema.pick({

@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { InformBlockMessageSchema } from '../../../../../../prisma/generated/zod';
 
+/////////////////////////////////////////
+// DTO SCHEMAS (REQUEST / RESPONSE)
+/////////////////////////////////////////
+
 /**
  * Follow-up Question Message Schema – request body for user message in inform block chat.
  * Used by generate-chat-response request DTO.
