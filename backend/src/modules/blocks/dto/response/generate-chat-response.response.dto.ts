@@ -1,20 +1,5 @@
 import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
-import { informBlockMessageSchema } from '../../../../domain/schemas/blocks/inform-block.schema';
+import { followUpAnswerMessageSchema } from '../../../../domain/schemas/blocks/inform/inform-block-messages/follow_up_answer-message.schema';
 
-/**
- * Chat Response Schema
- *
- * Defines the response structure for chat messages within an Inform Block.
- */
-const chatResponseSchema = z.object({
-  response: informBlockMessageSchema.shape.message
-    .describe('AI response from Owlbert'),
-});
-
-/**
- * Generate Chat Response DTO
- *
- * Used for API responses when students ask follow-up questions in inform blocks.
- */
-export class GenerateChatResponseResponseDto extends createZodDto(chatResponseSchema) {}
+/** Response when students ask follow-up questions in inform blocks. */
+export class GenerateChatResponseResponseDto extends createZodDto(followUpAnswerMessageSchema) {}

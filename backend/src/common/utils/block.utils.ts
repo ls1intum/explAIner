@@ -1,5 +1,5 @@
 import { BlockType } from '@prisma/client';
-import type { WrongAnswer } from '../types/practice-blocks.types';
+import type { WrongAnswer } from '../../domain/schemas/blocks/practice/practice-block.schema';
 
 
 /**

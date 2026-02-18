@@ -58,7 +58,7 @@ export class GetSessionService {
               blockId: msg.blockId,
               message: msg.message,
               sender: msg.sender,
-              timestamp: msg.timestamp.toISOString(),
+              timestamp: (msg.timestamp as Date).toISOString(),
             })) || [],
           };
         } else if (block.type === 'Practice' && block.practiceBlock) {

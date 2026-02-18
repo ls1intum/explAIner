@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateEasierLearningGoalsPrompt } from '../prompts/generate-easier-learning-goals.prompt';
-import { learningGoalsSchema } from '../schemas/learning-goals.schema';
-import type { LearningGoalsArray } from '../../../../common/types/learning-goals.types';
+import {
+  learningGoalsSchema,
+  type LearningGoals,
+} from '../../../../domain/schemas/learning-goals/learning-goals.schema';
 import { logAiChain } from '../../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../../config/logging.config';
 
@@ -12,7 +14,7 @@ import { isLogEnabled } from '../../../../config/logging.config';
  */
 @Injectable()
 export class GenerateEasierLearningGoalsChain {
-  private parser: Parser<LearningGoalsArray>;
+  private parser: Parser<LearningGoals>;
 
   constructor(private llmService: LlmService) {
     this.parser = new Parser(learningGoalsSchema, async (error: string) => {
@@ -31,7 +33,7 @@ export class GenerateEasierLearningGoalsChain {
     originalBloomsLevel: string;
     wrongQuestions?: string[];
     coveredContent?: string;
-  }): Promise<LearningGoalsArray> {
+  }): Promise<LearningGoals> {
     // Log chain execution
     if (isLogEnabled('ai')) {
       logAiChain('generate-easier-learning-goals');

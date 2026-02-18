@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateChatResponsePrompt } from '../prompts/generate-chat-response.prompt';
-import { chatResponseSchema, type ChatResponse } from '../schemas/chat-response.schema';
+import {
+  followUpAnswerMessageSchema,
+  type FollowUpAnswerMessage,
+} from '../../../../domain/schemas/blocks/inform/inform-block-messages/follow_up_answer-message.schema';
 import { logAiChain } from '../../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../../config/logging.config';
 
@@ -11,10 +14,10 @@ import { isLogEnabled } from '../../../../config/logging.config';
  */
 @Injectable()
 export class GenerateChatResponseChain {
-  private parser: Parser<ChatResponse>;
+  private parser: Parser<FollowUpAnswerMessage>;
 
   constructor(private llmService: LlmService) {
-    this.parser = new Parser(chatResponseSchema, async (error: string) => {
+    this.parser = new Parser(followUpAnswerMessageSchema, async (error: string) => {
       const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
       return this.llmService.callClaude(fixPrompt);
     });
@@ -26,7 +29,7 @@ export class GenerateChatResponseChain {
     bloomsLevel: string;
     userMessage: string;
     conversationHistory?: string;
-  }): Promise<ChatResponse> {
+  }): Promise<FollowUpAnswerMessage> {
     if (isLogEnabled('ai')) {
       logAiChain('generate-chat-response');
     }

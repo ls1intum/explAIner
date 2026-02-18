@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateBlockSequenceChain } from '../../ai/llm/chains/generate-block-sequence.chain';
-import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
+import { BlockSequenceMode } from '../../../domain/schemas/blocks/block-sequence.schema';
 import { BlockType, SoloLevel } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
+import type { WrongAnswer } from '../../../domain/schemas/blocks/practice/practice-block.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
 import { extractWrongAnswersFromLastSequence } from '../../../common/utils/block.utils';
@@ -79,11 +79,15 @@ export class GenerateBlockSequenceService {
 
     // 8. Create inform block with formatted message
     const label = mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
-    
+    const keyPoints =
+      'keyFacts' in blockSequence.informBlock
+        ? blockSequence.informBlock.keyFacts
+        : blockSequence.informBlock.keyMisconceptions;
+
     const formattedMessage = `${blockSequence.informBlock.explanation}
 
 ${label}
-${blockSequence.informBlock.keyPoints.map(item => `${item}`).join('\n')}
+${keyPoints.map(item => `${item}`).join('\n')}
 
 SUMMARY
 ${blockSequence.informBlock.summary}`;
@@ -172,7 +176,7 @@ ${blockSequence.informBlock.summary}`;
           blockId: msg.blockId,
           message: msg.message,
           sender: msg.sender,
-          timestamp: msg.timestamp.toISOString(),
+          timestamp: (msg.timestamp as Date).toISOString(),
         })) || [],
       },
       practiceBlocks: [

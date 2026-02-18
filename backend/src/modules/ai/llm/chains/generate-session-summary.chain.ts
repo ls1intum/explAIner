@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateSessionSummaryPrompt } from '../prompts/generate-session-summary.prompt';
-import { sessionSummarySchema, type SessionSummary } from '../schemas/session-summary.schema';
+import {
+  sessionSummarySchema,
+  type SessionSummary,
+} from '../../../../domain/schemas/blocks/summary/summary-block.schema';
 import { logAiChain } from '../../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../../config/logging.config';
 

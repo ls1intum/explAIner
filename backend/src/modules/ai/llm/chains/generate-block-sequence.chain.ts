@@ -2,17 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateBlockSequencePrompt } from '../prompts/generate-block-sequence.prompt';
-import { aiGeneratedBlockSequenceSchema, type AIGeneratedBlockSequence } from '../schemas/block-sequence.schema';
-import { BlockSequenceMode } from '../../../../common/enums/block-sequence-mode.enum';
-import type { WrongAnswer } from '../../../../common/types/practice-blocks.types';
+import {
+  aiGeneratedBlockSequenceInitialSchema,
+  aiGeneratedBlockSequenceSubsequentSchema,
+  BlockSequenceMode,
+  type AIGeneratedBlockSequenceInitial,
+  type AIGeneratedBlockSequenceSubsequent,
+} from '../../../../domain/schemas/blocks/block-sequence.schema';
+import type { WrongAnswer } from '../../../../domain/schemas/blocks/practice/practice-block.schema';
 import { SoloLevel } from '@prisma/client';
 import { logAiChain } from '../../../../common/utils/logging.utils';
 import { isLogEnabled } from '../../../../config/logging.config';
-import { extractJsonFromMarkdown } from '../../../../common/utils/json-parser.util';
+
+/** Union return type for block sequence chain (initial or subsequent). */
+export type AIGeneratedBlockSequence = AIGeneratedBlockSequenceInitial | AIGeneratedBlockSequenceSubsequent;
 
 /**
- * Unified chain for generating block sequences (initial or subsequent)
- * Orchestrates: Prompt -> LLM Call -> Transform -> Parse -> Validate
+ * Chain for generating block sequences (initial or subsequent).
+ * Uses mode-specific schema: keyFacts (initial) or keyMisconceptions (subsequent).
  */
 @Injectable()
 export class GenerateBlockSequenceChain {
@@ -27,12 +34,10 @@ export class GenerateBlockSequenceChain {
     wrongAnswers?: WrongAnswer[];
     soloLevels: SoloLevel[];
   }): Promise<AIGeneratedBlockSequence> {
-    // Log chain execution
     if (isLogEnabled('ai')) {
       logAiChain(`generate-block-sequence-${params.mode}`);
     }
 
-    // 1. Generate prompt based on mode
     const prompt = generateBlockSequencePrompt({
       mode: params.mode,
       topic: params.topic,
@@ -43,56 +48,18 @@ export class GenerateBlockSequenceChain {
       wrongAnswers: params.wrongAnswers,
     });
 
-    // 2. Call Claude
     const rawResponse = await this.llmService.callClaude(prompt);
 
-    // 3. Transform keyFacts/keyMisconceptions to keyPoints before validation
-    const transformedResponse = this.transformResponse(rawResponse, params.mode);
-
-    // 4. Parse and validate (retry sends error to LLM and re-transforms the new raw response)
-    const parser = new Parser(aiGeneratedBlockSequenceSchema, async (error: string) => {
+    const retryFn = async (error: string) => {
       const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
-      const raw = await this.llmService.callClaude(fixPrompt);
-      return this.transformResponse(raw, params.mode);
-    });
-    const blockSequence = await parser.parseWithRetry(transformedResponse);
+      return this.llmService.callClaude(fixPrompt);
+    };
 
-    return blockSequence;
-  }
-
-  /**
-   * Transform AI response to map keyFacts/keyMisconceptions to keyPoints
-   * This allows AI to generate mode-specific field names while we validate against unified schema
-   */
-  private transformResponse(rawResponse: string, mode: BlockSequenceMode): string {
-    try {
-      // Extract JSON from markdown if present
-      const jsonText = extractJsonFromMarkdown(rawResponse);
-      const parsed = JSON.parse(jsonText);
-
-      // Check if inform block exists
-      if (!parsed.informBlock) {
-        throw new Error('Response missing informBlock');
-      }
-
-      // Determine which field to look for based on mode
-      const sourceField = mode === BlockSequenceMode.INITIAL ? 'keyFacts' : 'keyMisconceptions';
-
-      // Check if the expected field exists
-      if (!parsed.informBlock[sourceField]) {
-        throw new Error(`Response missing ${sourceField} in informBlock`);
-      }
-
-      // Transform: rename keyFacts/keyMisconceptions to keyPoints
-      parsed.informBlock.keyPoints = parsed.informBlock[sourceField];
-      delete parsed.informBlock[sourceField];
-
-      return JSON.stringify(parsed);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to transform AI response: ${error.message}`);
-      }
-      throw new Error('Failed to transform AI response: Unknown error');
+    if (params.mode === BlockSequenceMode.INITIAL) {
+      const parser = new Parser(aiGeneratedBlockSequenceInitialSchema, retryFn);
+      return parser.parseWithRetry(rawResponse);
     }
+    const parser = new Parser(aiGeneratedBlockSequenceSubsequentSchema, retryFn);
+    return parser.parseWithRetry(rawResponse);
   }
 }
