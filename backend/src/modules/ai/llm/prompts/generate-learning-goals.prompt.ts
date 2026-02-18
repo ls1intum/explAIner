@@ -1,4 +1,4 @@
-import { BLOOMS_TAXONOMY_DESCRIPTION } from '../../../domain/didactical-frameworks/blooms-taxonomy.util';
+import { BLOOMS_TAXONOMY_DESCRIPTION } from '../../../../domain/didactical-frameworks/blooms-taxonomy.util';
 
 interface GenerateLearningGoalsPromptParams {
   topic: string;
@@ -47,6 +47,3 @@ Expected format - exactly 3 objects:
 
 IMPORTANT: The learningGoal text must include the BloomsLevel word (e.g., "Remember", "Understand") right after "you will be able to".`;
 };
-
-
-

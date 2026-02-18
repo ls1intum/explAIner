@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { practiceBlockContentSchema } from '../../../domain/schemas/blocks/practice-block.schema';
+import { practiceBlockContentSchema } from '../../../../domain/schemas/blocks/practice-block.schema';
 
 /**
  * Unified Inform Block Schema for AI Generation
- * 
+ *
  * AI generates structured content that will be formatted into a message.
  * The keyPoints array contains either keyFacts (initial) or keyMisconceptions (subsequent).
  */
@@ -27,7 +27,7 @@ export type ParseSchemaFirstInformBlockMessage = z.infer<typeof ParseSchemaFirst
 
 /**
  * Practice Block Schema for AI Generation
- * 
+ *
  * Reuses fields from common practice block content schema.
  * Excludes blockId and student answer fields (populated later).
  */
@@ -42,7 +42,7 @@ export type ParseSchemaPracticeBlockQuestion = z.infer<typeof ParseSchemaPractic
 
 /**
  * Unified Block Sequence Schema for AI Generation
- * 
+ *
  * Used for both initial and subsequent block sequences.
  * Contains: 1 inform block + 3 practice blocks
  */

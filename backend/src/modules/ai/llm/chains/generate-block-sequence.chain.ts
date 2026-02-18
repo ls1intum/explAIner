@@ -3,16 +3,16 @@ import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateBlockSequencePrompt } from '../prompts/generate-block-sequence.prompt';
 import { aiGeneratedBlockSequenceSchema, type AIGeneratedBlockSequence } from '../schemas/block-sequence.schema';
-import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
-import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
+import { BlockSequenceMode } from '../../../../common/enums/block-sequence-mode.enum';
+import type { WrongAnswer } from '../../../../common/types/practice-blocks.types';
 import { SoloLevel } from '@prisma/client';
-import { logAiChain } from '../../../common/utils/logging.utils';
-import { isLogEnabled } from '../../../config/logging.config';
-import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util';
+import { logAiChain } from '../../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../../config/logging.config';
+import { extractJsonFromMarkdown } from '../../../../common/utils/json-parser.util';
 
 /**
  * Unified chain for generating block sequences (initial or subsequent)
- * Orchestrates: Prompt -> AI Call -> Transform -> Parse -> Validate
+ * Orchestrates: Prompt -> LLM Call -> Transform -> Parse -> Validate
  */
 @Injectable()
 export class GenerateBlockSequenceChain {

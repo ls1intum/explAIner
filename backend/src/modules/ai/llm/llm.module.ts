@@ -6,8 +6,7 @@ import { GenerateBlockSequenceChain } from './chains/generate-block-sequence.cha
 import { GenerateChatResponseChain } from './chains/generate-chat-response.chain';
 import { GenerateSessionSummaryChain } from './chains/generate-session-summary.chain';
 
-// AI Module: Infrastructure layer providing AI services and chains
-// No controllers - this is not a feature module, but infrastructure used by other modules
+// LLM Module: Infrastructure providing LLM services and chains (used by blocks, learning-goals)
 @Module({
   providers: [
     LlmService,
@@ -26,4 +25,4 @@ import { GenerateSessionSummaryChain } from './chains/generate-session-summary.c
     GenerateSessionSummaryChain,
   ],
 })
-export class AiModule {}
+export class LlmModule {}

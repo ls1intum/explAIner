@@ -5,11 +5,11 @@ import { GenerateBlockSequenceService } from './services/generate-block-sequence
 import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
 import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
 import { GenerateChatResponseService } from './services/generate-chat-response.service';
-import { AiModule } from '../ai/ai.module';
+import { LlmModule } from '../ai/llm/llm.module';
 
 // Blocks Module: Handles all block-related operations (CRUD, generation, interaction)
 @Module({
-  imports: [AiModule],
+  imports: [LlmModule],
   controllers: [BlocksController],
   providers: [
     SubmitAnswerService,

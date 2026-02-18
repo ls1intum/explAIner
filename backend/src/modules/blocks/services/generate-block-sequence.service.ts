@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateBlockSequenceChain } from '../../ai/chains/generate-block-sequence.chain';
+import { GenerateBlockSequenceChain } from '../../ai/llm/chains/generate-block-sequence.chain';
 import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
 import { BlockType, SoloLevel } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';

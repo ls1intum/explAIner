@@ -3,12 +3,11 @@ import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateChatResponsePrompt } from '../prompts/generate-chat-response.prompt';
 import { chatResponseSchema, type ChatResponse } from '../schemas/chat-response.schema';
-import { logAiChain } from '../../../common/utils/logging.utils';
-import { isLogEnabled } from '../../../config/logging.config';
+import { logAiChain } from '../../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../../config/logging.config';
 
 /**
- * Chain for generating chat responses
- * Orchestrates: Prompt -> AI Call -> Parse -> Validate
+ * Chain for generating chat responses. Orchestrates: Prompt -> LLM Call -> Parse -> Validate
  */
 @Injectable()
 export class GenerateChatResponseChain {
@@ -28,7 +27,6 @@ export class GenerateChatResponseChain {
     userMessage: string;
     conversationHistory?: string;
   }): Promise<ChatResponse> {
-    // Log chain execution
     if (isLogEnabled('ai')) {
       logAiChain('generate-chat-response');
     }

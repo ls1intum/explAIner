@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { LearningGoalsController } from './learning-goals.controller';
 import { GenerateLearningGoalsService } from './services/generate-learning-goals.service';
 import { GenerateEasierLearningGoalsService } from './services/generate-easier-learning-goals.service';
-import { AiModule } from '../ai/ai.module';
+import { LlmModule } from '../ai/llm/llm.module';
 
 @Module({
-  imports: [AiModule],
+  imports: [LlmModule],
   controllers: [LearningGoalsController],
   providers: [
     GenerateLearningGoalsService,

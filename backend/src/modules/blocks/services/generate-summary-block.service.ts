@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateSessionSummaryChain } from '../../ai/chains/generate-session-summary.chain';
+import { GenerateSessionSummaryChain } from '../../ai/llm/chains/generate-session-summary.chain';
 import { BlockType } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';

@@ -3,12 +3,11 @@ import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateSessionSummaryPrompt } from '../prompts/generate-session-summary.prompt';
 import { sessionSummarySchema, type SessionSummary } from '../schemas/session-summary.schema';
-import { logAiChain } from '../../../common/utils/logging.utils';
-import { isLogEnabled } from '../../../config/logging.config';
+import { logAiChain } from '../../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../../config/logging.config';
 
 /**
- * Chain for generating session summary
- * Orchestrates: Prompt -> AI Call -> Parse -> Validate
+ * Chain for generating session summary. Orchestrates: Prompt -> LLM Call -> Parse -> Validate
  */
 @Injectable()
 export class GenerateSessionSummaryChain {
@@ -28,7 +27,6 @@ export class GenerateSessionSummaryChain {
     informContent: string[];
     practiceResults: Array<{ question: string; isCorrect: boolean }>;
   }): Promise<SessionSummary> {
-    // Log chain execution
     if (isLogEnabled('ai')) {
       logAiChain('generate-session-summary');
     }

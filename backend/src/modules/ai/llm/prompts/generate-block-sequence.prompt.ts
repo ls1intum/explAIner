@@ -1,6 +1,6 @@
-import { SOLO_TAXONOMY_DESCRIPTION } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
-import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
-import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
+import { SOLO_TAXONOMY_DESCRIPTION } from '../../../../domain/didactical-frameworks/solo-taxonomy.util';
+import { BlockSequenceMode } from '../../../../common/enums/block-sequence-mode.enum';
+import type { WrongAnswer } from '../../../../common/types/practice-blocks.types';
 
 interface GenerateBlockSequencePromptParams {
   mode: BlockSequenceMode;
@@ -14,7 +14,6 @@ interface GenerateBlockSequencePromptParams {
 
 /**
  * Unified prompt for generating block sequences (initial or subsequent)
- * Mode determines whether to generate keyFacts or keyMisconceptions
  */
 export const generateBlockSequencePrompt = ({
   mode,
@@ -83,7 +82,7 @@ Create 3 multiple choice practice questions that PROGRESSIVELY build understandi
 **PART 2: INFORM BLOCK (Generate AFTER practice questions)**
 ${informBlockInstructions}
 
-**CRITICAL: The ${keyPointsLabel} array MUST contain between 2-4 items. Do NOT include more than 4 ${isInitial ? 'key facts' : 'misconceptions'}.**
+**CRITICAL: The ${keyPointsLabel} array MUST contain between 2-4 items. Do NOT include more than 4 ${isInitial ? 'key facts' : 'key misconceptions'}.**
 
 **Highlighting Instructions:**
 - Use **bold** markdown syntax to highlight important terms, concepts, and key phrases

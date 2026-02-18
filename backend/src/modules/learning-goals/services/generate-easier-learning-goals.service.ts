@@ -3,7 +3,7 @@ import { GenerateEasierLearningGoalsRequestDto } from '../dto/request/generate-e
 import { GenerateEasierLearningGoalsResponseDto } from '../dto/response/generate-easier-learning-goals.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateEasierLearningGoalsChain } from '../../ai/chains/generate-easier-learning-goals.chain';
+import { GenerateEasierLearningGoalsChain } from '../../ai/llm/chains/generate-easier-learning-goals.chain';
 import { BlockType } from '@prisma/client';
 
 @Injectable()

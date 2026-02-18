@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { extractJsonFromMarkdown } from '../../common/utils/json-parser.util';
+import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util';
 
 /**
  * Generic parser for LLM outputs.

@@ -3,13 +3,12 @@ import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
 import { learningGoalsSchema } from '../schemas/learning-goals.schema';
-import type { LearningGoalsArray } from '../../../common/types/learning-goals.types';
-import { logAiChain } from '../../../common/utils/logging.utils';
-import { isLogEnabled } from '../../../config/logging.config';
+import type { LearningGoalsArray } from '../../../../common/types/learning-goals.types';
+import { logAiChain } from '../../../../common/utils/logging.utils';
+import { isLogEnabled } from '../../../../config/logging.config';
 
 /**
- * Chain for generating learning goals
- * Orchestrates: Prompt -> AI Call -> Parse -> Validate
+ * Chain for generating learning goals. Orchestrates: Prompt -> LLM Call -> Parse -> Validate
  */
 @Injectable()
 export class GenerateLearningGoalsChain {
