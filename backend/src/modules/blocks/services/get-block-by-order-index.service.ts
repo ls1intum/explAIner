@@ -32,22 +32,53 @@ export class GetBlockByOrderIndexService {
       );
     }
 
-    // Return block in frontend-compatible format
-    return {
-      id: block.id,
-      sessionId: block.sessionId,
-      orderIndex: block.orderIndex,
-      alreadyViewed: block.alreadyViewed,
-      type: block.type,
-      informBlockMessages: block.informBlockMessages?.map((msg) => ({
-        id: msg.id,
-        blockId: msg.blockId,
-        message: msg.message,
-        sender: msg.sender,
-        timestamp: msg.timestamp.toISOString(),
-      })),
-      practiceBlock: block.practiceBlock ?? undefined,
-      summaryBlock: block.summaryBlock ?? undefined,
-    };
+    // Return block in schema-compatible format (discriminated union with content field)
+    if (block.type === 'Inform') {
+      return {
+        id: block.id,
+        sessionId: block.sessionId,
+        orderIndex: block.orderIndex,
+        alreadyViewed: block.alreadyViewed,
+        type: 'Inform' as const,
+        content: block.informBlockMessages?.map((msg) => ({
+          id: msg.id,
+          blockId: msg.blockId,
+          message: msg.message,
+          sender: msg.sender,
+          timestamp: msg.timestamp.toISOString(),
+        })) || [],
+      };
+    } else if (block.type === 'Practice' && block.practiceBlock) {
+      return {
+        id: block.id,
+        sessionId: block.sessionId,
+        orderIndex: block.orderIndex,
+        alreadyViewed: block.alreadyViewed,
+        type: 'Practice' as const,
+        content: {
+          blockId: block.practiceBlock.blockId,
+          soloLevel: block.practiceBlock.soloLevel,
+          question: block.practiceBlock.question,
+          answerOptions: block.practiceBlock.answerOptions,
+          correctAnswerOptionIndices: block.practiceBlock.correctAnswerOptionIndices,
+          studentAnswerOptionIndices: block.practiceBlock.studentAnswerOptionIndices,
+          studentAnswerIsCorrect: block.practiceBlock.studentAnswerIsCorrect,
+        },
+      };
+    } else if (block.type === 'Summary' && block.summaryBlock) {
+      return {
+        id: block.id,
+        sessionId: block.sessionId,
+        orderIndex: block.orderIndex,
+        alreadyViewed: block.alreadyViewed,
+        type: 'Summary' as const,
+        content: {
+          blockId: block.summaryBlock.blockId,
+          sessionSummary: block.summaryBlock.sessionSummary,
+        },
+      };
+    }
+
+    throw new NotFoundException(`Invalid block type or missing block content`);
   }
 }

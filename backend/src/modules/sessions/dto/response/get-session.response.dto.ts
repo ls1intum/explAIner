@@ -1,17 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { GetBlockResponseDto } from '../../../blocks/dto/response/get-block-by-order-index.response.dto';
-import { SessionInfoDto } from '../session-info.dto';
+import { createZodDto } from 'nestjs-zod';
+import { sessionSchema } from '../../../../common/schemas/sessions/session.schema';
 
 /**
  * Get Session Response DTO
  *
- * Wrapper DTO for session retrieval response.
- * Note: Kept as class-based DTO since it references other DTOs.
+ * Re-exported from common session schema.
+ * Returns the session with all blocks.
  */
-export class GetSessionResponseDto {
-  @ApiProperty({ description: 'Session information', type: SessionInfoDto })
-  session: SessionInfoDto;
-
-  @ApiProperty({ description: 'All blocks in the session', type: [GetBlockResponseDto] })
-  blocks: GetBlockResponseDto[];
-}
+export class GetSessionResponseDto extends createZodDto(sessionSchema) {}

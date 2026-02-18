@@ -1,24 +1,50 @@
 import { SOLO_TAXONOMY_DESCRIPTION } from '../../../common/utils/didactical-frameworks/solo-taxonomy.util';
+import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
+import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 
-interface GenerateInitialBlockSequencePromptParams {
+interface GenerateBlockSequencePromptParams {
+  mode: BlockSequenceMode;
   topic: string;
   learningGoal: string;
   bloomsLevel: string;
   priorKnowledge?: string;
   soloLevels: string[];
+  wrongAnswers?: WrongAnswer[];
 }
 
 /**
- * Prompt for generating initial block sequence (block_sequence_counter = 0)
- * Generates: inform block with keyFacts + practice block
+ * Unified prompt for generating block sequences (initial or subsequent)
+ * Mode determines whether to generate keyFacts or keyMisconceptions
  */
-export const generateInitialBlockSequencePrompt = ({
+export const generateBlockSequencePrompt = ({
+  mode,
   topic,
   learningGoal,
   bloomsLevel,
   priorKnowledge,
   soloLevels,
-}: GenerateInitialBlockSequencePromptParams): string => {
+  wrongAnswers,
+}: GenerateBlockSequencePromptParams): string => {
+  // Mode-specific configuration
+  const isInitial = mode === BlockSequenceMode.INITIAL;
+  const keyPointsLabel = isInitial ? 'keyFacts' : 'keyMisconceptions';
+  const keyPointsDescription = isInitial
+    ? 'key facts (2-4 items)'
+    : 'key misconceptions to address (2-4 items)';
+  const informBlockInstructions = isInitial
+    ? 'Create educational content that teaches EVERYTHING needed to answer the practice questions:\n1. Start with a brief explanation (2-3 sentences) that connects the concepts\n2. List EXACTLY 3 or 4 key facts (NO MORE THAN 4) that directly address ALL concepts needed for the questions\n3. End with a one-sentence summary that frames the topic'
+    : 'Create educational content that addresses misconceptions and teaches EVERYTHING needed to answer the practice questions:\n1. Start with a brief explanation (2-3 sentences) that connects the concepts\n2. List 2-4 key misconceptions that address the student\'s previous mistakes and clarify them\n3. End with a one-sentence summary that frames the topic';
+
+  // Format wrong answers section (only for subsequent mode)
+  const wrongAnswersText = !isInitial && wrongAnswers && wrongAnswers.length > 0
+    ? `\n\n**Student's Previous Mistakes (to address in ${keyPointsLabel}):**
+${wrongAnswers.map((wa) => `
+Question: ${wa.question}
+Correct Answer(s): ${wa.correctAnswerOptions.join(', ')}
+Student Selected: ${wa.wrongStudentAnswerOptions.join(', ')}
+`).join('\n')}`
+    : '';
+
   // Format prior knowledge context if available
   const priorKnowledgeContext = priorKnowledge
     ? `\n\n**Prior Knowledge Context:**\nThe learner already has knowledge about: ${priorKnowledge}\nEnsure the questions and explanations build upon this existing knowledge appropriately.`
@@ -31,13 +57,13 @@ ${SOLO_TAXONOMY_DESCRIPTION}
 Topic: ${topic}
 Learning Goal: ${learningGoal}
 Bloom's Level: ${bloomsLevel}
-Recommended SOLO Levels for practice: ${soloLevels.join(', ')}${priorKnowledgeContext}
+Recommended SOLO Levels for practice: ${soloLevels.join(', ')}${priorKnowledgeContext}${wrongAnswersText}
 
 Respond in English.
 
 **IMPORTANT: Generate in this order:**
 1. FIRST: Generate 3 practice questions
-2. THEN: Generate 1 inform block that teaches everything needed for those questions
+2. THEN: Generate 1 inform block that ${isInitial ? 'teaches' : 'addresses misconceptions and teaches'} everything needed for those questions
 
 **PART 1: PRACTICE QUESTIONS (Generate FIRST)**
 Create 3 multiple choice practice questions that PROGRESSIVELY build understanding:
@@ -55,12 +81,9 @@ Create 3 multiple choice practice questions that PROGRESSIVELY build understandi
 - NEVER use meta-options like "All of the above" or "None of the above"
 
 **PART 2: INFORM BLOCK (Generate AFTER practice questions)**
-Create educational content that teaches EVERYTHING needed to answer the practice questions:
-1. Start with a brief explanation (2-3 sentences) that connects the concepts
-2. List EXACTLY 3 or 4 key facts (NO MORE THAN 4) that directly address ALL concepts needed for the questions
-3. End with a one-sentence summary that frames the topic
+${informBlockInstructions}
 
-**CRITICAL: The keyFacts array MUST contain between 2-4 items. Do NOT include more than 4 key facts.**
+**CRITICAL: The ${keyPointsLabel} array MUST contain between 2-4 items. Do NOT include more than 4 ${isInitial ? 'key facts' : 'misconceptions'}.**
 
 **Highlighting Instructions:**
 - Use **bold** markdown syntax to highlight important terms, concepts, and key phrases
@@ -95,14 +118,14 @@ Expected format:
   ],
   "informBlock": {
     "explanation": "Brief 2-3 sentence explanation with **bold** for key terms that connects the concepts",
-    "keyFacts": [
-      "First key fact with **bold terms**",
-      "Second key fact addressing a concept",
-      "Third key fact with **highlighted concepts**"
+    "${keyPointsLabel}": [
+      "${isInitial ? 'First key fact' : 'First misconception clarification'} with **bold terms**",
+      "${isInitial ? 'Second key fact' : 'Second misconception'} addressing ${isInitial ? 'a concept' : 'student\'s mistake'}",
+      "${isInitial ? 'Third key fact' : 'Third misconception'} with **highlighted concepts**"
     ],
     "summary": "One sentence overview with **bold key terms** that frames the topic"
   }
 }
 
-IMPORTANT: The keyFacts array must have 2-4 items maximum. In this example, there are 3 key facts.`;
+IMPORTANT: The ${keyPointsLabel} array must have 2-4 items maximum. In this example, there are 3 ${isInitial ? 'key facts' : 'key misconceptions'}.`;
 };

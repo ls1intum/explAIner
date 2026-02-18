@@ -34,50 +34,64 @@ export class GetSessionService {
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
     }
 
-    // Transform to match frontend structure
+    // Transform to match session schema structure
     return {
-      session: {
-        id: session.id,
-        topic: session.learningTopicOrQuestion,
+      id: session.id,
+      topic: session.learningTopicOrQuestion,
+      priorKnowledge: session.priorKnowledgeKeywords || undefined,
+      learningGoal: {
         learningGoal: session.learningGoal,
         bloomsLevel: session.learningGoalBloomsLevel,
-        totalBlocks: session.totalBlocks,
-        currentBlockIndex: session.currentBlockIndex,
       },
-      blocks: session.blocks.map((block) => ({
-        id: block.id,
-        sessionId: block.sessionId,
-        orderIndex: block.orderIndex,
-        alreadyViewed: block.alreadyViewed,
-        type: block.type,
-        informBlockMessages: block.informBlockMessages?.map((msg) => ({
-          id: msg.id,
-          blockId: msg.blockId,
-          message: msg.message,
-          sender: msg.sender,
-          timestamp: msg.timestamp.toISOString(),
-        })),
-        practiceBlock: block.practiceBlock
-          ? {
+      totalBlocks: session.totalBlocks,
+      currentBlockIndex: session.currentBlockIndex,
+      blocks: session.blocks.map((block) => {
+        if (block.type === 'Inform') {
+          return {
+            id: block.id,
+            sessionId: block.sessionId,
+            orderIndex: block.orderIndex,
+            alreadyViewed: block.alreadyViewed,
+            type: 'Inform' as const,
+            content: block.informBlockMessages?.map((msg) => ({
+              id: msg.id,
+              blockId: msg.blockId,
+              message: msg.message,
+              sender: msg.sender,
+              timestamp: msg.timestamp.toISOString(),
+            })) || [],
+          };
+        } else if (block.type === 'Practice' && block.practiceBlock) {
+          return {
+            id: block.id,
+            sessionId: block.sessionId,
+            orderIndex: block.orderIndex,
+            alreadyViewed: block.alreadyViewed,
+            type: 'Practice' as const,
+            content: {
               blockId: block.practiceBlock.blockId,
               soloLevel: block.practiceBlock.soloLevel,
               question: block.practiceBlock.question,
               answerOptions: block.practiceBlock.answerOptions,
-              correctAnswerOptionIndices:
-                block.practiceBlock.correctAnswerOptionIndices,
-              studentAnswerOptionIndices:
-                block.practiceBlock.studentAnswerOptionIndices,
-              studentAnswerIsCorrect:
-                block.practiceBlock.studentAnswerIsCorrect,
-            }
-          : undefined,
-        summaryBlock: block.summaryBlock
-          ? {
-              blockId: block.summaryBlock.blockId,
-              sessionSummary: block.summaryBlock.sessionSummary,
-            }
-          : undefined,
-      })),
+              correctAnswerOptionIndices: block.practiceBlock.correctAnswerOptionIndices,
+              studentAnswerOptionIndices: block.practiceBlock.studentAnswerOptionIndices,
+              studentAnswerIsCorrect: block.practiceBlock.studentAnswerIsCorrect,
+            },
+          };
+        } else {
+          return {
+            id: block.id,
+            sessionId: block.sessionId,
+            orderIndex: block.orderIndex,
+            alreadyViewed: block.alreadyViewed,
+            type: 'Summary' as const,
+            content: {
+              blockId: block.summaryBlock!.blockId,
+              sessionSummary: block.summaryBlock!.sessionSummary,
+            },
+          };
+        }
+      }),
     };
   }
 }

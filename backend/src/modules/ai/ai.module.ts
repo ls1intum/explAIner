@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { LlmService } from './llm.service';
 import { GenerateLearningGoalsChain } from './chains/generate-learning-goals.chain';
 import { GenerateEasierLearningGoalsChain } from './chains/generate-easier-learning-goals.chain';
-import { GenerateInitialBlockSequenceChain } from './chains/generate-initial-block-sequence.chain';
-import { GenerateSubsequentBlockSequenceChain } from './chains/generate-subsequent-block-sequence.chain';
+import { GenerateBlockSequenceChain } from './chains/generate-block-sequence.chain';
 import { GenerateChatResponseChain } from './chains/generate-chat-response.chain';
 import { GenerateSessionSummaryChain } from './chains/generate-session-summary.chain';
 
@@ -14,8 +13,7 @@ import { GenerateSessionSummaryChain } from './chains/generate-session-summary.c
     LlmService,
     GenerateLearningGoalsChain,
     GenerateEasierLearningGoalsChain,
-    GenerateInitialBlockSequenceChain,
-    GenerateSubsequentBlockSequenceChain,
+    GenerateBlockSequenceChain,
     GenerateChatResponseChain,
     GenerateSessionSummaryChain,
   ],
@@ -23,8 +21,7 @@ import { GenerateSessionSummaryChain } from './chains/generate-session-summary.c
     LlmService,
     GenerateLearningGoalsChain,
     GenerateEasierLearningGoalsChain,
-    GenerateInitialBlockSequenceChain,
-    GenerateSubsequentBlockSequenceChain,
+    GenerateBlockSequenceChain,
     GenerateChatResponseChain,
     GenerateSessionSummaryChain,
   ],

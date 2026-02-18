@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { informBlockMessageSchema } from '../../../common/schemas/blocks/inform-block.schema';
 
 /**
  * Chat Response Schema
@@ -10,9 +11,7 @@ import { z } from 'zod';
  * The response is stored in the inform_block_messages table with sender='Owlbert'.
  */
 export const chatResponseSchema = z.object({
-  response: z
-    .string()
-    .min(1, 'Response must not be empty')
+  response: informBlockMessageSchema.shape.message
     .describe('AI response from Owlbert'),
 });
 

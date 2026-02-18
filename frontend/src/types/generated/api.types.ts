@@ -262,40 +262,28 @@ export interface components {
             /** @description Array of exactly 3 generated learning goals */
             learningGoals: [
                 {
-                    /**
-                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-                     * @example After this session, you will be able to Understand the process of photosynthesis.
-                     */
+                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
                     learningGoal: string;
                     /**
                      * @description Bloom's taxonomy level for this learning goal
-                     * @example Understand
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
                 },
                 {
-                    /**
-                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-                     * @example After this session, you will be able to Understand the process of photosynthesis.
-                     */
+                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
                     learningGoal: string;
                     /**
                      * @description Bloom's taxonomy level for this learning goal
-                     * @example Understand
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
                 },
                 {
-                    /**
-                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-                     * @example After this session, you will be able to Understand the process of photosynthesis.
-                     */
+                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
                     learningGoal: string;
                     /**
                      * @description Bloom's taxonomy level for this learning goal
-                     * @example Understand
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
@@ -320,40 +308,28 @@ export interface components {
             /** @description Array of exactly 3 easier learning goals generated for new session */
             learningGoals: [
                 {
-                    /**
-                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-                     * @example After this session, you will be able to Understand the process of photosynthesis.
-                     */
+                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
                     learningGoal: string;
                     /**
                      * @description Bloom's taxonomy level for this learning goal
-                     * @example Understand
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
                 },
                 {
-                    /**
-                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-                     * @example After this session, you will be able to Understand the process of photosynthesis.
-                     */
+                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
                     learningGoal: string;
                     /**
                      * @description Bloom's taxonomy level for this learning goal
-                     * @example Understand
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
                 },
                 {
-                    /**
-                     * @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."
-                     * @example After this session, you will be able to Understand the process of photosynthesis.
-                     */
+                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
                     learningGoal: string;
                     /**
                      * @description Bloom's taxonomy level for this learning goal
-                     * @example Understand
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
@@ -373,93 +349,230 @@ export interface components {
              */
             bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
         };
-        SessionInfoDto: {
+        CreateSessionResponseDto: {
             /** @description Unique session identifier */
             id: string;
             /** @description Learning topic or question */
             topic: string;
-            /** @description Learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
-            learningGoal: string;
-            /** @description Bloom's taxonomy level */
-            bloomsLevel: string;
-            /** @description Total number of blocks in the session (increases by 4 for each new block sequence) */
+            /** @description Prior knowledge keywords */
+            priorKnowledge?: string;
+            /** @description Selected learning goal */
+            learningGoal: {
+                /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                learningGoal: string;
+                /**
+                 * @description Bloom's taxonomy level for this learning goal
+                 * @enum {string}
+                 */
+                bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+            };
+            /** @description Total number of blocks in the session */
             totalBlocks: number;
-            /** @description Block index (0-based) of currently / last viewed block by the user */
+            /** @description Current block index (0-based) */
             currentBlockIndex: number;
-        };
-        GetBlockResponseDto: {
-            /** @description Block ID */
-            id: string;
-            /** @description Session ID this block belongs to */
-            sessionId: string;
-            /** @description Order index of the block (0-based) */
-            orderIndex: number;
-            /** @description Whether the block has been viewed by the user already */
-            alreadyViewed: boolean;
-            /**
-             * @description Block type
-             * @enum {string}
-             */
-            type: "Inform" | "Practice" | "Summary";
-            /** @description Inform block messages (only for Inform blocks) */
-            informBlockMessages?: {
-                /** @description Message ID */
+            /** @description All blocks in the session */
+            blocks: ({
+                /** @description Block ID */
                 id: string;
-                /** @description Block ID this message belongs to */
-                blockId: string;
-                /** @description Message content */
-                message: string;
+                /** @description Session ID this block belongs to */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
                 /**
-                 * @description Message sender
+                 * @description Block type
                  * @enum {string}
                  */
-                sender: "User" | "Owlbert";
-                /**
-                 * Format: date-time
-                 * @description Message timestamp (ISO 8601 format)
-                 */
-                timestamp: string;
-            }[];
-            /** @description Practice block data (only for Practice blocks) */
-            practiceBlock?: {
+                type: "Inform";
+                /** @description Inform block messages */
+                content: {
+                    /** @description Message ID */
+                    id: string;
+                    /** @description Block ID this message belongs to */
+                    blockId: string;
+                    /** @description Message content */
+                    message: string;
+                    /**
+                     * @description Message sender
+                     * @enum {string}
+                     */
+                    sender: "User" | "Owlbert";
+                    /**
+                     * Format: date-time
+                     * @description Message timestamp (ISO 8601 format)
+                     */
+                    timestamp: string;
+                }[];
+            } | {
                 /** @description Block ID */
-                blockId: string;
+                id: string;
+                /** @description Session ID this block belongs to */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
                 /**
-                 * @description SOLO taxonomy level
+                 * @description Block type
                  * @enum {string}
                  */
-                soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
-                /** @description Practice question */
-                question: string;
-                /** @description Available answer options */
-                answerOptions: string[];
-                /** @description Indices of correct answer options */
-                correctAnswerOptionIndices: number[];
-                /** @description Indices of student's selected answer options */
-                studentAnswerOptionIndices: number[];
-                /** @description Whether the student's answer is correct (null if not yet answered) */
-                studentAnswerIsCorrect: boolean | null;
-            };
-            /** @description Summary block data (only for Summary blocks) */
-            summaryBlock?: {
+                type: "Practice";
+                /** @description Practice block content */
+                content: {
+                    /** @description Block ID */
+                    blockId: string;
+                    /**
+                     * @description SOLO taxonomy level
+                     * @enum {string}
+                     */
+                    soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                    /** @description Practice question */
+                    question: string;
+                    /** @description Available answer options */
+                    answerOptions: string[];
+                    /** @description Indices of correct answer options */
+                    correctAnswerOptionIndices: number[];
+                    /** @description Indices of student's selected answer options */
+                    studentAnswerOptionIndices: number[];
+                    /** @description Whether the student's answer is correct (null if not yet answered) */
+                    studentAnswerIsCorrect: boolean | null;
+                };
+            } | {
                 /** @description Block ID */
-                blockId: string;
-                /** @description Session summary content */
-                sessionSummary: string;
-            };
-        };
-        CreateSessionResponseDto: {
-            /** @description Session information */
-            session: components["schemas"]["SessionInfoDto"];
-            /** @description Initial block sequence (1 inform + 3 practice) */
-            blocks: components["schemas"]["GetBlockResponseDto"][];
+                id: string;
+                /** @description Session ID this block belongs to */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Summary";
+                /** @description Summary block content */
+                content: {
+                    /** @description Block ID */
+                    blockId: string;
+                    /** @description Session summary content */
+                    sessionSummary: string;
+                };
+            })[];
         };
         GetSessionRequestDto: Record<string, never>;
         GetSessionResponseDto: {
-            /** @description Session information */
-            session: components["schemas"]["SessionInfoDto"];
+            /** @description Unique session identifier */
+            id: string;
+            /** @description Learning topic or question */
+            topic: string;
+            /** @description Prior knowledge keywords */
+            priorKnowledge?: string;
+            /** @description Selected learning goal */
+            learningGoal: {
+                /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                learningGoal: string;
+                /**
+                 * @description Bloom's taxonomy level for this learning goal
+                 * @enum {string}
+                 */
+                bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+            };
+            /** @description Total number of blocks in the session */
+            totalBlocks: number;
+            /** @description Current block index (0-based) */
+            currentBlockIndex: number;
             /** @description All blocks in the session */
-            blocks: components["schemas"]["GetBlockResponseDto"][];
+            blocks: ({
+                /** @description Block ID */
+                id: string;
+                /** @description Session ID this block belongs to */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Inform";
+                /** @description Inform block messages */
+                content: {
+                    /** @description Message ID */
+                    id: string;
+                    /** @description Block ID this message belongs to */
+                    blockId: string;
+                    /** @description Message content */
+                    message: string;
+                    /**
+                     * @description Message sender
+                     * @enum {string}
+                     */
+                    sender: "User" | "Owlbert";
+                    /**
+                     * Format: date-time
+                     * @description Message timestamp (ISO 8601 format)
+                     */
+                    timestamp: string;
+                }[];
+            } | {
+                /** @description Block ID */
+                id: string;
+                /** @description Session ID this block belongs to */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Practice";
+                /** @description Practice block content */
+                content: {
+                    /** @description Block ID */
+                    blockId: string;
+                    /**
+                     * @description SOLO taxonomy level
+                     * @enum {string}
+                     */
+                    soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                    /** @description Practice question */
+                    question: string;
+                    /** @description Available answer options */
+                    answerOptions: string[];
+                    /** @description Indices of correct answer options */
+                    correctAnswerOptionIndices: number[];
+                    /** @description Indices of student's selected answer options */
+                    studentAnswerOptionIndices: number[];
+                    /** @description Whether the student's answer is correct (null if not yet answered) */
+                    studentAnswerIsCorrect: boolean | null;
+                };
+            } | {
+                /** @description Block ID */
+                id: string;
+                /** @description Session ID this block belongs to */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Summary";
+                /** @description Summary block content */
+                content: {
+                    /** @description Block ID */
+                    blockId: string;
+                    /** @description Session summary content */
+                    sessionSummary: string;
+                };
+            })[];
         };
         DeleteSessionRequestDto: Record<string, never>;
         DeleteSessionResponseDto_Output: {
@@ -502,90 +615,182 @@ export interface components {
         };
         GenerateBlockSequenceRequestDto: Record<string, never>;
         GenerateBlockSequenceResponseDto: {
-            /** @description Generated inform block */
-            informBlock: components["schemas"]["GetBlockResponseDto"];
-            /** @description Generated practice blocks (3 blocks) */
-            practiceBlocks: components["schemas"]["GetBlockResponseDto"][];
+            /** @description Inform block introducing new content */
+            informBlock: {
+                /** @description Block ID */
+                id: string;
+                /** @description Session ID this block belongs to */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Inform";
+                /** @description Inform block messages */
+                content: {
+                    /** @description Message ID */
+                    id: string;
+                    /** @description Block ID this message belongs to */
+                    blockId: string;
+                    /** @description Message content */
+                    message: string;
+                    /**
+                     * @description Message sender
+                     * @enum {string}
+                     */
+                    sender: "User" | "Owlbert";
+                    /**
+                     * Format: date-time
+                     * @description Message timestamp (ISO 8601 format)
+                     */
+                    timestamp: string;
+                }[];
+            };
+            /** @description Exactly 3 practice blocks for reinforcement */
+            practiceBlocks: [
+                {
+                    /** @description Block ID */
+                    id: string;
+                    /** @description Session ID this block belongs to */
+                    sessionId: string;
+                    /** @description Order index of the block (0-based) */
+                    orderIndex: number;
+                    /** @description Whether the block has been viewed by the user */
+                    alreadyViewed: boolean;
+                    /**
+                     * @description Block type
+                     * @constant
+                     */
+                    type: "Practice";
+                    /** @description Practice block content */
+                    content: {
+                        /** @description Block ID */
+                        blockId: string;
+                        /**
+                         * @description SOLO taxonomy level
+                         * @enum {string}
+                         */
+                        soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                        /** @description Practice question */
+                        question: string;
+                        /** @description Available answer options */
+                        answerOptions: string[];
+                        /** @description Indices of correct answer options */
+                        correctAnswerOptionIndices: number[];
+                        /** @description Indices of student's selected answer options */
+                        studentAnswerOptionIndices: number[];
+                        /** @description Whether the student's answer is correct (null if not yet answered) */
+                        studentAnswerIsCorrect: boolean | null;
+                    };
+                },
+                {
+                    /** @description Block ID */
+                    id: string;
+                    /** @description Session ID this block belongs to */
+                    sessionId: string;
+                    /** @description Order index of the block (0-based) */
+                    orderIndex: number;
+                    /** @description Whether the block has been viewed by the user */
+                    alreadyViewed: boolean;
+                    /**
+                     * @description Block type
+                     * @constant
+                     */
+                    type: "Practice";
+                    /** @description Practice block content */
+                    content: {
+                        /** @description Block ID */
+                        blockId: string;
+                        /**
+                         * @description SOLO taxonomy level
+                         * @enum {string}
+                         */
+                        soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                        /** @description Practice question */
+                        question: string;
+                        /** @description Available answer options */
+                        answerOptions: string[];
+                        /** @description Indices of correct answer options */
+                        correctAnswerOptionIndices: number[];
+                        /** @description Indices of student's selected answer options */
+                        studentAnswerOptionIndices: number[];
+                        /** @description Whether the student's answer is correct (null if not yet answered) */
+                        studentAnswerIsCorrect: boolean | null;
+                    };
+                },
+                {
+                    /** @description Block ID */
+                    id: string;
+                    /** @description Session ID this block belongs to */
+                    sessionId: string;
+                    /** @description Order index of the block (0-based) */
+                    orderIndex: number;
+                    /** @description Whether the block has been viewed by the user */
+                    alreadyViewed: boolean;
+                    /**
+                     * @description Block type
+                     * @constant
+                     */
+                    type: "Practice";
+                    /** @description Practice block content */
+                    content: {
+                        /** @description Block ID */
+                        blockId: string;
+                        /**
+                         * @description SOLO taxonomy level
+                         * @enum {string}
+                         */
+                        soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                        /** @description Practice question */
+                        question: string;
+                        /** @description Available answer options */
+                        answerOptions: string[];
+                        /** @description Indices of correct answer options */
+                        correctAnswerOptionIndices: number[];
+                        /** @description Indices of student's selected answer options */
+                        studentAnswerOptionIndices: number[];
+                        /** @description Whether the student's answer is correct (null if not yet answered) */
+                        studentAnswerIsCorrect: boolean | null;
+                    };
+                }
+            ];
         };
         GenerateSummaryBlockRequestDto: Record<string, never>;
-        SessionStatsDto: {
-            /** @description Learning goal for the session */
-            learningGoal: string;
-            /** @description Bloom's taxonomy level */
-            bloomsLevel: string;
-            /** @description Total number of blocks in the session */
-            totalBlocks: number;
-            /** @description Session duration in minutes */
-            sessionDuration: number;
-        };
         GenerateSummaryBlockResponseDto: {
             /** @description Generated summary block */
-            block: components["schemas"]["GetBlockResponseDto"];
-            /** @description Session statistics for the summary */
-            sessionStats: components["schemas"]["SessionStatsDto"];
+            summaryBlock: {
+                /** @description Block ID */
+                id: string;
+                /** @description Session ID this block belongs to */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Summary";
+                /** @description Summary block content */
+                content: {
+                    /** @description Block ID */
+                    blockId: string;
+                    /** @description Session summary content */
+                    sessionSummary: string;
+                };
+            };
+            /** @description Session duration in minutes */
+            sessionDuration: number;
+            /** @description Total number of blocks in the session */
+            totalBlocks: number;
         };
         GetBlockByOrderIndexRequestDto: Record<string, never>;
-        GetBlockResponseDto_Output: {
-            /** @description Block ID */
-            id: string;
-            /** @description Session ID this block belongs to */
-            sessionId: string;
-            /** @description Order index of the block (0-based) */
-            orderIndex: number;
-            /** @description Whether the block has been viewed by the user already */
-            alreadyViewed: boolean;
-            /**
-             * @description Block type
-             * @enum {string}
-             */
-            type: "Inform" | "Practice" | "Summary";
-            /** @description Inform block messages (only for Inform blocks) */
-            informBlockMessages?: {
-                /** @description Message ID */
-                id: string;
-                /** @description Block ID this message belongs to */
-                blockId: string;
-                /** @description Message content */
-                message: string;
-                /**
-                 * @description Message sender
-                 * @enum {string}
-                 */
-                sender: "User" | "Owlbert";
-                /**
-                 * Format: date-time
-                 * @description Message timestamp (ISO 8601 format)
-                 */
-                timestamp: string;
-            }[];
-            /** @description Practice block data (only for Practice blocks) */
-            practiceBlock?: {
-                /** @description Block ID */
-                blockId: string;
-                /**
-                 * @description SOLO taxonomy level
-                 * @enum {string}
-                 */
-                soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
-                /** @description Practice question */
-                question: string;
-                /** @description Available answer options */
-                answerOptions: string[];
-                /** @description Indices of correct answer options */
-                correctAnswerOptionIndices: number[];
-                /** @description Indices of student's selected answer options */
-                studentAnswerOptionIndices: number[];
-                /** @description Whether the student's answer is correct (null if not yet answered) */
-                studentAnswerIsCorrect: boolean | null;
-            };
-            /** @description Summary block data (only for Summary blocks) */
-            summaryBlock?: {
-                /** @description Block ID */
-                blockId: string;
-                /** @description Session summary content */
-                sessionSummary: string;
-            };
-        };
+        GetBlockResponseDto: Record<string, never>;
         GenerateChatResponseRequestDto: {
             /** @description User message / follow-up question sent in the inform block chat */
             message: string;
@@ -974,7 +1179,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetBlockResponseDto_Output"];
+                    "application/json": components["schemas"]["GetBlockResponseDto"];
                 };
             };
             /** @description Block not found */

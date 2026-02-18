@@ -1,16 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { GetBlockResponseDto } from './get-block-by-order-index.response.dto';
+import { createZodDto } from 'nestjs-zod';
+import { blockSequenceSchema } from '../../../../common/schemas/blocks/block-sequence.schema';
 
 /**
  * Generate Block Sequence Response DTO
  *
- * Wrapper DTO for block sequence generation response.
- * Note: Kept as class-based DTO since it references other DTOs.
+ * Returns the generated block sequence (1 inform + 3 practice blocks).
  */
-export class GenerateBlockSequenceResponseDto {
-  @ApiProperty({ description: 'Generated inform block', type: GetBlockResponseDto })
-  informBlock: GetBlockResponseDto;
-
-  @ApiProperty({ description: 'Generated practice blocks (3 blocks)', type: [GetBlockResponseDto] })
-  practiceBlocks: GetBlockResponseDto[];
-}
+export class GenerateBlockSequenceResponseDto extends createZodDto(blockSequenceSchema) {}

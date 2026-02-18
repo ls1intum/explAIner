@@ -39,14 +39,15 @@ export class CreateSessionService {
 
     // 4. Return session with blocks (inform first, then practice blocks in order)
     return {
-      session: {
-        id: session.id,
-        topic: dto.topic,
+      id: session.id,
+      topic: dto.topic,
+      priorKnowledge: dto.priorKnowledgeKeywords || undefined,
+      learningGoal: {
         learningGoal: dto.learningGoal,
         bloomsLevel: dto.bloomsLevel,
-        totalBlocks: 4,
-        currentBlockIndex: 0,
       },
+      totalBlocks: 4,
+      currentBlockIndex: 0,
       blocks: [informBlock, ...sortedPracticeBlocks],
     };
   }

@@ -60,7 +60,7 @@ export class BlocksController {
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
   @ApiBody({ type: GetBlockByOrderIndexRequestDto })
-  @ZodResponse({ status: 200, description: 'Block found', type: GetBlockResponseDto })
+  @ApiResponse({ status: 200, description: 'Block found', type: GetBlockResponseDto })
   @ApiResponse({ status: 404, description: 'Block not found' })
   getBlock(
     @Param('sessionId') sessionId: string,

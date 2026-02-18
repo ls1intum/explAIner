@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { informBlockMessageSchema } from '../../../../common/schemas/blocks/inform-block.schema';
 
 /**
  * Generate Chat Response Request Schema
@@ -7,9 +8,7 @@ import { z } from 'zod';
  * Validates user message for inform block chat.
  */
 const generateChatResponseRequestSchema = z.object({
-  message: z
-    .string()
-    .min(1, 'Message cannot be empty')
+  message: informBlockMessageSchema.shape.message
     .describe('User message / follow-up question sent in the inform block chat'),
 });
 

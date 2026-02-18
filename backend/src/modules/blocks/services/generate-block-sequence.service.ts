@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateInitialBlockSequenceChain } from '../../ai/chains/generate-initial-block-sequence.chain';
-import { GenerateSubsequentBlockSequenceChain } from '../../ai/chains/generate-subsequent-block-sequence.chain';
+import { GenerateBlockSequenceChain } from '../../ai/chains/generate-block-sequence.chain';
 import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
 import { BlockType, SoloLevel } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../common/utils/didactical-frameworks/solo-taxonomy.util';
+import { extractWrongAnswersFromLastSequence } from '../../../common/utils/block.utils';
+
 
 /**
  * Unified service for generating block sequences (initial or subsequent)
@@ -19,8 +20,7 @@ import { getSOLOLevelsForBlooms } from '../../../common/utils/didactical-framewo
 export class GenerateBlockSequenceService {
   constructor(
     private prisma: PrismaService,
-    private generateInitialBlockSequenceChain: GenerateInitialBlockSequenceChain,
-    private generateSubsequentBlockSequenceChain: GenerateSubsequentBlockSequenceChain,
+    private generateBlockSequenceChain: GenerateBlockSequenceChain,
   ) {}
 
   @LogService()
@@ -55,41 +55,10 @@ export class GenerateBlockSequenceService {
       : session.blocks.length;
 
     // 4. Extract wrong answers (only for SUBSEQUENT mode)
-    let wrongAnswers: WrongAnswer[] = [];
-    if (mode === BlockSequenceMode.SUBSEQUENT) {
-      const informBlocks = session.blocks.filter(
-        (block) => block.type === BlockType.Inform,
-      );
-      const blockSequenceCounter = informBlocks.length;
-
-      // Get practice blocks from the last sequence (last 3 practice blocks)
-      const lastSequenceStartIndex = (blockSequenceCounter - 1) * 4;
-      const lastSequenceBlocks = session.blocks.slice(
-        lastSequenceStartIndex,
-        lastSequenceStartIndex + 4,
-      );
-      const lastSequencePracticeBlocks = lastSequenceBlocks.filter(
-        (block) => block.type === BlockType.Practice && block.practiceBlock,
-      );
-
-      // Filter for incorrectly answered practice blocks
-      wrongAnswers = lastSequencePracticeBlocks
-        .filter(
-          (block) => block.practiceBlock?.studentAnswerIsCorrect === false,
-        )
-        .map((block) => {
-          const pb = block.practiceBlock!;
-          return {
-            question: pb.question,
-            correctAnswerOptions: pb.correctAnswerOptionIndices.map(
-              (idx) => pb.answerOptions[idx],
-            ),
-            wrongStudentAnswerOptions: pb.studentAnswerOptionIndices.map(
-              (idx) => pb.answerOptions[idx],
-            ),
-          };
-        });
-    }
+    const wrongAnswers: WrongAnswer[] = 
+      mode === BlockSequenceMode.SUBSEQUENT
+        ? extractWrongAnswersFromLastSequence(session.blocks)
+        : [];
 
     // 5. Get prior knowledge context
     const priorKnowledge = session.priorKnowledgeKeywords || '';
@@ -97,40 +66,24 @@ export class GenerateBlockSequenceService {
     // 6. Determine appropriate SOLO levels based on Bloom's level
     const soloLevels = getSOLOLevelsForBlooms(session.learningGoalBloomsLevel);
 
-    // 7. Call appropriate chain based on mode
-    const blockSequence = mode === BlockSequenceMode.INITIAL
-      ? await this.generateInitialBlockSequenceChain.execute({
-          topic: session.learningTopicOrQuestion,
-          learningGoal: session.learningGoal,
-          bloomsLevel: session.learningGoalBloomsLevel,
-          priorKnowledge,
-          soloLevels,
-        })
-      : await this.generateSubsequentBlockSequenceChain.execute({
-          topic: session.learningTopicOrQuestion,
-          learningGoal: session.learningGoal,
-          bloomsLevel: session.learningGoalBloomsLevel,
-          priorKnowledge,
-          wrongAnswers,
-          soloLevels,
-        });
+    // 7. Call unified chain with mode parameter
+    const blockSequence = await this.generateBlockSequenceChain.execute({
+      mode,
+      topic: session.learningTopicOrQuestion,
+      learningGoal: session.learningGoal,
+      bloomsLevel: session.learningGoalBloomsLevel,
+      priorKnowledge,
+      wrongAnswers: mode === BlockSequenceMode.SUBSEQUENT ? wrongAnswers : undefined,
+      soloLevels,
+    });
 
     // 8. Create inform block with formatted message
-    let content: string[];
-    let label: string;
-    
-    if (mode === BlockSequenceMode.INITIAL) {
-      content = 'keyFacts' in blockSequence.informBlock ? blockSequence.informBlock.keyFacts : [];
-      label = 'KEY FACTS';
-    } else {
-      content = 'keyMisconceptions' in blockSequence.informBlock ? blockSequence.informBlock.keyMisconceptions : [];
-      label = 'KEY MISCONCEPTIONS';
-    }
+    const label = mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
     
     const formattedMessage = `${blockSequence.informBlock.explanation}
 
 ${label}
-${content.map(item => `${item}`).join('\n')}
+${blockSequence.informBlock.keyPoints.map(item => `${item}`).join('\n')}
 
 SUMMARY
 ${blockSequence.informBlock.summary}`;
@@ -189,30 +142,44 @@ ${blockSequence.informBlock.summary}`;
       data: { totalBlocks: newTotal },
     });
 
-    // 11. Return all blocks (inform + practice) mapped to DTOs
+    // 11. Return all blocks mapped to block schema structure
+    const mapPracticeBlock = (block: any) => ({
+      id: block.id,
+      sessionId: block.sessionId,
+      orderIndex: block.orderIndex,
+      alreadyViewed: block.alreadyViewed,
+      type: 'Practice' as const,
+      content: {
+        blockId: block.practiceBlock.blockId,
+        soloLevel: block.practiceBlock.soloLevel,
+        question: block.practiceBlock.question,
+        answerOptions: block.practiceBlock.answerOptions,
+        correctAnswerOptionIndices: block.practiceBlock.correctAnswerOptionIndices,
+        studentAnswerOptionIndices: block.practiceBlock.studentAnswerOptionIndices,
+        studentAnswerIsCorrect: block.practiceBlock.studentAnswerIsCorrect,
+      },
+    });
+
     return {
       informBlock: {
         id: informBlock.id,
         sessionId: informBlock.sessionId,
         orderIndex: informBlock.orderIndex,
         alreadyViewed: informBlock.alreadyViewed,
-        type: informBlock.type,
-        informBlockMessages: informBlock.informBlockMessages?.map((msg) => ({
+        type: 'Inform' as const,
+        content: informBlock.informBlockMessages?.map((msg) => ({
           id: msg.id,
           blockId: msg.blockId,
           message: msg.message,
           sender: msg.sender,
           timestamp: msg.timestamp.toISOString(),
-        })),
+        })) || [],
       },
-      practiceBlocks: practiceBlocks.map((block) => ({
-        id: block.id,
-        sessionId: block.sessionId,
-        orderIndex: block.orderIndex,
-        alreadyViewed: block.alreadyViewed,
-        type: block.type,
-        practiceBlock: block.practiceBlock ?? undefined,
-      })),
+      practiceBlocks: [
+        mapPracticeBlock(practiceBlocks[0]),
+        mapPracticeBlock(practiceBlocks[1]),
+        mapPracticeBlock(practiceBlocks[2]),
+      ],
     };
   }
 }

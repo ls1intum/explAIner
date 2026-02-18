@@ -95,15 +95,23 @@ export class GenerateSummaryBlockService {
       },
     });
 
-    // 9. Return summary block with additional session stats mapped to DTO
+    // 9. Return summary block with session metadata in schema format
+    // Note: learningGoal and bloomsLevel are not included as they should already be
+    // stored in the frontend from the session data
     return {
-      block: createdSummaryBlock as any,
-      sessionStats: {
-        learningGoal: session.learningGoal,
-        bloomsLevel: session.learningGoalBloomsLevel,
-        totalBlocks: session.totalBlocks + 1,
-        sessionDuration,
+      summaryBlock: {
+        id: createdSummaryBlock.id,
+        sessionId: createdSummaryBlock.sessionId,
+        orderIndex: createdSummaryBlock.orderIndex,
+        alreadyViewed: createdSummaryBlock.alreadyViewed,
+        type: 'Summary' as const,
+        content: {
+          blockId: createdSummaryBlock.summaryBlock!.blockId,
+          sessionSummary: createdSummaryBlock.summaryBlock!.sessionSummary,
+        },
       },
+      sessionDuration,
+      totalBlocks: session.totalBlocks + 1,
     };
   }
 }
