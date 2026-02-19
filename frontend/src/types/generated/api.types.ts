@@ -253,7 +253,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         GenerateLearningGoalsRequestDto: {
-            /** @description The learning topic or question to generate learning goals for */
+            /** @description The learning topic or question */
             topic: string;
             /** @description Keywords describing prior knowledge (optional) */
             priorKnowledgeKeywords?: string;
@@ -291,7 +291,7 @@ export interface components {
             ];
         };
         GenerateEasierLearningGoalsRequestDto: {
-            /** @description Session ID of the existing session to generate easier learning goals for */
+            /** @description Session ID to generate easier learning goals for */
             sessionId: string;
         };
         GenerateEasierLearningGoalsResponseDto_Output: {
@@ -301,11 +301,11 @@ export interface components {
              */
             topic: string;
             /**
-             * @description Prior knowledge keywords from the previous session
+             * @description Prior knowledge from previous session
              * @example plants, light
              */
             priorKnowledgeKeywords?: string;
-            /** @description Array of exactly 3 easier learning goals generated for new session */
+            /** @description Array of exactly 3 easier learning goals */
             learningGoals: [
                 {
                     /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
@@ -337,17 +337,20 @@ export interface components {
             ];
         };
         CreateSessionRequestDto: {
-            /** @description The learning topic or question for the session */
+            /** @description The learning topic or question */
             topic: string;
-            /** @description Keywords indicating what the user already knows about the learning topic or question (optional) */
+            /** @description Keywords describing prior knowledge (optional) */
             priorKnowledgeKeywords?: string;
-            /** @description The specific learning goal for this session */
-            learningGoal: string;
-            /**
-             * @description Bloom's taxonomy level for the learning goal
-             * @enum {string}
-             */
-            bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+            /** @description Selected learning goal for this session */
+            learningGoal: {
+                /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                learningGoal: string;
+                /**
+                 * @description Bloom's taxonomy level for this learning goal
+                 * @enum {string}
+                 */
+                bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
+            };
         };
         CreateSessionResponseDto: {
             /** Format: uuid */
@@ -594,7 +597,7 @@ export interface components {
         };
         DeleteSessionRequestDto: Record<string, never>;
         DeleteSessionResponseDto_Output: {
-            /** @description Whether the session was successfully deleted */
+            /** @description Whether the operation succeeded */
             success: boolean;
         };
         UpdateCurrentBlockIndexRequestDto: {
@@ -602,7 +605,7 @@ export interface components {
             currentBlockIndex: number;
         };
         UpdateCurrentBlockIndexResponseDto_Output: {
-            /** @description Whether the current block index was successfully updated */
+            /** @description Whether the operation succeeded */
             success: boolean;
             /** @description The updated current block index (0-based) */
             currentBlockIndex: number;
@@ -616,7 +619,7 @@ export interface components {
              */
             action: "navigate" | "next-sequence" | "summary" | "prompt-user";
             /**
-             * @description Order index to navigate to (only present for "navigate" action)
+             * @description Order index to navigate to (only for "navigate")
              * @example 3
              */
             targetBlockIndex?: number;
@@ -626,7 +629,7 @@ export interface components {
             rating: number;
         };
         SubmitFeedbackResponseDto_Output: {
-            /** @description Whether the feedback was successfully submitted */
+            /** @description Whether the operation succeeded */
             success: boolean;
             /** @description The submitted rating (1-5) - 1: "very unhelpful", 5: "very helpful" */
             rating: number;
@@ -791,31 +794,28 @@ export interface components {
         };
         GenerateSummaryBlockRequestDto: Record<string, never>;
         GenerateSummaryBlockResponseDto: {
-            /** @description Generated summary block */
-            summaryBlock: {
-                /**
-                 * Format: uuid
-                 * @description Block ID
-                 */
-                id: string;
-                /** @description Session ID this block belongs to */
-                sessionId: string;
-                /** @description Order index of the block (0-based) */
-                orderIndex: number;
-                /** @description Whether the block has been viewed by the user */
-                alreadyViewed: boolean;
-                /**
-                 * @description Block type
-                 * @enum {string}
-                 */
-                type: "Summary";
-                /** @description Summary block content */
-                content: {
-                    /** @description Block ID */
-                    blockId: string;
-                    /** @description Session summary content */
-                    sessionSummary: string;
-                };
+            /**
+             * Format: uuid
+             * @description Block ID
+             */
+            id: string;
+            /** @description Session ID this block belongs to */
+            sessionId: string;
+            /** @description Order index of the block (0-based) */
+            orderIndex: number;
+            /** @description Whether the block has been viewed by the user */
+            alreadyViewed: boolean;
+            /**
+             * @description Block type
+             * @enum {string}
+             */
+            type: "Summary";
+            /** @description Summary block content */
+            content: {
+                /** @description Block ID */
+                blockId: string;
+                /** @description Session summary content */
+                sessionSummary: string;
             };
             /** @description Session duration in minutes */
             sessionDuration: number;
