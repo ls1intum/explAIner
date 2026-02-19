@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PracticeBlockSchema } from '../../../../../prisma/generated/zod';
+import { PracticeBlockSchema as PrismaPracticeBlockSchema } from '../../../../../prisma/generated/zod';
 import { baseBlockSchema } from '../base-block.schema';
 
 /////////////////////////////////////////
@@ -15,20 +15,20 @@ export const wrongAnswerSchema = z.object({
 export type WrongAnswer = z.infer<typeof wrongAnswerSchema>;
 
 /** Content schema derived from Prisma; refinement for non-empty question. */
-export const practiceBlockContentSchema = PracticeBlockSchema.extend({
-  blockId: PracticeBlockSchema.shape.blockId.describe('Block ID'),
-  soloLevel: PracticeBlockSchema.shape.soloLevel.describe('SOLO taxonomy level'),
-  question: PracticeBlockSchema.shape.question
+export const practiceBlockContentSchema = PrismaPracticeBlockSchema.extend({
+  blockId: PrismaPracticeBlockSchema.shape.blockId.describe('Block ID'),
+  soloLevel: PrismaPracticeBlockSchema.shape.soloLevel.describe('SOLO taxonomy level'),
+  question: PrismaPracticeBlockSchema.shape.question
     .min(1, 'Practice question must not be empty')
     .describe('Practice question'),
-  answerOptions: PracticeBlockSchema.shape.answerOptions.describe('Available answer options'),
-  correctAnswerOptionIndices: PracticeBlockSchema.shape.correctAnswerOptionIndices.describe(
+  answerOptions: PrismaPracticeBlockSchema.shape.answerOptions.describe('Available answer options'),
+  correctAnswerOptionIndices: PrismaPracticeBlockSchema.shape.correctAnswerOptionIndices.describe(
     'Indices of correct answer options',
   ),
-  studentAnswerOptionIndices: PracticeBlockSchema.shape.studentAnswerOptionIndices.describe(
+  studentAnswerOptionIndices: PrismaPracticeBlockSchema.shape.studentAnswerOptionIndices.describe(
     "Indices of student's selected answer options",
   ),
-  studentAnswerIsCorrect: PracticeBlockSchema.shape.studentAnswerIsCorrect.describe(
+  studentAnswerIsCorrect: PrismaPracticeBlockSchema.shape.studentAnswerIsCorrect.describe(
     "Whether the student's answer is correct (null if not yet answered)",
   ),
 });

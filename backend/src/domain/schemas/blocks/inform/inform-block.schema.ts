@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { InformBlockMessageSchema } from '../../../../../prisma/generated/zod';
+import { InformBlockMessageSchema as PrismaInformBlockMessageSchema } from '../../../../../prisma/generated/zod';
 import { baseBlockSchema } from '../base-block.schema';
 
 /////////////////////////////////////////
@@ -10,11 +10,11 @@ import { baseBlockSchema } from '../base-block.schema';
 const isoDateStringSchema = z.string();
 
 /** Message schema derived from Prisma; timestamp as ISO string for API/OpenAPI compatibility. */
-export const informBlockMessageSchema = InformBlockMessageSchema.omit({ timestamp: true }).extend({
-  id: InformBlockMessageSchema.shape.id.describe('Message ID'),
-  blockId: InformBlockMessageSchema.shape.blockId.describe('Block ID this message belongs to'),
-  message: InformBlockMessageSchema.shape.message.min(1, 'Message must not be empty').describe('Message content'),
-  sender: InformBlockMessageSchema.shape.sender.describe('Message sender'),
+export const informBlockMessageSchema = PrismaInformBlockMessageSchema.omit({ timestamp: true }).extend({
+  id: PrismaInformBlockMessageSchema.shape.id.describe('Message ID'),
+  blockId: PrismaInformBlockMessageSchema.shape.blockId.describe('Block ID this message belongs to'),
+  message: PrismaInformBlockMessageSchema.shape.message.min(1, 'Message must not be empty').describe('Message content'),
+  sender: PrismaInformBlockMessageSchema.shape.sender.describe('Message sender'),
   timestamp: isoDateStringSchema.describe('Message timestamp (ISO 8601 format)'),
 });
 

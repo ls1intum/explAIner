@@ -7,7 +7,6 @@ import { learningGoalSchema } from './learning-goal.schema';
 
 /**
  * Learning Goals Schema – validates exactly 3 learning goals (tuple).
- * Used for AI-generated learning goals in various endpoints.
  */
 export const learningGoalsSchema = z.tuple([
   learningGoalSchema,
@@ -31,23 +30,25 @@ export const topicWithPriorKnowledgeSchema = z.object({
 // DTO SCHEMAS (REQUEST / RESPONSE)
 /////////////////////////////////////////
 
-/** Request: generate learning goals from topic (reuses topicWithPriorKnowledgeSchema). */
+/** Request: generate learning goals from topic */
 export const generateLearningGoalsRequestSchema = topicWithPriorKnowledgeSchema;
 export type GenerateLearningGoalsRequest = z.infer<typeof generateLearningGoalsRequestSchema>;
 
-/** Request: session ID for easier learning goals. */
-export const generateEasierLearningGoalsRequestSchema = z.object({
-  sessionId: z.string().min(1, 'Session ID cannot be empty').describe('Session ID to generate easier learning goals for'),
-});
-export type GenerateEasierLearningGoalsRequest = z.infer<typeof generateEasierLearningGoalsRequestSchema>;
-
-/** Response: array of 3 generated learning goals. */
+/** Response: array of 3 generated learning goals */
 export const generateLearningGoalsResponseSchema = z.object({
   learningGoals: learningGoalsSchema.describe('Array of exactly 3 generated learning goals'),
 });
 export type GenerateLearningGoalsResponse = z.infer<typeof generateLearningGoalsResponseSchema>;
 
-/** Response: easier learning goals with session context. */
+
+
+/** Request: session ID for easier learning goals */
+export const generateEasierLearningGoalsRequestSchema = z.object({
+  sessionId: z.string().min(1, 'Session ID cannot be empty').describe('Session ID to generate easier learning goals for'),
+});
+export type GenerateEasierLearningGoalsRequest = z.infer<typeof generateEasierLearningGoalsRequestSchema>;
+
+/** Response: easier learning goals with session context */
 export const generateEasierLearningGoalsResponseSchema = z.object({
   topic: z.string().describe('The learning topic from the previous session').meta({ example: 'Photosynthesis' }),
   priorKnowledgeKeywords: z.string().optional().describe('Prior knowledge from previous session').meta({ example: 'plants, light' }),

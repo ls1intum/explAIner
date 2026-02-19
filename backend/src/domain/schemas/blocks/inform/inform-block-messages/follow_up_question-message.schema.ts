@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { InformBlockMessageSchema } from '../../../../../../prisma/generated/zod';
+import { InformBlockMessageSchema as PrismaInformBlockMessageSchema } from '../../../../../../prisma/generated/zod';
 
 /////////////////////////////////////////
 // DTO SCHEMAS (REQUEST / RESPONSE)
@@ -10,7 +10,7 @@ import { InformBlockMessageSchema } from '../../../../../../prisma/generated/zod
  * Used by generate-chat-response request DTO.
  */
 export const followUpQuestionMessageSchema = z.object({
-  message: InformBlockMessageSchema.shape.message.describe(
+  message: PrismaInformBlockMessageSchema.shape.message.describe(
     'User message / follow-up question sent in the inform block chat',
   ),
 });
