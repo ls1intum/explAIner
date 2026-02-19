@@ -43,7 +43,7 @@ export class GenerateSessionSummaryChain {
       practiceResults: params.practiceResults,
     });
 
-    // 2. Call Claude
+    // 2. Call LLM with generated prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response (with retry on schema/parse failure)

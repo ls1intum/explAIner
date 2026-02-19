@@ -39,7 +39,7 @@ export class GenerateEasierLearningGoalsChain {
       this.logger.log('generate-easier-learning-goals');
     }
 
-    // 1. Generate prompt from template
+    // 1. Generate prompt
     const prompt = generateEasierLearningGoalsPrompt({
       topic: params.topic,
       originalGoal: params.originalGoal,
@@ -48,7 +48,7 @@ export class GenerateEasierLearningGoalsChain {
       coveredContent: params.coveredContent,
     });
 
-    // 2. Call Claude with generated prompt
+    // 2. Call LLM with generated prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response (with retry on schema/parse failure)

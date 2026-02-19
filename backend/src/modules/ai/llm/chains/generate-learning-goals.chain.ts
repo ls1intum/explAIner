@@ -36,13 +36,13 @@ export class GenerateLearningGoalsChain {
       this.logger.log('generate-learning-goals');
     }
 
-    // 1. Generate prompt from template
+    // 1. Generate prompt
     const prompt = generateLearningGoalsPrompt({
       topic: params.topic,
       priorKnowledgeKeywords: params.priorKnowledgeKeywords,
     });
 
-    // 2. Call Claude with generated prompt
+    // 2. Call LLM with generated prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
     // 3. Parse and validate response (with retry on schema/parse failure)
