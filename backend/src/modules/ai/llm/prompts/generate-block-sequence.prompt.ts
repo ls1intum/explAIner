@@ -27,9 +27,6 @@ export const generateBlockSequencePrompt = ({
   // Mode-specific configuration
   const isInitial = mode === BlockSequenceMode.INITIAL;
   const keyPointsLabel = isInitial ? 'keyFacts' : 'keyMisconceptions';
-  const keyPointsDescription = isInitial
-    ? 'key facts (2-4 items)'
-    : 'key misconceptions to address (2-4 items)';
   const informBlockInstructions = isInitial
     ? 'Create educational content that teaches EVERYTHING needed to answer the practice questions:\n1. Start with a brief explanation (2-3 sentences) that connects the concepts\n2. List EXACTLY 3 or 4 key facts (NO MORE THAN 4) that directly address ALL concepts needed for the questions\n3. End with a one-sentence summary that frames the topic'
     : 'Create educational content that addresses misconceptions and teaches EVERYTHING needed to answer the practice questions:\n1. Start with a brief explanation (2-3 sentences) that connects the concepts\n2. List 2-4 key misconceptions that address the student\'s previous mistakes and clarify them\n3. End with a one-sentence summary that frames the topic';
