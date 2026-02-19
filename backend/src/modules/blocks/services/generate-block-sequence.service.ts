@@ -173,7 +173,7 @@ ${blockSequence.informBlock.summary}`;
         type: 'Inform' as const,
         content: informBlock.messages.map((msg) => ({
           id: msg.id,
-          blockId: informBlockCreated.id,
+          informBlockId: informBlockCreated.id,
           message: msg.message,
           sender: msg.sender,
           timestamp: (msg.timestamp as Date).toISOString(),

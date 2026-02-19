@@ -57,7 +57,7 @@ export class GetSessionService {
             type: 'Inform' as const,
             content: block.informBlock.messages.map((msg) => ({
               id: msg.id,
-              blockId: block.id,
+              informBlockId: block.id,
               message: msg.message,
               sender: msg.sender,
               timestamp: (msg.timestamp as Date).toISOString(),

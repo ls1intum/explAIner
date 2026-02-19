@@ -9,13 +9,12 @@ import { BaseBlockSchema } from '../base-block.schema';
 /** Timestamp string (e.g. ISO 8601). Avoids z.date() so schema is JSON-Schema compatible. */
 const IsoDateStringSchema = z.string();
 
-// API shape: expose blockId (block this message belongs to); DB uses informBlockId
+// timestamp overridden for JSON-Schema compatibility
 export const InformBlockMessageSchema = PrismaInformBlockMessageSchema.omit({
   timestamp: true,
-  informBlockId: true,
 }).extend({
   id: PrismaInformBlockMessageSchema.shape.id.describe('Message ID'),
-  blockId: z.string().uuid().describe('Block ID this message belongs to'),
+  informBlockId: PrismaInformBlockMessageSchema.shape.informBlockId.describe('Inform block this message belongs to'),
   message: PrismaInformBlockMessageSchema.shape.message.min(1, 'Message must not be empty').describe('Message content'),
   sender: PrismaInformBlockMessageSchema.shape.sender.describe('Message sender'),
   timestamp: IsoDateStringSchema.describe('Message timestamp (ISO 8601 format)'),

@@ -403,13 +403,10 @@ export interface components {
                      * @description Message ID
                      */
                     id: string;
+                    /** @description Inform block this message belongs to */
+                    informBlockId: string;
                     /** @description Message content */
                     message: string;
-                    /**
-                     * Format: uuid
-                     * @description Block ID this message belongs to
-                     */
-                    blockId: string;
                     /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];
@@ -528,13 +525,10 @@ export interface components {
                      * @description Message ID
                      */
                     id: string;
+                    /** @description Inform block this message belongs to */
+                    informBlockId: string;
                     /** @description Message content */
                     message: string;
-                    /**
-                     * Format: uuid
-                     * @description Block ID this message belongs to
-                     */
-                    blockId: string;
                     /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];
@@ -672,13 +666,10 @@ export interface components {
                      * @description Message ID
                      */
                     id: string;
+                    /** @description Inform block this message belongs to */
+                    informBlockId: string;
                     /** @description Message content */
                     message: string;
-                    /**
-                     * Format: uuid
-                     * @description Block ID this message belongs to
-                     */
-                    blockId: string;
                     /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];
