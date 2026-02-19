@@ -1,15 +1,15 @@
 import { z } from 'zod';
-import { SummaryBlockSchema } from '../../../../../prisma/generated/zod';
 import { baseBlockSchema } from '../base-block.schema';
+import { SummaryBlockSchema as PrismaSummaryBlockSchema } from '../../../../../prisma/generated/zod';
 
 /////////////////////////////////////////
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
 /////////////////////////////////////////
 
 /** Content schema derived from Prisma; refinement for non-empty summary. */
-export const summaryBlockContentSchema = SummaryBlockSchema.extend({
-  blockId: SummaryBlockSchema.shape.blockId.describe('Block ID'),
-  sessionSummary: SummaryBlockSchema.shape.sessionSummary
+export const summaryBlockContentSchema = PrismaSummaryBlockSchema.extend({
+  blockId: PrismaSummaryBlockSchema.shape.blockId.describe('Block ID'),
+  sessionSummary: PrismaSummaryBlockSchema.shape.sessionSummary
     .min(1, 'Summary must not be empty')
     .describe('Session summary content'),
 });
@@ -25,17 +25,16 @@ export const summaryBlockSchema = baseBlockSchema.extend({
 export type SummaryBlockContent = z.infer<typeof summaryBlockContentSchema>;
 export type SummaryBlock = z.infer<typeof summaryBlockSchema>;
 
-/** Session summary only – used by AI summary chain and DTOs. */
-export const sessionSummarySchema = summaryBlockContentSchema.pick({ sessionSummary: true });
-export type SessionSummary = z.infer<typeof sessionSummarySchema>;
+/** Parser schema for session-summary chain (LLM response shape: sessionSummary only). */
+export const sessionSummaryParseSchema = summaryBlockContentSchema.pick({ sessionSummary: true });
+export type SessionSummaryParseSchema = z.infer<typeof sessionSummaryParseSchema>;
 
 /////////////////////////////////////////
 // DTO SCHEMAS (REQUEST / RESPONSE)
 /////////////////////////////////////////
 
-/** Response shape for generate-summary-block endpoint. */
-export const GenerateSummaryBlockResponseSchema = z.object({
-  summaryBlock: summaryBlockSchema.describe('Generated summary block'),
+/** Response shape for generate-summary-block endpoint. Reuses summaryBlockSchema + session metadata. */
+export const GenerateSummaryBlockResponseSchema = summaryBlockSchema.extend({
   sessionDuration: z.number().describe('Session duration in minutes'),
   totalBlocks: z.number().describe('Total number of blocks in the session'),
 });

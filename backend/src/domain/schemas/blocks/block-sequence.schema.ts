@@ -28,24 +28,24 @@ export type BlockSequence = z.infer<typeof blockSequenceSchema>;
 /////////////////////////////////////////
 
 /** Practice block question shape for AI generation (no blockId, no student answers). */
-export const parseSchemaPracticeBlockQuestion = practiceBlockContentSchema.pick({
+export const practiceBlockQuestionParseSchema = practiceBlockContentSchema.pick({
   soloLevel: true,
   question: true,
   answerOptions: true,
   correctAnswerOptionIndices: true,
 });
-export type ParseSchemaPracticeBlockQuestion = z.infer<typeof parseSchemaPracticeBlockQuestion>;
+export type PracticeBlockQuestionParseSchema = z.infer<typeof practiceBlockQuestionParseSchema>;
 
-/** AI block sequence schema for mode initial (keyFacts). */
-export const aiGeneratedBlockSequenceInitialSchema = z.object({
+/** Block sequence parser schema for mode initial (keyFacts). */
+export const initialBlockSequenceParseSchema = z.object({
   informBlock: keyFactsMessageSchema.describe('Inform block content with key facts'),
-  practiceBlocks: z.array(parseSchemaPracticeBlockQuestion).length(3, 'Must have exactly 3 practice blocks'),
+  practiceBlocks: z.array(practiceBlockQuestionParseSchema).length(3, 'Must have exactly 3 practice blocks'),
 });
-export type AIGeneratedBlockSequenceInitial = z.infer<typeof aiGeneratedBlockSequenceInitialSchema>;
+export type InitialBlockSequenceParseSchema = z.infer<typeof initialBlockSequenceParseSchema>;
 
-/** AI block sequence schema for mode subsequent (keyMisconceptions). */
-export const aiGeneratedBlockSequenceSubsequentSchema = z.object({
+/** Block sequence parser schema for mode subsequent (keyMisconceptions). */
+export const subsequentBlockSequenceParseSchema = z.object({
   informBlock: keyMisconceptionsMessageSchema.describe('Inform block content with key misconceptions'),
-  practiceBlocks: z.array(parseSchemaPracticeBlockQuestion).length(3, 'Must have exactly 3 practice blocks'),
+  practiceBlocks: z.array(practiceBlockQuestionParseSchema).length(3, 'Must have exactly 3 practice blocks'),
 });
-export type AIGeneratedBlockSequenceSubsequent = z.infer<typeof aiGeneratedBlockSequenceSubsequentSchema>;
+export type SubsequentBlockSequenceParseSchema = z.infer<typeof subsequentBlockSequenceParseSchema>;

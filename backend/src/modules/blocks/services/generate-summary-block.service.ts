@@ -95,21 +95,14 @@ export class GenerateSummaryBlockService {
       },
     });
 
-    // 9. Return summary block with session metadata in schema format
-    // Note: learningGoal and bloomsLevel are not included as they should already be
-    // stored in the frontend from the session data
+    // 9. Return block in schema shape (summaryBlockSchema) + session metadata; minimal mapping: key summaryBlock -> content
     return {
-      summaryBlock: {
-        id: createdSummaryBlock.id,
-        sessionId: createdSummaryBlock.sessionId,
-        orderIndex: createdSummaryBlock.orderIndex,
-        alreadyViewed: createdSummaryBlock.alreadyViewed,
-        type: 'Summary' as const,
-        content: {
-          blockId: createdSummaryBlock.summaryBlock!.blockId,
-          sessionSummary: createdSummaryBlock.summaryBlock!.sessionSummary,
-        },
-      },
+      id: createdSummaryBlock.id,
+      sessionId: createdSummaryBlock.sessionId,
+      orderIndex: createdSummaryBlock.orderIndex,
+      alreadyViewed: createdSummaryBlock.alreadyViewed,
+      type: 'Summary' as const,
+      content: createdSummaryBlock.summaryBlock!,
       sessionDuration,
       totalBlocks: session.totalBlocks + 1,
     };
