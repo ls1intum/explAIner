@@ -16,4 +16,3 @@ export const blockSchema = z.discriminatedUnion('type', [
   summaryBlockSchema,
 ]);
 export type Block = z.infer<typeof blockSchema>;
-export { baseBlockSchema } from './base-block.schema';
