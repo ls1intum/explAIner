@@ -94,11 +94,10 @@ export default function LearningGoalPage() {
       setShowLoadingScreen(true);
       dispatch(setLoading(true));
 
-      // Call createSession API
+      // Call createSession API (nested learningGoal matches domain shape)
       const response = await createSession({
         topic: pageData.topic,
-        learningGoal: finalGoal,
-        bloomsLevel: finalBloomsLevel,
+        learningGoal: { learningGoal: finalGoal, bloomsLevel: finalBloomsLevel },
         priorKnowledgeKeywords: pageData.keywords?.trim() || undefined,
       }).unwrap();
 

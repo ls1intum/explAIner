@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BloomsLevelSchema as PrismaBloomsLevelSchema, SessionSchema as PrismaSessionSchema } from '../../../../prisma/generated/zod';
+import { SessionSchema as PrismaSessionSchema } from '../../../../prisma/generated/zod';
 import { LearningGoalSchema } from '../learning-goals/learning-goal.schema';
 import { TopicWithPriorKnowledgeSchema } from '../learning-goals/learning-goals.schema';
 import { BlockSchema } from '../blocks/block.schema';
@@ -55,10 +55,9 @@ export const UpdateCurrentBlockIndexResponseSchema = z.object({
 export type UpdateCurrentBlockIndexResponse = z.infer<typeof UpdateCurrentBlockIndexResponseSchema>;
 
 
-/** Request: create session (reuses topic + priorKnowledge from learning-goals). */
+/** Request: create session. Reuses topic + priorKnowledge and nested learningGoal (same shape as domain). */
 export const CreateSessionRequestSchema = TopicWithPriorKnowledgeSchema.extend({
-  learningGoal: z.string().min(1, 'Learning goal cannot be empty').describe('The specific learning goal for this session'),
-  bloomsLevel: PrismaBloomsLevelSchema.describe("Bloom's taxonomy level for the learning goal"),
+  learningGoal: LearningGoalSchema.describe('Selected learning goal for this session'),
 });
 export type CreateSessionRequest = z.infer<typeof CreateSessionRequestSchema>;
 
