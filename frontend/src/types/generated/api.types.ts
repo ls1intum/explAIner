@@ -255,8 +255,8 @@ export interface components {
         GenerateLearningGoalsRequestDto: {
             /** @description The learning topic or question */
             topic: string;
-            /** @description Keywords describing prior knowledge (optional) */
-            priorKnowledgeKeywords?: string;
+            /** @description Prior knowledge (optional) */
+            priorKnowledge?: string;
         };
         GenerateLearningGoalsResponseDto_Output: {
             /** @description Array of exactly 3 generated learning goals */
@@ -304,7 +304,7 @@ export interface components {
              * @description Prior knowledge from previous session
              * @example plants, light
              */
-            priorKnowledgeKeywords?: string;
+            priorKnowledge?: string;
             /** @description Array of exactly 3 easier learning goals */
             learningGoals: [
                 {
@@ -339,8 +339,8 @@ export interface components {
         CreateSessionRequestDto: {
             /** @description The learning topic or question */
             topic: string;
-            /** @description Keywords describing prior knowledge (optional) */
-            priorKnowledgeKeywords?: string;
+            /** @description Prior knowledge (optional) */
+            priorKnowledge?: string;
             /** @description Selected learning goal for this session */
             learningGoal: {
                 /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
@@ -391,7 +391,7 @@ export interface components {
                  * @enum {string}
                  */
                 type: "Inform";
-                /** @description Inform block messages */
+                /** @description Inform block content */
                 content: {
                     /**
                      * @description Message sender
@@ -403,10 +403,13 @@ export interface components {
                      * @description Message ID
                      */
                     id: string;
-                    /** @description Block ID this message belongs to */
-                    blockId: string;
                     /** @description Message content */
                     message: string;
+                    /**
+                     * Format: uuid
+                     * @description Block ID this message belongs to
+                     */
+                    blockId: string;
                     /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];
@@ -513,7 +516,7 @@ export interface components {
                  * @enum {string}
                  */
                 type: "Inform";
-                /** @description Inform block messages */
+                /** @description Inform block content */
                 content: {
                     /**
                      * @description Message sender
@@ -525,10 +528,13 @@ export interface components {
                      * @description Message ID
                      */
                     id: string;
-                    /** @description Block ID this message belongs to */
-                    blockId: string;
                     /** @description Message content */
                     message: string;
+                    /**
+                     * Format: uuid
+                     * @description Block ID this message belongs to
+                     */
+                    blockId: string;
                     /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];
@@ -654,7 +660,7 @@ export interface components {
                  * @enum {string}
                  */
                 type: "Inform";
-                /** @description Inform block messages */
+                /** @description Inform block content */
                 content: {
                     /**
                      * @description Message sender
@@ -666,10 +672,13 @@ export interface components {
                      * @description Message ID
                      */
                     id: string;
-                    /** @description Block ID this message belongs to */
-                    blockId: string;
                     /** @description Message content */
                     message: string;
+                    /**
+                     * Format: uuid
+                     * @description Block ID this message belongs to
+                     */
+                    blockId: string;
                     /** @description Message timestamp (ISO 8601 format) */
                     timestamp: string;
                 }[];

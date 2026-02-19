@@ -50,10 +50,10 @@ enum SoloLevel {
 // Models
 model Session {
   id                      String      @id @default(uuid()) @db.Uuid
-  learningTopicOrQuestion String      @map("learning_topic_or_question") @db.Text
+  topic                   String      @db.Text
   learningGoal            String      @map("learning_goal") @db.Text
   learningGoalBloomsLevel BloomsLevel @map("learning_goal_blooms_level")
-  priorKnowledgeKeywords  String?     @map("prior_knowledge_keywords") @db.Text
+  priorKnowledge          String?     @map("prior_knowledge") @db.Text
   totalBlocks             Int         @default(1) @map("total_blocks")
   currentBlockIndex       Int         @default(0) @map("current_block_index")
   userFeedback            Int?        @map("user_feedback") @db.SmallInt
@@ -72,26 +72,34 @@ model Block {
   alreadyViewed Boolean   @default(false) @map("already_viewed")
   type          BlockType
 
-  session             Session              @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  informBlockMessages InformBlockMessage[]
-  practiceBlock       PracticeBlock?
-  summaryBlock        SummaryBlock?
+  session       Session        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  informBlock   InformBlock?
+  practiceBlock PracticeBlock?
+  summaryBlock  SummaryBlock?
 
   @@unique([sessionId, orderIndex])
   @@index([sessionId, orderIndex])
   @@map("blocks")
 }
 
+model InformBlock {
+  blockId   String   @id @map("block_id") @db.Uuid
+  block     Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  messages  InformBlockMessage[]
+
+  @@map("inform_blocks")
+}
+
 model InformBlockMessage {
-  id        String        @id @default(uuid()) @db.Uuid
-  blockId   String        @map("block_id") @db.Uuid
-  message   String        @db.Text
-  sender    MessageSender
-  timestamp DateTime      @default(now()) @db.Timestamptz(3)
+  id             String      @id @default(uuid()) @db.Uuid
+  informBlockId  String      @map("inform_block_id") @db.Uuid
+  message        String      @db.Text
+  sender         MessageSender
+  timestamp      DateTime    @default(now()) @db.Timestamptz(3)
 
-  block Block @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  informBlock InformBlock @relation(fields: [informBlockId], references: [blockId], onDelete: Cascade)
 
-  @@index([blockId, timestamp])
+  @@index([informBlockId, timestamp])
   @@map("inform_block_messages")
 }
 

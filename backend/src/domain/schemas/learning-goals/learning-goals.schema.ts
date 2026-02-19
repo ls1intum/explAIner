@@ -22,7 +22,7 @@ export type LearningGoals = z.infer<typeof LearningGoalsSchema>;
 /** Topic + optional prior knowledge – reused by create-session and generate-learning-goals requests. */
 export const TopicWithPriorKnowledgeSchema = z.object({
   topic: z.string().min(1, 'Topic cannot be empty').describe('The learning topic or question'),
-  priorKnowledgeKeywords: z.string().optional().describe('Keywords describing prior knowledge (optional)'),
+  priorKnowledge: z.string().optional().describe('Prior knowledge (optional)'),
 });
 
 /////////////////////////////////////////
@@ -46,7 +46,7 @@ export type GenerateEasierLearningGoalsRequest = z.infer<typeof GenerateEasierLe
 /** Response: easier learning goals with session context */
 export const GenerateEasierLearningGoalsResponseSchema = z.object({
   topic: z.string().describe('The learning topic from the previous session').meta({ example: 'Photosynthesis' }),
-  priorKnowledgeKeywords: z.string().optional().describe('Prior knowledge from previous session').meta({ example: 'plants, light' }),
+  priorKnowledge: z.string().optional().describe('Prior knowledge from previous session').meta({ example: 'plants, light' }),
   learningGoals: LearningGoalsSchema.describe('Array of exactly 3 easier learning goals'),
 });
 export type GenerateEasierLearningGoalsResponse = z.infer<typeof GenerateEasierLearningGoalsResponseSchema>;

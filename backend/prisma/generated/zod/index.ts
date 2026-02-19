@@ -12,11 +12,13 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const SessionScalarFieldEnumSchema = z.enum(['id','learningTopicOrQuestion','learningGoal','learningGoalBloomsLevel','priorKnowledgeKeywords','totalBlocks','currentBlockIndex','userFeedback','startedAt','completedAt']);
+export const SessionScalarFieldEnumSchema = z.enum(['id','topic','learningGoal','learningGoalBloomsLevel','priorKnowledge','totalBlocks','currentBlockIndex','userFeedback','startedAt','completedAt']);
 
 export const BlockScalarFieldEnumSchema = z.enum(['id','sessionId','orderIndex','alreadyViewed','type']);
 
-export const InformBlockMessageScalarFieldEnumSchema = z.enum(['id','blockId','message','sender','timestamp']);
+export const InformBlockScalarFieldEnumSchema = z.enum(['blockId']);
+
+export const InformBlockMessageScalarFieldEnumSchema = z.enum(['id','informBlockId','message','sender','timestamp']);
 
 export const PracticeBlockScalarFieldEnumSchema = z.enum(['blockId','soloLevel','question','answerOptions','correctAnswerOptionIndices','studentAnswerOptionIndices','studentAnswerIsCorrect']);
 
@@ -55,9 +57,9 @@ export type SoloLevelType = `${z.infer<typeof SoloLevelSchema>}`
 export const SessionSchema = z.object({
   learningGoalBloomsLevel: BloomsLevelSchema,
   id: z.uuid(),
-  learningTopicOrQuestion: z.string(),
+  topic: z.string(),
   learningGoal: z.string(),
-  priorKnowledgeKeywords: z.string().nullable(),
+  priorKnowledge: z.string().nullable(),
   totalBlocks: z.number().int(),
   currentBlockIndex: z.number().int(),
   userFeedback: z.number().int().nullable(),
@@ -82,13 +84,23 @@ export const BlockSchema = z.object({
 export type Block = z.infer<typeof BlockSchema>
 
 /////////////////////////////////////////
+// INFORM BLOCK SCHEMA
+/////////////////////////////////////////
+
+export const InformBlockSchema = z.object({
+  blockId: z.string(),
+})
+
+export type InformBlock = z.infer<typeof InformBlockSchema>
+
+/////////////////////////////////////////
 // INFORM BLOCK MESSAGE SCHEMA
 /////////////////////////////////////////
 
 export const InformBlockMessageSchema = z.object({
   sender: MessageSenderSchema,
   id: z.uuid(),
-  blockId: z.string(),
+  informBlockId: z.string(),
   message: z.string(),
   timestamp: z.coerce.date(),
 })

@@ -17,8 +17,8 @@ export const SessionSchema = PrismaSessionSchema.pick({
   totalBlocks: true,
   currentBlockIndex: true,
 }).extend({
-  topic: PrismaSessionSchema.shape.learningTopicOrQuestion.describe('Learning topic or question'),
-  priorKnowledge: PrismaSessionSchema.shape.priorKnowledgeKeywords.optional().describe('Prior knowledge keywords'),
+  topic: PrismaSessionSchema.shape.topic.describe('Learning topic or question'),
+  priorKnowledge: PrismaSessionSchema.shape.priorKnowledge.optional().describe('Prior knowledge keywords'),
   learningGoal: LearningGoalSchema.describe('Selected learning goal'),
   blocks: z.array(BlockSchema).describe('All blocks in the session'),
   // Re-specify picked keys only to add .describe() for OpenAPI; validation still uses Prisma schemas.

@@ -98,7 +98,7 @@ export default function LearningGoalPage() {
       const response = await createSession({
         topic: pageData.topic,
         learningGoal: { learningGoal: finalGoal, bloomsLevel: finalBloomsLevel },
-        priorKnowledgeKeywords: pageData.keywords?.trim() || undefined,
+        priorKnowledge: pageData.keywords?.trim() || undefined,
       }).unwrap();
 
       // Update Redux store with new session data (overwrites old session)

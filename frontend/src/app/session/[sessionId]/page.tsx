@@ -195,7 +195,7 @@ export default function SessionPage() {
       // Set learning goals page data with easier goals
       dispatch(setLearningGoalsPageData({
         topic: result.topic,
-        keywords: result.priorKnowledgeKeywords || '',
+        keywords: result.priorKnowledge || '',
         goals: result.learningGoals,
       }));
       

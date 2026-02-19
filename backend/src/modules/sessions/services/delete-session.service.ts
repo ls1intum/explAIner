@@ -9,7 +9,7 @@ export class DeleteSessionService {
 
   /**
    * Delete session and all related data (cascade delete)
-   * Deletes: Session -> Blocks -> InformBlockMessages, PracticeBlocks, SummaryBlocks
+   * Deletes: Session -> Blocks -> InformBlocks -> InformBlockMessages, PracticeBlocks, SummaryBlocks
    */
   @LogService()
   async delete(sessionId: string): Promise<DeleteSessionResponseDto> {

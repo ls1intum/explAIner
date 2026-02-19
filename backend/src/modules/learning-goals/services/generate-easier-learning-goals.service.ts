@@ -22,7 +22,7 @@ export class GenerateEasierLearningGoalsService {
         blocks: {
           include: {
             practiceBlock: true,
-            informBlockMessages: true,
+            informBlock: { include: { messages: true } },
           },
           orderBy: {
             orderIndex: 'asc',
@@ -56,20 +56,20 @@ export class GenerateEasierLearningGoalsService {
 
     // 3. Extract covered content from inform blocks
     const informBlocks = session.blocks.filter(
-      (block) => block.type === BlockType.Inform && block.informBlockMessages,
+      (block) => block.type === BlockType.Inform && block.informBlock,
     );
-    
+
     const coveredContent = informBlocks
-      .map((block) => 
-        block.informBlockMessages
+      .map((block) =>
+        block.informBlock!.messages
           .map((msg) => msg.message)
-          .join('\n')
+          .join('\n'),
       )
       .join('\n\n');
 
     // 4. Call chain with structured params (chain handles prompt generation)
     const learningGoals = await this.generateEasierLearningGoalsChain.execute({
-      topic: session.learningTopicOrQuestion,
+      topic: session.topic,
       originalGoal: session.learningGoal,
       originalBloomsLevel: session.learningGoalBloomsLevel,
       wrongQuestions: wrongPracticeBlocks,
@@ -78,8 +78,8 @@ export class GenerateEasierLearningGoalsService {
 
     // 5. Return complete response (chain already returns correct tuple structure)
     return {
-      topic: session.learningTopicOrQuestion,
-      priorKnowledgeKeywords: session.priorKnowledgeKeywords || undefined,
+      topic: session.topic,
+      priorKnowledge: session.priorKnowledge ?? undefined,
       learningGoals: learningGoals,
     };
   }

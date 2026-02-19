@@ -18,8 +18,10 @@ export class GetBlockByOrderIndexService {
         },
       },
       include: {
-        informBlockMessages: {
-          orderBy: { timestamp: 'asc' },
+        informBlock: {
+          include: {
+            messages: { orderBy: { timestamp: 'asc' } },
+          },
         },
         practiceBlock: true,
         summaryBlock: true,
@@ -33,20 +35,20 @@ export class GetBlockByOrderIndexService {
     }
 
     // Return block in schema-compatible format (discriminated union with content field)
-    if (block.type === 'Inform') {
+    if (block.type === 'Inform' && block.informBlock) {
       return {
         id: block.id,
         sessionId: block.sessionId,
         orderIndex: block.orderIndex,
         alreadyViewed: block.alreadyViewed,
         type: 'Inform' as const,
-        content: block.informBlockMessages?.map((msg) => ({
+        content: block.informBlock.messages.map((msg) => ({
           id: msg.id,
-          blockId: msg.blockId,
+          blockId: block.id,
           message: msg.message,
           sender: msg.sender,
           timestamp: msg.timestamp.toISOString(),
-        })) || [],
+        })),
       };
     } else if (block.type === 'Practice' && block.practiceBlock) {
       return {

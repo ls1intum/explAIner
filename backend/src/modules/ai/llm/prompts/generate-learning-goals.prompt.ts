@@ -2,12 +2,12 @@ import { BLOOMS_TAXONOMY_DESCRIPTION } from '../../../../domain/didactical-frame
 
 interface GenerateLearningGoalsPromptParams {
   topic: string;
-  priorKnowledgeKeywords?: string;
+  priorKnowledge?: string;
 }
 
-export const generateLearningGoalsPrompt = ({ topic, priorKnowledgeKeywords }: GenerateLearningGoalsPromptParams): string => {
-  const priorKnowledgeContext = priorKnowledgeKeywords
-    ? `\n\nIMPORTANT - PRIOR KNOWLEDGE: The learner already knows about: ${priorKnowledgeKeywords}
+export const generateLearningGoalsPrompt = ({ topic, priorKnowledge }: GenerateLearningGoalsPromptParams): string => {
+  const priorKnowledgeContext = priorKnowledge
+    ? `\n\nIMPORTANT - PRIOR KNOWLEDGE: The learner already knows about: ${priorKnowledge}
 Do NOT include learning goals that cover concepts the learner already knows. Focus on NEW knowledge beyond what they already understand.`
     : '';
 
@@ -29,7 +29,7 @@ CRITICAL REQUIREMENTS:
    - Goal 3: Apply or Analyze level (practical application or analysis)
 4. Each goal MUST be BRIEF (max 30 words total)
 5. Do NOT repeat similar content across goals
-6. ${priorKnowledgeKeywords ? 'SKIP any content the learner already knows based on their prior knowledge. Focus ONLY on new concepts.' : 'Cover the fundamentals if no prior knowledge is indicated.'}
+6. ${priorKnowledge ? 'SKIP any content the learner already knows based on their prior knowledge. Focus ONLY on new concepts.' : 'Cover the fundamentals if no prior knowledge is indicated.'}
 
 ${BLOOMS_TAXONOMY_DESCRIPTION}
 

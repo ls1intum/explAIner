@@ -17,7 +17,7 @@ export class GenerateLearningGoalsService {
     // Call chain with structured params (chain handles prompt generation)
     const goals = await this.generateLearningGoalsChain.execute({
       topic: dto.topic,
-      priorKnowledgeKeywords: dto.priorKnowledgeKeywords,
+      priorKnowledge: dto.priorKnowledge,
     });
 
     // Return wrapped response (chain already returns correct tuple structure)

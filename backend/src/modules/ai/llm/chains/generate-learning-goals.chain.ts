@@ -29,7 +29,7 @@ export class GenerateLearningGoalsChain {
    */
   async execute(params: {
     topic: string;
-    priorKnowledgeKeywords?: string;
+    priorKnowledge?: string;
   }): Promise<LearningGoals> {
     // Log chain execution
     if (isLogEnabled('ai')) {
@@ -39,7 +39,7 @@ export class GenerateLearningGoalsChain {
     // 1. Generate prompt
     const prompt = generateLearningGoalsPrompt({
       topic: params.topic,
-      priorKnowledgeKeywords: params.priorKnowledgeKeywords,
+      priorKnowledge: params.priorKnowledge,
     });
 
     // 2. Call LLM with generated prompt

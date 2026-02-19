@@ -20,8 +20,10 @@ export class GetSessionService {
         blocks: {
           orderBy: { orderIndex: 'asc' },
           include: {
-            informBlockMessages: {
-              orderBy: { timestamp: 'asc' },
+            informBlock: {
+              include: {
+                messages: { orderBy: { timestamp: 'asc' } },
+              },
             },
             practiceBlock: true,
             summaryBlock: true,
@@ -37,8 +39,8 @@ export class GetSessionService {
     // Transform to match session schema structure
     return {
       id: session.id,
-      topic: session.learningTopicOrQuestion,
-      priorKnowledge: session.priorKnowledgeKeywords || undefined,
+      topic: session.topic,
+      priorKnowledge: session.priorKnowledge ?? undefined,
       learningGoal: {
         learningGoal: session.learningGoal,
         bloomsLevel: session.learningGoalBloomsLevel,
@@ -46,20 +48,20 @@ export class GetSessionService {
       totalBlocks: session.totalBlocks,
       currentBlockIndex: session.currentBlockIndex,
       blocks: session.blocks.map((block) => {
-        if (block.type === 'Inform') {
+        if (block.type === 'Inform' && block.informBlock) {
           return {
             id: block.id,
             sessionId: block.sessionId,
             orderIndex: block.orderIndex,
             alreadyViewed: block.alreadyViewed,
             type: 'Inform' as const,
-            content: block.informBlockMessages?.map((msg) => ({
+            content: block.informBlock.messages.map((msg) => ({
               id: msg.id,
-              blockId: msg.blockId,
+              blockId: block.id,
               message: msg.message,
               sender: msg.sender,
               timestamp: (msg.timestamp as Date).toISOString(),
-            })) || [],
+            })),
           };
         } else if (block.type === 'Practice' && block.practiceBlock) {
           return {

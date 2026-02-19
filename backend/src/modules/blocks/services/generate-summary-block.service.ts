@@ -20,7 +20,7 @@ export class GenerateSummaryBlockService {
       include: {
         blocks: {
           include: {
-            informBlockMessages: true,
+            informBlock: { include: { messages: true } },
             practiceBlock: true,
           },
           orderBy: {
@@ -36,10 +36,10 @@ export class GenerateSummaryBlockService {
 
     // 2. Extract inform content (first message from each inform block)
     const informBlocks = session.blocks.filter(
-      (block) => block.type === BlockType.Inform,
+      (block) => block.type === BlockType.Inform && block.informBlock,
     );
     const informContent = informBlocks.map((block) => {
-      const firstMessage = block.informBlockMessages?.[0]?.message || '';
+      const firstMessage = block.informBlock!.messages?.[0]?.message || '';
       return firstMessage;
     });
 
@@ -59,7 +59,7 @@ export class GenerateSummaryBlockService {
 
     // 5. Call chain to generate summary
     const summaryBlock = await this.generateSessionSummaryChain.execute({
-      topic: session.learningTopicOrQuestion,
+      topic: session.topic,
       learningGoal: session.learningGoal,
       bloomsLevel: session.learningGoalBloomsLevel,
       informContent,

@@ -20,10 +20,10 @@ export class CreateSessionService {
     // 1. Create initial session with learning goal (nested shape from request)
     const session = await this.prisma.session.create({
       data: {
-        learningTopicOrQuestion: dto.topic,
+        topic: dto.topic,
         learningGoal: dto.learningGoal.learningGoal,
         learningGoalBloomsLevel: dto.learningGoal.bloomsLevel,
-        priorKnowledgeKeywords: dto.priorKnowledgeKeywords || undefined,
+        priorKnowledge: dto.priorKnowledge ?? undefined,
       },
     });
 
@@ -41,7 +41,7 @@ export class CreateSessionService {
     return {
       id: session.id,
       topic: dto.topic,
-      priorKnowledge: dto.priorKnowledgeKeywords || undefined,
+      priorKnowledge: dto.priorKnowledge ?? undefined,
       learningGoal: dto.learningGoal,
       totalBlocks: 4,
       currentBlockIndex: 0,

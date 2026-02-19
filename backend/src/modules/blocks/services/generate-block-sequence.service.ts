@@ -61,7 +61,7 @@ export class GenerateBlockSequenceService {
         : [];
 
     // 5. Get prior knowledge context
-    const priorKnowledge = session.priorKnowledgeKeywords || '';
+    const priorKnowledge = session.priorKnowledge ?? '';
 
     // 6. Determine appropriate SOLO levels based on Bloom's level
     const soloLevels = getSOLOLevelsForBlooms(session.learningGoalBloomsLevel);
@@ -69,7 +69,7 @@ export class GenerateBlockSequenceService {
     // 7. Call unified chain with mode parameter
     const blockSequence = await this.generateBlockSequenceChain.execute({
       mode,
-      topic: session.learningTopicOrQuestion,
+      topic: session.topic,
       learningGoal: session.learningGoal,
       bloomsLevel: session.learningGoalBloomsLevel,
       priorKnowledge,
@@ -92,23 +92,22 @@ ${keyPoints.map(item => `${item}`).join('\n')}
 SUMMARY
 ${blockSequence.informBlock.summary}`;
 
-    const informBlock = await this.prisma.block.create({
+    const informBlockCreated = await this.prisma.block.create({
       data: {
         sessionId,
         orderIndex: nextOrderIndexStart,
         type: BlockType.Inform,
         alreadyViewed: mode === BlockSequenceMode.INITIAL, // Only initial block is pre-viewed
-        informBlockMessages: {
-          create: [
-            {
-              message: formattedMessage,
-              sender: 'Owlbert',
+        informBlock: {
+          create: {
+            messages: {
+              create: [{ message: formattedMessage, sender: 'Owlbert' }],
             },
-          ],
+          },
         },
       },
       include: {
-        informBlockMessages: true,
+        informBlock: { include: { messages: true } },
       },
     });
 
@@ -164,20 +163,21 @@ ${blockSequence.informBlock.summary}`;
       },
     });
 
+    const informBlock = informBlockCreated.informBlock!;
     return {
       informBlock: {
-        id: informBlock.id,
-        sessionId: informBlock.sessionId,
-        orderIndex: informBlock.orderIndex,
-        alreadyViewed: informBlock.alreadyViewed,
+        id: informBlockCreated.id,
+        sessionId: informBlockCreated.sessionId,
+        orderIndex: informBlockCreated.orderIndex,
+        alreadyViewed: informBlockCreated.alreadyViewed,
         type: 'Inform' as const,
-        content: informBlock.informBlockMessages?.map((msg) => ({
+        content: informBlock.messages.map((msg) => ({
           id: msg.id,
-          blockId: msg.blockId,
+          blockId: informBlockCreated.id,
           message: msg.message,
           sender: msg.sender,
           timestamp: (msg.timestamp as Date).toISOString(),
-        })) || [],
+        })),
       },
       practiceBlocks: [
         mapPracticeBlock(practiceBlocks[0]),
