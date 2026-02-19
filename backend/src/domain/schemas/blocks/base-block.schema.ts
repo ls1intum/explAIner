@@ -7,6 +7,8 @@ import { BlockSchema as PrismaBlockSchema } from '../../../../prisma/generated/z
 
 /**
  * Base Block Schema – common fields shared by all block types (no type discriminator).
+ * Kept in its own file instead of in block.schema so inform/practice/summary can import it without creating a circular dependency:
+ * block.schema -> inform/practice/summary -> base-block.schema -> block.schema
  */
 export const baseBlockSchema = PrismaBlockSchema.pick({
   id: true,
@@ -21,3 +23,4 @@ export const baseBlockSchema = PrismaBlockSchema.pick({
   alreadyViewed: PrismaBlockSchema.shape.alreadyViewed.describe('Whether the block has been viewed by the user'),
 });
 export type BaseBlock = z.infer<typeof baseBlockSchema>;
+
