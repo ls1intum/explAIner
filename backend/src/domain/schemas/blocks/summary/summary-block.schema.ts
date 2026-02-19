@@ -6,24 +6,23 @@ import { SummaryBlockSchema as PrismaSummaryBlockSchema } from '../../../../../p
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
 /////////////////////////////////////////
 
-/** Content schema derived from Prisma; refinement for non-empty summary. */
 export const summaryBlockContentSchema = PrismaSummaryBlockSchema.extend({
   blockId: PrismaSummaryBlockSchema.shape.blockId.describe('Block ID'),
   sessionSummary: PrismaSummaryBlockSchema.shape.sessionSummary
     .min(1, 'Summary must not be empty')
     .describe('Session summary content'),
 });
+export type SummaryBlockContent = z.infer<typeof summaryBlockContentSchema>;
 
-/**
- * Summary Block Schema – block with type Summary and session summary content.
- */
 export const summaryBlockSchema = baseBlockSchema.extend({
   type: z.literal('Summary').describe('Block type'),
   content: summaryBlockContentSchema.describe('Summary block content'),
 });
-
-export type SummaryBlockContent = z.infer<typeof summaryBlockContentSchema>;
 export type SummaryBlock = z.infer<typeof summaryBlockSchema>;
+
+/////////////////////////////////////////
+// LLM PARSER SCHEMAS
+/////////////////////////////////////////
 
 /** Parser schema for session-summary chain (LLM response shape: sessionSummary only). */
 export const sessionSummaryParseSchema = summaryBlockContentSchema.pick({ sessionSummary: true });

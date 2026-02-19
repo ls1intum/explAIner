@@ -13,7 +13,6 @@ export const learningGoalsSchema = z.tuple([
   learningGoalSchema,
   learningGoalSchema,
 ]);
-
 export type LearningGoals = z.infer<typeof learningGoalsSchema>;
 
 /////////////////////////////////////////
@@ -33,21 +32,17 @@ export const topicWithPriorKnowledgeSchema = z.object({
 /** Request: generate learning goals from topic */
 export const generateLearningGoalsRequestSchema = topicWithPriorKnowledgeSchema;
 export type GenerateLearningGoalsRequest = z.infer<typeof generateLearningGoalsRequestSchema>;
-
 /** Response: array of 3 generated learning goals */
 export const generateLearningGoalsResponseSchema = z.object({
   learningGoals: learningGoalsSchema.describe('Array of exactly 3 generated learning goals'),
 });
 export type GenerateLearningGoalsResponse = z.infer<typeof generateLearningGoalsResponseSchema>;
 
-
-
 /** Request: session ID for easier learning goals */
 export const generateEasierLearningGoalsRequestSchema = z.object({
   sessionId: z.string().min(1, 'Session ID cannot be empty').describe('Session ID to generate easier learning goals for'),
 });
 export type GenerateEasierLearningGoalsRequest = z.infer<typeof generateEasierLearningGoalsRequestSchema>;
-
 /** Response: easier learning goals with session context */
 export const generateEasierLearningGoalsResponseSchema = z.object({
   topic: z.string().describe('The learning topic from the previous session').meta({ example: 'Photosynthesis' }),

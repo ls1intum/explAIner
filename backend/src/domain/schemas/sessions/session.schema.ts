@@ -29,10 +29,14 @@ export const sessionSchema = PrismaSessionSchema.pick({
 export type Session = z.infer<typeof sessionSchema>;
 
 /////////////////////////////////////////
-// DTO SCHEMAS (REQUEST / RESPONSE)
+// SHARED / REUSABLE SCHEMAS
 /////////////////////////////////////////
 
 const successField = z.boolean().describe('Whether the operation succeeded');
+
+/////////////////////////////////////////
+// DTO SCHEMAS (REQUEST / RESPONSE)
+/////////////////////////////////////////
 
 /** Request: current block index (0-based). */
 export const updateCurrentBlockIndexRequestSchema = z.object({
@@ -43,7 +47,6 @@ export const updateCurrentBlockIndexRequestSchema = z.object({
     .describe('The index of the current block being viewed (0-based) by the user'),
 });
 export type UpdateCurrentBlockIndexRequest = z.infer<typeof updateCurrentBlockIndexRequestSchema>;
-
 /** Response after updating current block index. */
 export const updateCurrentBlockIndexResponseSchema = z.object({
   success: successField,
@@ -52,14 +55,12 @@ export const updateCurrentBlockIndexResponseSchema = z.object({
 export type UpdateCurrentBlockIndexResponse = z.infer<typeof updateCurrentBlockIndexResponseSchema>;
 
 
-
 /** Request: create session (reuses topic + priorKnowledge from learning-goals). */
 export const createSessionRequestSchema = topicWithPriorKnowledgeSchema.extend({
   learningGoal: z.string().min(1, 'Learning goal cannot be empty').describe('The specific learning goal for this session'),
   bloomsLevel: PrismaBloomsLevelSchema.describe("Bloom's taxonomy level for the learning goal"),
 });
 export type CreateSessionRequest = z.infer<typeof createSessionRequestSchema>;
-
 
 
 /** Request: user rating 1-5 stars. */
@@ -72,14 +73,12 @@ export const submitFeedbackRequestSchema = z.object({
     .describe('User rating for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful"'),
 });
 export type SubmitFeedbackRequest = z.infer<typeof submitFeedbackRequestSchema>;
-
 /** Response after submitting feedback. */
 export const submitFeedbackResponseSchema = z.object({
   success: successField,
   rating: z.number().describe('The submitted rating (1-5) - 1: "very unhelpful", 5: "very helpful"'),
 });
 export type SubmitFeedbackResponse = z.infer<typeof submitFeedbackResponseSchema>;
-
 
 
 /** Response: next action in session flow. */
@@ -91,7 +90,6 @@ export const continueSessionResponseSchema = z.object({
   targetBlockIndex: z.number().optional().describe('Order index to navigate to (only for "navigate")').meta({ example: 3 }),
 });
 export type ContinueSessionResponse = z.infer<typeof continueSessionResponseSchema>;
-
 
 
 /** Response after deleting session. */

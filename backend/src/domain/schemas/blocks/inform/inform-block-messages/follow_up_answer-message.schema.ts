@@ -12,5 +12,4 @@ import { InformBlockMessageSchema as PrismaInformBlockMessageSchema } from '../.
 export const followUpAnswerMessageSchema = z.object({
   response: PrismaInformBlockMessageSchema.shape.message.describe('AI response from Owlbert'),
 });
-
 export type FollowUpAnswerMessage = z.infer<typeof followUpAnswerMessageSchema>;

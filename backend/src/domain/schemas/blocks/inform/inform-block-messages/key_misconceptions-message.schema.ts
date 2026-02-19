@@ -17,5 +17,4 @@ export const keyMisconceptionsMessageSchema = z.object({
     .describe('Key misconceptions to address'),
   summary: z.string().min(1, 'Summary must not be empty').describe('Brief summary of the explanation'),
 });
-
 export type KeyMisconceptionsMessage = z.infer<typeof keyMisconceptionsMessageSchema>;

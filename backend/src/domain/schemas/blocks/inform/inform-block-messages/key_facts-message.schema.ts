@@ -17,5 +17,4 @@ export const keyFactsMessageSchema = z.object({
     .describe('Key facts for the topic'),
   summary: z.string().min(1, 'Summary must not be empty').describe('Brief summary of the explanation'),
 });
-
 export type KeyFactsMessage = z.infer<typeof keyFactsMessageSchema>;

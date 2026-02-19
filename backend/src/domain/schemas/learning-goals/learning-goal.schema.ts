@@ -16,5 +16,4 @@ export const learningGoalSchema = z.object({
     .describe('The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>."'),
   bloomsLevel: PrismaBloomsLevelSchema.describe("Bloom's taxonomy level for this learning goal"),
 });
-
 export type LearningGoal = z.infer<typeof learningGoalSchema>;

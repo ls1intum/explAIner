@@ -9,7 +9,6 @@ import { baseBlockSchema } from '../base-block.schema';
 /** ISO 8601 date string – avoids z.date() so schema is JSON-Schema compatible. */
 const isoDateStringSchema = z.string();
 
-/** Message schema derived from Prisma; timestamp as ISO string for API/OpenAPI compatibility. */
 export const informBlockMessageSchema = PrismaInformBlockMessageSchema.omit({ timestamp: true }).extend({
   id: PrismaInformBlockMessageSchema.shape.id.describe('Message ID'),
   blockId: PrismaInformBlockMessageSchema.shape.blockId.describe('Block ID this message belongs to'),
@@ -17,14 +16,10 @@ export const informBlockMessageSchema = PrismaInformBlockMessageSchema.omit({ ti
   sender: PrismaInformBlockMessageSchema.shape.sender.describe('Message sender'),
   timestamp: isoDateStringSchema.describe('Message timestamp (ISO 8601 format)'),
 });
+export type InformBlockMessage = z.infer<typeof informBlockMessageSchema>;
 
-/**
- * Inform Block Schema – block with type Inform and array of messages.
- */
 export const informBlockSchema = baseBlockSchema.extend({
   type: z.literal('Inform').describe('Block type'),
   content: z.array(informBlockMessageSchema).describe('Inform block messages'),
 });
-
-export type InformBlockMessage = z.infer<typeof informBlockMessageSchema>;
 export type InformBlock = z.infer<typeof informBlockSchema>;

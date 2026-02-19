@@ -23,4 +23,3 @@ export const baseBlockSchema = PrismaBlockSchema.pick({
   alreadyViewed: PrismaBlockSchema.shape.alreadyViewed.describe('Whether the block has been viewed by the user'),
 });
 export type BaseBlock = z.infer<typeof baseBlockSchema>;
-

@@ -14,5 +14,4 @@ export const followUpQuestionMessageSchema = z.object({
     'User message / follow-up question sent in the inform block chat',
   ),
 });
-
 export type FollowUpQuestionMessage = z.infer<typeof followUpQuestionMessageSchema>;
