@@ -6,7 +6,7 @@ import { BaseBlockSchema } from '../base-block.schema';
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
 /////////////////////////////////////////
 
-/** ISO 8601 date string – avoids z.date() so schema is JSON-Schema compatible. */
+/** Timestamp string (e.g. ISO 8601). Avoids z.date() so schema is JSON-Schema compatible. */
 const IsoDateStringSchema = z.string();
 
 export const InformBlockMessageSchema = PrismaInformBlockMessageSchema.omit({ timestamp: true }).extend({
