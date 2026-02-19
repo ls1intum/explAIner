@@ -1,9 +1,8 @@
 import { z } from 'zod';
-import { SessionSchema as PrismaSessionSchema } from '../../../../prisma/generated/zod';
+import { BloomsLevelSchema as PrismaBloomsLevelSchema, SessionSchema as PrismaSessionSchema } from '../../../../prisma/generated/zod';
 import { learningGoalSchema } from '../learning-goals/learning-goal.schema';
 import { topicWithPriorKnowledgeSchema } from '../learning-goals/learning-goals.schema';
 import { blockSchema } from '../blocks/block.schema';
-import { BloomsLevel } from '@prisma/client';
 
 /////////////////////////////////////////
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
@@ -52,12 +51,16 @@ export const updateCurrentBlockIndexResponseSchema = z.object({
 });
 export type UpdateCurrentBlockIndexResponse = z.infer<typeof updateCurrentBlockIndexResponseSchema>;
 
+
+
 /** Request: create session (reuses topic + priorKnowledge from learning-goals). */
 export const createSessionRequestSchema = topicWithPriorKnowledgeSchema.extend({
   learningGoal: z.string().min(1, 'Learning goal cannot be empty').describe('The specific learning goal for this session'),
-  bloomsLevel: z.nativeEnum(BloomsLevel).describe("Bloom's taxonomy level for the learning goal"),
+  bloomsLevel: PrismaBloomsLevelSchema.describe("Bloom's taxonomy level for the learning goal"),
 });
 export type CreateSessionRequest = z.infer<typeof createSessionRequestSchema>;
+
+
 
 /** Request: user rating 1-5 stars. */
 export const submitFeedbackRequestSchema = z.object({
@@ -77,6 +80,8 @@ export const submitFeedbackResponseSchema = z.object({
 });
 export type SubmitFeedbackResponse = z.infer<typeof submitFeedbackResponseSchema>;
 
+
+
 /** Response: next action in session flow. */
 export const continueSessionResponseSchema = z.object({
   action: z
@@ -86,6 +91,8 @@ export const continueSessionResponseSchema = z.object({
   targetBlockIndex: z.number().optional().describe('Order index to navigate to (only for "navigate")').meta({ example: 3 }),
 });
 export type ContinueSessionResponse = z.infer<typeof continueSessionResponseSchema>;
+
+
 
 /** Response after deleting session. */
 export const deleteSessionResponseSchema = z.object({ success: successField });
