@@ -3,7 +3,7 @@ import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
 import {
-  learningGoalsSchema,
+  LearningGoalsSchema,
   type LearningGoals,
 } from '../../../../domain/schemas/learning-goals/learning-goals.schema';
 import { isLogEnabled } from '../../../../config/logging.config';
@@ -17,7 +17,7 @@ export class GenerateLearningGoalsChain {
   private parser: Parser<LearningGoals>;
 
   constructor(private llmService: LlmService) {
-    this.parser = new Parser(learningGoalsSchema, async (error: string) => {
+    this.parser = new Parser(LearningGoalsSchema, async (error: string) => {
       const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
       return this.llmService.callClaude(fixPrompt);
     });

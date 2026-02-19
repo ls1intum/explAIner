@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { informBlockSchema } from './inform/inform-block.schema';
-import { practiceBlockSchema } from './practice/practice-block.schema';
-import { summaryBlockSchema } from './summary/summary-block.schema';
+import { InformBlockSchema } from './inform/inform-block.schema';
+import { PracticeBlockSchema } from './practice/practice-block.schema';
+import { SummaryBlockSchema } from './summary/summary-block.schema';
 
 /////////////////////////////////////////
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
@@ -10,9 +10,9 @@ import { summaryBlockSchema } from './summary/summary-block.schema';
 /**
  * Block Schema – discriminated union of all block types (Inform, Practice, Summary).
  */
-export const blockSchema = z.discriminatedUnion('type', [
-  informBlockSchema,
-  practiceBlockSchema,
-  summaryBlockSchema,
+export const BlockSchema = z.discriminatedUnion('type', [
+  InformBlockSchema,
+  PracticeBlockSchema,
+  SummaryBlockSchema,
 ]);
-export type Block = z.infer<typeof blockSchema>;
+export type Block = z.infer<typeof BlockSchema>;

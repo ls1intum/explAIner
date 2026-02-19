@@ -1,51 +1,51 @@
 import { z } from 'zod';
-import { informBlockSchema } from './inform/inform-block.schema';
-import { practiceBlockSchema } from './practice/practice-block.schema';
-import { practiceBlockContentSchema } from './practice/practice-block.schema';
-import { keyFactsMessageSchema } from './inform/inform-block-messages/key_facts-message.schema';
-import { keyMisconceptionsMessageSchema } from './inform/inform-block-messages/key_misconceptions-message.schema';
+import { InformBlockSchema } from './inform/inform-block.schema';
+import { PracticeBlockSchema } from './practice/practice-block.schema';
+import { PracticeBlockContentSchema } from './practice/practice-block.schema';
+import { KeyFactsMessageSchema } from './inform/inform-block-messages/key_facts-message.schema';
+import { KeyMisconceptionsMessageSchema } from './inform/inform-block-messages/key_misconceptions-message.schema';
 
 /////////////////////////////////////////
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
 /////////////////////////////////////////
 
 /** Block sequence generation mode: initial (keyFacts) or subsequent (keyMisconceptions). */
-export const blockSequenceModeSchema = z.enum(['initial', 'subsequent']);
-export type BlockSequenceMode = z.infer<typeof blockSequenceModeSchema>;
+export const BlockSequenceModeSchema = z.enum(['initial', 'subsequent']);
+export type BlockSequenceMode = z.infer<typeof BlockSequenceModeSchema>;
 export const BlockSequenceMode = { INITIAL: 'initial', SUBSEQUENT: 'subsequent' } as const;
 
 /**
  * Block Sequence Schema – 1 inform block + 3 practice blocks (API/DB shape).
  */
-export const blockSequenceSchema = z.object({
-  informBlock: informBlockSchema.describe('Inform block introducing new content'),
-  practiceBlocks: z.tuple([practiceBlockSchema, practiceBlockSchema, practiceBlockSchema]).describe('Exactly 3 practice blocks'),
+export const BlockSequenceSchema = z.object({
+  informBlock: InformBlockSchema.describe('Inform block introducing new content'),
+  practiceBlocks: z.tuple([PracticeBlockSchema, PracticeBlockSchema, PracticeBlockSchema]).describe('Exactly 3 practice blocks'),
 });
-export type BlockSequence = z.infer<typeof blockSequenceSchema>;
+export type BlockSequence = z.infer<typeof BlockSequenceSchema>;
 
 /////////////////////////////////////////
 // LLM PARSER SCHEMAS
 /////////////////////////////////////////
 
 /** Practice block question shape for AI generation (no blockId, no student answers). */
-export const practiceBlockQuestionParseSchema = practiceBlockContentSchema.pick({
+export const PracticeBlockQuestionParseSchema = PracticeBlockContentSchema.pick({
   soloLevel: true,
   question: true,
   answerOptions: true,
   correctAnswerOptionIndices: true,
 });
-export type PracticeBlockQuestionParseSchema = z.infer<typeof practiceBlockQuestionParseSchema>;
+export type PracticeBlockQuestionParse = z.infer<typeof PracticeBlockQuestionParseSchema>;
 
 /** Block sequence parser schema for mode initial (keyFacts). */
-export const initialBlockSequenceParseSchema = z.object({
-  informBlock: keyFactsMessageSchema.describe('Inform block content with key facts'),
-  practiceBlocks: z.array(practiceBlockQuestionParseSchema).length(3, 'Must have exactly 3 practice blocks'),
+export const InitialBlockSequenceParseSchema = z.object({
+  informBlock: KeyFactsMessageSchema.describe('Inform block content with key facts'),
+  practiceBlocks: z.array(PracticeBlockQuestionParseSchema).length(3, 'Must have exactly 3 practice blocks'),
 });
-export type InitialBlockSequenceParseSchema = z.infer<typeof initialBlockSequenceParseSchema>;
+export type InitialBlockSequenceParse = z.infer<typeof InitialBlockSequenceParseSchema>;
 
 /** Block sequence parser schema for mode subsequent (keyMisconceptions). */
-export const subsequentBlockSequenceParseSchema = z.object({
-  informBlock: keyMisconceptionsMessageSchema.describe('Inform block content with key misconceptions'),
-  practiceBlocks: z.array(practiceBlockQuestionParseSchema).length(3, 'Must have exactly 3 practice blocks'),
+export const SubsequentBlockSequenceParseSchema = z.object({
+  informBlock: KeyMisconceptionsMessageSchema.describe('Inform block content with key misconceptions'),
+  practiceBlocks: z.array(PracticeBlockQuestionParseSchema).length(3, 'Must have exactly 3 practice blocks'),
 });
-export type SubsequentBlockSequenceParseSchema = z.infer<typeof subsequentBlockSequenceParseSchema>;
+export type SubsequentBlockSequenceParse = z.infer<typeof SubsequentBlockSequenceParseSchema>;

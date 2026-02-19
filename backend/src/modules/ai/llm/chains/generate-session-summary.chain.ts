@@ -3,8 +3,8 @@ import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateSessionSummaryPrompt } from '../prompts/generate-session-summary.prompt';
 import {
-  sessionSummaryParseSchema,
-  type SessionSummaryParseSchema,
+  SessionSummaryParseSchema,
+  type SessionSummaryParse,
 } from '../../../../domain/schemas/blocks/summary/summary-block.schema';
 import { isLogEnabled } from '../../../../config/logging.config';
 
@@ -14,10 +14,10 @@ import { isLogEnabled } from '../../../../config/logging.config';
 @Injectable()
 export class GenerateSessionSummaryChain {
   private readonly logger = new Logger('AI-CHAIN');
-  private parser: Parser<SessionSummaryParseSchema>;
+  private parser: Parser<SessionSummaryParse>;
 
   constructor(private llmService: LlmService) {
-    this.parser = new Parser(sessionSummaryParseSchema, async (error: string) => {
+    this.parser = new Parser(SessionSummaryParseSchema, async (error: string) => {
       const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
       return this.llmService.callClaude(fixPrompt);
     });
@@ -29,7 +29,7 @@ export class GenerateSessionSummaryChain {
     bloomsLevel: string;
     informContent: string[];
     practiceResults: Array<{ question: string; isCorrect: boolean }>;
-  }): Promise<SessionSummaryParseSchema> {
+  }): Promise<SessionSummaryParse> {
     if (isLogEnabled('ai')) {
       this.logger.log('generate-session-summary');
     }

@@ -8,7 +8,7 @@ import { z } from 'zod';
  * Key Facts Message Schema – first message in the initial block-sequence inform block (AI output).
  * Used when parsing block sequence with mode initial.
  */
-export const keyFactsMessageSchema = z.object({
+export const KeyFactsMessageSchema = z.object({
   explanation: z.string().min(1, 'Explanation must not be empty').describe('Detailed explanation of the topic'),
   keyFacts: z
     .array(z.string().min(1))
@@ -17,4 +17,4 @@ export const keyFactsMessageSchema = z.object({
     .describe('Key facts for the topic'),
   summary: z.string().min(1, 'Summary must not be empty').describe('Brief summary of the explanation'),
 });
-export type KeyFactsMessage = z.infer<typeof keyFactsMessageSchema>;
+export type KeyFactsMessage = z.infer<typeof KeyFactsMessageSchema>;

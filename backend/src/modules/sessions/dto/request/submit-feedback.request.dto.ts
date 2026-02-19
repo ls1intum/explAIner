@@ -1,7 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
-import { submitFeedbackRequestSchema } from '../../../../domain/schemas/sessions/session.schema';
+import { SubmitFeedbackRequestSchema } from '../../../../domain/schemas/sessions/session.schema';
 
 /**
  * Request body for submitting session feedback.
  */
-export class SubmitFeedbackRequestDto extends createZodDto(submitFeedbackRequestSchema) {}
+export class SubmitFeedbackRequestDto extends createZodDto(SubmitFeedbackRequestSchema) {}

@@ -1,9 +1,9 @@
 import { createZodDto } from 'nestjs-zod';
-import { generateLearningGoalsRequestSchema } from '../../../../domain/schemas/learning-goals/learning-goals.schema';
+import { GenerateLearningGoalsRequestSchema } from '../../../../domain/schemas/learning-goals/learning-goals.schema';
 
 /**
  * Request body for generating learning goals from topic and prior knowledge.
  */
 export class GenerateLearningGoalsRequestDto extends createZodDto(
-  generateLearningGoalsRequestSchema,
+  GenerateLearningGoalsRequestSchema,
 ) {}

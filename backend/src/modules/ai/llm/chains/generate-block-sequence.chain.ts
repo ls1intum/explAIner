@@ -3,18 +3,18 @@ import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateBlockSequencePrompt } from '../prompts/generate-block-sequence.prompt';
 import {
-  initialBlockSequenceParseSchema,
-  subsequentBlockSequenceParseSchema,
+  InitialBlockSequenceParseSchema,
+  SubsequentBlockSequenceParseSchema,
   BlockSequenceMode,
-  type InitialBlockSequenceParseSchema,
-  type SubsequentBlockSequenceParseSchema,
+  type InitialBlockSequenceParse,
+  type SubsequentBlockSequenceParse,
 } from '../../../../domain/schemas/blocks/block-sequence.schema';
 import type { WrongAnswer } from '../../../../domain/schemas/blocks/practice/practice-block.schema';
 import { SoloLevel } from '@prisma/client';
 import { isLogEnabled } from '../../../../config/logging.config';
 
 /** Union return type for block sequence chain (initial or subsequent). */
-export type BlockSequenceParseSchema = InitialBlockSequenceParseSchema | SubsequentBlockSequenceParseSchema;
+export type BlockSequenceParse = InitialBlockSequenceParse | SubsequentBlockSequenceParse;
 
 /**
  * Chain for generating block sequences (initial or subsequent).
@@ -34,7 +34,7 @@ export class GenerateBlockSequenceChain {
     priorKnowledge?: string;
     wrongAnswers?: WrongAnswer[];
     soloLevels: SoloLevel[];
-  }): Promise<BlockSequenceParseSchema> {
+  }): Promise<BlockSequenceParse> {
     if (isLogEnabled('ai')) {
       this.logger.log(`generate-block-sequence-${params.mode}`);
     }
@@ -61,10 +61,10 @@ export class GenerateBlockSequenceChain {
     };
 
     if (params.mode === BlockSequenceMode.INITIAL) {
-      const parser = new Parser(initialBlockSequenceParseSchema, retryFn);
+      const parser = new Parser(InitialBlockSequenceParseSchema, retryFn);
       return parser.parseWithRetry(rawResponse);
     }
-    const parser = new Parser(subsequentBlockSequenceParseSchema, retryFn);
+    const parser = new Parser(SubsequentBlockSequenceParseSchema, retryFn);
     return parser.parseWithRetry(rawResponse);
   }
 }

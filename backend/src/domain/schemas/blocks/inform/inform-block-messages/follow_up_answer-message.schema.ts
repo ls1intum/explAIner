@@ -9,7 +9,7 @@ import { InformBlockMessageSchema as PrismaInformBlockMessageSchema } from '../.
  * Follow-up Answer Message Schema – LLM response shape for Owlbert's reply in inform block chat.
  * Used by generate-chat-response chain and response DTO.
  */
-export const followUpAnswerMessageSchema = z.object({
+export const FollowUpAnswerMessageSchema = z.object({
   response: PrismaInformBlockMessageSchema.shape.message.describe('AI response from Owlbert'),
 });
-export type FollowUpAnswerMessage = z.infer<typeof followUpAnswerMessageSchema>;
+export type FollowUpAnswerMessage = z.infer<typeof FollowUpAnswerMessageSchema>;

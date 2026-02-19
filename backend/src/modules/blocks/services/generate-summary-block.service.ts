@@ -95,7 +95,7 @@ export class GenerateSummaryBlockService {
       },
     });
 
-    // 9. Return block in schema shape (summaryBlockSchema) + session metadata; minimal mapping: key summaryBlock -> content
+    // 9. Return block in schema shape (SummaryBlockSchema) + session metadata; minimal mapping: key summaryBlock -> content
     return {
       id: createdSummaryBlock.id,
       sessionId: createdSummaryBlock.sessionId,

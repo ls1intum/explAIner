@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { learningGoalSchema } from './learning-goal.schema';
+import { LearningGoalSchema } from './learning-goal.schema';
 
 /////////////////////////////////////////
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
@@ -8,19 +8,19 @@ import { learningGoalSchema } from './learning-goal.schema';
 /**
  * Learning Goals Schema – validates exactly 3 learning goals (tuple).
  */
-export const learningGoalsSchema = z.tuple([
-  learningGoalSchema,
-  learningGoalSchema,
-  learningGoalSchema,
+export const LearningGoalsSchema = z.tuple([
+  LearningGoalSchema,
+  LearningGoalSchema,
+  LearningGoalSchema,
 ]);
-export type LearningGoals = z.infer<typeof learningGoalsSchema>;
+export type LearningGoals = z.infer<typeof LearningGoalsSchema>;
 
 /////////////////////////////////////////
 // SHARED / REUSABLE SCHEMAS
 /////////////////////////////////////////
 
 /** Topic + optional prior knowledge – reused by create-session and generate-learning-goals requests. */
-export const topicWithPriorKnowledgeSchema = z.object({
+export const TopicWithPriorKnowledgeSchema = z.object({
   topic: z.string().min(1, 'Topic cannot be empty').describe('The learning topic or question'),
   priorKnowledgeKeywords: z.string().optional().describe('Keywords describing prior knowledge (optional)'),
 });
@@ -30,23 +30,23 @@ export const topicWithPriorKnowledgeSchema = z.object({
 /////////////////////////////////////////
 
 /** Request: generate learning goals from topic */
-export const generateLearningGoalsRequestSchema = topicWithPriorKnowledgeSchema;
-export type GenerateLearningGoalsRequest = z.infer<typeof generateLearningGoalsRequestSchema>;
+export const GenerateLearningGoalsRequestSchema = TopicWithPriorKnowledgeSchema;
+export type GenerateLearningGoalsRequest = z.infer<typeof GenerateLearningGoalsRequestSchema>;
 /** Response: array of 3 generated learning goals */
-export const generateLearningGoalsResponseSchema = z.object({
-  learningGoals: learningGoalsSchema.describe('Array of exactly 3 generated learning goals'),
+export const GenerateLearningGoalsResponseSchema = z.object({
+  learningGoals: LearningGoalsSchema.describe('Array of exactly 3 generated learning goals'),
 });
-export type GenerateLearningGoalsResponse = z.infer<typeof generateLearningGoalsResponseSchema>;
+export type GenerateLearningGoalsResponse = z.infer<typeof GenerateLearningGoalsResponseSchema>;
 
 /** Request: session ID for easier learning goals */
-export const generateEasierLearningGoalsRequestSchema = z.object({
+export const GenerateEasierLearningGoalsRequestSchema = z.object({
   sessionId: z.string().min(1, 'Session ID cannot be empty').describe('Session ID to generate easier learning goals for'),
 });
-export type GenerateEasierLearningGoalsRequest = z.infer<typeof generateEasierLearningGoalsRequestSchema>;
+export type GenerateEasierLearningGoalsRequest = z.infer<typeof GenerateEasierLearningGoalsRequestSchema>;
 /** Response: easier learning goals with session context */
-export const generateEasierLearningGoalsResponseSchema = z.object({
+export const GenerateEasierLearningGoalsResponseSchema = z.object({
   topic: z.string().describe('The learning topic from the previous session').meta({ example: 'Photosynthesis' }),
   priorKnowledgeKeywords: z.string().optional().describe('Prior knowledge from previous session').meta({ example: 'plants, light' }),
-  learningGoals: learningGoalsSchema.describe('Array of exactly 3 easier learning goals'),
+  learningGoals: LearningGoalsSchema.describe('Array of exactly 3 easier learning goals'),
 });
-export type GenerateEasierLearningGoalsResponse = z.infer<typeof generateEasierLearningGoalsResponseSchema>;
+export type GenerateEasierLearningGoalsResponse = z.infer<typeof GenerateEasierLearningGoalsResponseSchema>;

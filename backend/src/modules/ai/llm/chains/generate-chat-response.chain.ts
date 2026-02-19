@@ -3,7 +3,7 @@ import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateChatResponsePrompt } from '../prompts/generate-chat-response.prompt';
 import {
-  followUpAnswerMessageSchema,
+  FollowUpAnswerMessageSchema,
   type FollowUpAnswerMessage,
 } from '../../../../domain/schemas/blocks/inform/inform-block-messages/follow_up_answer-message.schema';
 import { isLogEnabled } from '../../../../config/logging.config';
@@ -17,7 +17,7 @@ export class GenerateChatResponseChain {
   private parser: Parser<FollowUpAnswerMessage>;
 
   constructor(private llmService: LlmService) {
-    this.parser = new Parser(followUpAnswerMessageSchema, async (error: string) => {
+    this.parser = new Parser(FollowUpAnswerMessageSchema, async (error: string) => {
       const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
       return this.llmService.callClaude(fixPrompt);
     });

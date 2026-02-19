@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { PracticeBlockSchema as PrismaPracticeBlockSchema } from '../../../../../prisma/generated/zod';
-import { baseBlockSchema } from '../base-block.schema';
+import { BaseBlockSchema } from '../base-block.schema';
 
 /////////////////////////////////////////
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
 /////////////////////////////////////////
 
-export const practiceBlockContentSchema = PrismaPracticeBlockSchema.extend({
+export const PracticeBlockContentSchema = PrismaPracticeBlockSchema.extend({
   blockId: PrismaPracticeBlockSchema.shape.blockId.describe('Block ID'),
   soloLevel: PrismaPracticeBlockSchema.shape.soloLevel.describe('SOLO taxonomy level'),
   question: PrismaPracticeBlockSchema.shape.question
@@ -23,28 +23,28 @@ export const practiceBlockContentSchema = PrismaPracticeBlockSchema.extend({
     "Whether the student's answer is correct (null if not yet answered)",
   ),
 });
-export type PracticeBlockContent = z.infer<typeof practiceBlockContentSchema>;
+export type PracticeBlockContent = z.infer<typeof PracticeBlockContentSchema>;
 
-export const practiceBlockSchema = baseBlockSchema.extend({
+export const PracticeBlockSchema = BaseBlockSchema.extend({
   type: z.literal('Practice').describe('Block type'),
-  content: practiceBlockContentSchema.describe('Practice block content'),
+  content: PracticeBlockContentSchema.describe('Practice block content'),
 });
-export type PracticeBlock = z.infer<typeof practiceBlockSchema>;
+export type PracticeBlock = z.infer<typeof PracticeBlockSchema>;
 
 /////////////////////////////////////////
 // SHARED / REUSABLE SCHEMAS
 /////////////////////////////////////////
 
 /** Wrong-answer context for subsequent block sequence generation (addressing misconceptions). */
-export const wrongAnswerSchema = z.object({
+export const WrongAnswerSchema = z.object({
   question: z.string(),
   correctAnswerOptions: z.array(z.string()),
   wrongStudentAnswerOptions: z.array(z.string()),
 });
-export type WrongAnswer = z.infer<typeof wrongAnswerSchema>;
+export type WrongAnswer = z.infer<typeof WrongAnswerSchema>;
 
 /** Array of selected answer option indices (0-based); at least one required. Reused for submit-answer. */
-const studentAnswerOptionIndicesSchema = z
+const StudentAnswerOptionIndicesSchema = z
   .array(z.number().int())
   .min(1, 'At least one answer option must be selected')
   .describe('Array of selected answer option indices (0-based)');
@@ -54,13 +54,13 @@ const studentAnswerOptionIndicesSchema = z
 /////////////////////////////////////////
 
 /** Request: submit practice block answer. */
-export const submitAnswerRequestSchema = z.object({
-  studentAnswerOptionIndices: studentAnswerOptionIndicesSchema,
+export const SubmitAnswerRequestSchema = z.object({
+  studentAnswerOptionIndices: StudentAnswerOptionIndicesSchema,
 });
-export type SubmitAnswerRequest = z.infer<typeof submitAnswerRequestSchema>;
+export type SubmitAnswerRequest = z.infer<typeof SubmitAnswerRequestSchema>;
 /** Response after persisting student answer. */
-export const submitAnswerResponseSchema = z.object({
+export const SubmitAnswerResponseSchema = z.object({
   success: z.boolean().describe('Whether the student answer was successfully persisted'),
   studentAnswerOptionIndices: z.array(z.number()).describe('Array of selected answer option indices (0-based)').meta({ example: [0, 2] }),
 });
-export type SubmitAnswerResponse = z.infer<typeof submitAnswerResponseSchema>;
+export type SubmitAnswerResponse = z.infer<typeof SubmitAnswerResponseSchema>;
