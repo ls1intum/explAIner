@@ -391,25 +391,27 @@ export interface components {
                  * @enum {string}
                  */
                 type: "Inform";
-                /** @description Inform block content */
-                content: {
-                    /**
-                     * @description Message sender
-                     * @enum {string}
-                     */
-                    sender: "User" | "Owlbert";
-                    /**
-                     * Format: uuid
-                     * @description Message ID
-                     */
-                    id: string;
-                    /** @description Inform block this message belongs to */
-                    informBlockId: string;
-                    /** @description Message content */
-                    message: string;
-                    /** @description Message timestamp (ISO 8601 format) */
-                    timestamp: string;
-                }[];
+                informBlock: {
+                    /** @description Inform block messages */
+                    messages: {
+                        /**
+                         * @description Message sender
+                         * @enum {string}
+                         */
+                        sender: "User" | "Owlbert";
+                        /**
+                         * Format: uuid
+                         * @description Message ID
+                         */
+                        id: string;
+                        /** @description Inform block this message belongs to */
+                        informBlockId: string;
+                        /** @description Message content */
+                        message: string;
+                        /** @description Message timestamp (ISO 8601 format) */
+                        timestamp: string;
+                    }[];
+                };
             } | {
                 /**
                  * Format: uuid
@@ -428,7 +430,7 @@ export interface components {
                  */
                 type: "Practice";
                 /** @description Practice block content */
-                content: {
+                practiceBlock: {
                     /**
                      * @description SOLO taxonomy level
                      * @enum {string}
@@ -465,7 +467,7 @@ export interface components {
                  */
                 type: "Summary";
                 /** @description Summary block content */
-                content: {
+                summaryBlock: {
                     /** @description Block ID */
                     blockId: string;
                     /** @description Session summary content */
@@ -513,25 +515,27 @@ export interface components {
                  * @enum {string}
                  */
                 type: "Inform";
-                /** @description Inform block content */
-                content: {
-                    /**
-                     * @description Message sender
-                     * @enum {string}
-                     */
-                    sender: "User" | "Owlbert";
-                    /**
-                     * Format: uuid
-                     * @description Message ID
-                     */
-                    id: string;
-                    /** @description Inform block this message belongs to */
-                    informBlockId: string;
-                    /** @description Message content */
-                    message: string;
-                    /** @description Message timestamp (ISO 8601 format) */
-                    timestamp: string;
-                }[];
+                informBlock: {
+                    /** @description Inform block messages */
+                    messages: {
+                        /**
+                         * @description Message sender
+                         * @enum {string}
+                         */
+                        sender: "User" | "Owlbert";
+                        /**
+                         * Format: uuid
+                         * @description Message ID
+                         */
+                        id: string;
+                        /** @description Inform block this message belongs to */
+                        informBlockId: string;
+                        /** @description Message content */
+                        message: string;
+                        /** @description Message timestamp (ISO 8601 format) */
+                        timestamp: string;
+                    }[];
+                };
             } | {
                 /**
                  * Format: uuid
@@ -550,7 +554,7 @@ export interface components {
                  */
                 type: "Practice";
                 /** @description Practice block content */
-                content: {
+                practiceBlock: {
                     /**
                      * @description SOLO taxonomy level
                      * @enum {string}
@@ -587,7 +591,7 @@ export interface components {
                  */
                 type: "Summary";
                 /** @description Summary block content */
-                content: {
+                summaryBlock: {
                     /** @description Block ID */
                     blockId: string;
                     /** @description Session summary content */
@@ -654,25 +658,27 @@ export interface components {
                  * @enum {string}
                  */
                 type: "Inform";
-                /** @description Inform block content */
-                content: {
-                    /**
-                     * @description Message sender
-                     * @enum {string}
-                     */
-                    sender: "User" | "Owlbert";
-                    /**
-                     * Format: uuid
-                     * @description Message ID
-                     */
-                    id: string;
-                    /** @description Inform block this message belongs to */
-                    informBlockId: string;
-                    /** @description Message content */
-                    message: string;
-                    /** @description Message timestamp (ISO 8601 format) */
-                    timestamp: string;
-                }[];
+                informBlock: {
+                    /** @description Inform block messages */
+                    messages: {
+                        /**
+                         * @description Message sender
+                         * @enum {string}
+                         */
+                        sender: "User" | "Owlbert";
+                        /**
+                         * Format: uuid
+                         * @description Message ID
+                         */
+                        id: string;
+                        /** @description Inform block this message belongs to */
+                        informBlockId: string;
+                        /** @description Message content */
+                        message: string;
+                        /** @description Message timestamp (ISO 8601 format) */
+                        timestamp: string;
+                    }[];
+                };
             };
             /** @description Exactly 3 practice blocks */
             practiceBlocks: [
@@ -694,7 +700,7 @@ export interface components {
                      */
                     type: "Practice";
                     /** @description Practice block content */
-                    content: {
+                    practiceBlock: {
                         /**
                          * @description SOLO taxonomy level
                          * @enum {string}
@@ -732,7 +738,7 @@ export interface components {
                      */
                     type: "Practice";
                     /** @description Practice block content */
-                    content: {
+                    practiceBlock: {
                         /**
                          * @description SOLO taxonomy level
                          * @enum {string}
@@ -770,7 +776,7 @@ export interface components {
                      */
                     type: "Practice";
                     /** @description Practice block content */
-                    content: {
+                    practiceBlock: {
                         /**
                          * @description SOLO taxonomy level
                          * @enum {string}
@@ -811,7 +817,7 @@ export interface components {
              */
             type: "Summary";
             /** @description Summary block content */
-            content: {
+            summaryBlock: {
                 /** @description Block ID */
                 blockId: string;
                 /** @description Session summary content */
@@ -823,7 +829,6 @@ export interface components {
             totalBlocks: number;
         };
         GetBlockByOrderIndexRequestDto: Record<string, never>;
-        GetBlockResponseDto: Record<string, never>;
         GenerateChatResponseRequestDto: {
             /** @description User message / follow-up question sent in the inform block chat */
             message: string;
@@ -1206,14 +1211,12 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Block found */
+            /** @description Block found (Inform | Practice | Summary) */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["GetBlockResponseDto"];
-                };
+                content?: never;
             };
             /** @description Block not found */
             404: {

@@ -16,6 +16,7 @@ import {
   setCurrentBlockIndex,
 } from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
+import type { LearningGoal } from '@/types/domain';
 
 export default function LearningGoalPage() {
   const router = useRouter();
@@ -82,7 +83,7 @@ export default function LearningGoalPage() {
       finalBloomsLevel = customBloomsLevel;
     } else {
       // Use selected predefined goal
-      const selectedGoal = pageData.goals.find((_, index) => selectedGoalId === index.toString());
+      const selectedGoal = pageData.goals.find((_goal: LearningGoal, index: number) => selectedGoalId === index.toString());
       if (!selectedGoal) return;
       
       finalGoal = selectedGoal.learningGoal;
@@ -94,17 +95,16 @@ export default function LearningGoalPage() {
       setShowLoadingScreen(true);
       dispatch(setLoading(true));
 
-      // Call createSession API (nested learningGoal matches domain shape)
+      type BloomsLevel = 'Remember' | 'Understand' | 'Apply' | 'Analyze' | 'Evaluate' | 'Create';
       const response = await createSession({
         topic: pageData.topic,
-        learningGoal: { learningGoal: finalGoal, bloomsLevel: finalBloomsLevel },
+        learningGoal: { learningGoal: finalGoal, bloomsLevel: finalBloomsLevel as BloomsLevel },
         priorKnowledge: pageData.keywords?.trim() || undefined,
       }).unwrap();
 
-      // Update Redux store with new session data (overwrites old session)
-      dispatch(setCurrentSession(response.session.id));
-      dispatch(setCurrentBlockIndex(0)); // Explicitly set to first block
-      dispatch(setTotalBlocks(response.session.totalBlocks));
+      dispatch(setCurrentSession(response.id));
+      dispatch(setCurrentBlockIndex(0));
+      dispatch(setTotalBlocks(response.totalBlocks));
       
       // Mark first block as viewed and set block queue
       const blocksWithFirstViewed = response.blocks.map((block, index) => ({
@@ -114,7 +114,7 @@ export default function LearningGoalPage() {
       dispatch(setBlockQueue(blocksWithFirstViewed));
 
       // Navigate to session page
-      router.push(`/session/${response.session.id}`);
+      router.push(`/session/${response.id}`);
     } catch (error) {
       console.error('Failed to create session:', error);
       setShowLoadingScreen(false);
@@ -139,7 +139,7 @@ export default function LearningGoalPage() {
   }
 
   // Transform goals to extract objective part
-  const transformedGoals = pageData.goals.map((goal, index) => {
+  const transformedGoals = pageData.goals.map((goal: LearningGoal, index: number) => {
     const prefix = 'After this session, you will be able to ';
     let objective = goal.learningGoal;
     
@@ -192,7 +192,7 @@ export default function LearningGoalPage() {
                 Choose a learning goal...
               </div>
               <div className="space-y-3">
-                {transformedGoals.map((goal) => (
+                {transformedGoals.map((goal: (typeof transformedGoals)[number]) => (
                   <LearningGoalCard
                     key={goal.id}
                     goal={goal.goal}

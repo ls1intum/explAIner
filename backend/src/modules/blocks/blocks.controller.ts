@@ -13,7 +13,6 @@ import { GenerateSummaryBlockRequestDto } from './dto/request/generate-summary-b
 import { GetBlockByOrderIndexRequestDto } from './dto/request/get-block-by-order-index.request.dto';
 import { GenerateBlockSequenceResponseDto } from './dto/response/generate-block-sequence.response.dto';
 import { GenerateSummaryBlockResponseDto } from './dto/response/generate-summary-block.response.dto';
-import { GetBlockResponseDto } from './dto/response/get-block-by-order-index.response.dto';
 import { GenerateChatResponseResponseDto } from './dto/response/generate-chat-response.response.dto';
 import { SubmitAnswerResponseDto } from './dto/response/submit-answer.response.dto';
 
@@ -60,7 +59,7 @@ export class BlocksController {
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
   @ApiBody({ type: GetBlockByOrderIndexRequestDto })
-  @ApiResponse({ status: 200, description: 'Block found', type: GetBlockResponseDto })
+  @ApiResponse({ status: 200, description: 'Block found (Inform | Practice | Summary)' })
   @ApiResponse({ status: 404, description: 'Block not found' })
   getBlock(
     @Param('sessionId') sessionId: string,

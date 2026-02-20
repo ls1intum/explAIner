@@ -2,20 +2,23 @@ import { Middleware } from '@reduxjs/toolkit';
 import { isRejectedWithValue } from '@reduxjs/toolkit';
 import { isLogEnabled } from '../../config/logging.config';
 
+type ActionWithMeta = { type?: string; meta?: { arg?: { endpointName?: string; originalArgs?: unknown } } };
+
 /**
  * Redux logging middleware
  * Format: [REDUX] <API endpoint> <body>
  */
-export const loggingMiddleware: Middleware = (storeApi) => (next) => (action) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- middleware API requires first param
+export const loggingMiddleware: Middleware = (storeApi) => (next) => (action: unknown) => {
   if (!isLogEnabled('redux')) {
     return next(action);
   }
 
-  const actionType = action.type as string;
+  const a = action as ActionWithMeta;
+  const actionType = a.type as string;
 
-  // Check if this is an RTK Query action
-  if (actionType && action.meta && 'arg' in action.meta) {
-    const meta = action.meta as any;
+  if (actionType && a.meta && 'arg' in a.meta) {
+    const meta = a.meta;
     
     // Log queries and mutations when they start (pending state)
     if (actionType.endsWith('/pending')) {
@@ -29,10 +32,9 @@ export const loggingMiddleware: Middleware = (storeApi) => (next) => (action) =>
     }
   }
 
-  // Log errors
-  if (isRejectedWithValue(action)) {
+  if (isRejectedWithValue(action as Parameters<typeof isRejectedWithValue>[0])) {
     const endpointName = extractEndpointFromType(actionType);
-    console.error(`[REDUX] ${endpointName} Error:`, action.payload);
+    console.error(`[REDUX] ${endpointName} Error:`, (action as { payload?: unknown }).payload);
   }
 
   return next(action);
@@ -66,7 +68,7 @@ function extractEndpointFromType(type: string): string {
 /**
  * Format body for logging (truncate strings to 30 chars, one-line)
  */
-function formatBody(body: any): string {
+function formatBody(body: unknown): string {
   if (!body) return '{}';
   
   try {
@@ -80,24 +82,25 @@ function formatBody(body: any): string {
 /**
  * Sanitize and truncate data for logging
  */
-function sanitizeAndTruncate(obj: any): any {
+function sanitizeAndTruncate(obj: unknown): unknown {
   if (typeof obj === 'string') {
     return obj.length > 30 ? obj.substring(0, 30) + '...' : obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(item => sanitizeAndTruncate(item));
+    return obj.map((item) => sanitizeAndTruncate(item));
   }
 
   if (obj && typeof obj === 'object') {
-    const result: any = {};
+    const result: Record<string, unknown> = {};
     const sensitiveKeys = ['password', 'token', 'apiKey', 'secret'];
     
-    for (const key of Object.keys(obj)) {
+    const record = obj as Record<string, unknown>;
+    for (const key of Object.keys(record)) {
       if (sensitiveKeys.some((sensitive) => key.toLowerCase().includes(sensitive))) {
         result[key] = '***';
       } else {
-        result[key] = sanitizeAndTruncate(obj[key]);
+        result[key] = sanitizeAndTruncate(record[key]);
       }
     }
     return result;

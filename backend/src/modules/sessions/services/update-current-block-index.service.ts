@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { UpdateCurrentBlockIndexResponseDto } from '../dto/response/update-current-block-index.response.dto';
+import { mapUpdateCurrentBlockIndexResponse } from '../utils/session-mapper.utils';
 
 @Injectable()
 export class UpdateCurrentBlockIndexService {
@@ -13,22 +14,22 @@ export class UpdateCurrentBlockIndexService {
    */
   @LogService()
   async updateCurrentBlockIndex(sessionId: string, currentBlockIndex: number): Promise<UpdateCurrentBlockIndexResponseDto> {
-    // Validate session exists
+    
+    // 1. Validate session exists
     const session = await this.prisma.session.findUnique({
       where: { id: sessionId },
     });
-
     if (!session) {
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
     }
 
-    // Update current block index
+    // 2. Update current block index
     await this.prisma.session.update({
       where: { id: sessionId },
       data: { currentBlockIndex },
     });
 
-    // Mark the block as viewed in the database
+    // 3. Mark the block as viewed in the database
     await this.prisma.block.updateMany({
       where: {
         sessionId,
@@ -39,6 +40,6 @@ export class UpdateCurrentBlockIndexService {
       },
     });
 
-    return { success: true, currentBlockIndex };
+    return mapUpdateCurrentBlockIndexResponse(currentBlockIndex);
   }
 }

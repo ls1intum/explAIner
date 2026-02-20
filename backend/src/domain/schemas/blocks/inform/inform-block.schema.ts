@@ -6,13 +6,10 @@ import { BaseBlockSchema } from '../base-block.schema';
 // DOMAIN ENTITY SCHEMAS (PRISMA + EXTENSION)
 /////////////////////////////////////////
 
-/** Timestamp string (e.g. ISO 8601). Avoids z.date() so schema is JSON-Schema compatible. */
+/** Timestamp string (ISO 8601). JSON-Schema compatible. */
 const IsoDateStringSchema = z.string();
 
-// timestamp overridden for JSON-Schema compatibility
-export const InformBlockMessageSchema = PrismaInformBlockMessageSchema.omit({
-  timestamp: true,
-}).extend({
+export const InformBlockMessageSchema = PrismaInformBlockMessageSchema.omit({ timestamp: true }).extend({
   id: PrismaInformBlockMessageSchema.shape.id.describe('Message ID'),
   informBlockId: PrismaInformBlockMessageSchema.shape.informBlockId.describe('Inform block this message belongs to'),
   message: PrismaInformBlockMessageSchema.shape.message.min(1, 'Message must not be empty').describe('Message content'),
@@ -21,14 +18,15 @@ export const InformBlockMessageSchema = PrismaInformBlockMessageSchema.omit({
 });
 export type InformBlockMessage = z.infer<typeof InformBlockMessageSchema>;
 
-/** Inform block content: array of chat messages (same shape as PracticeBlockContentSchema / SummaryBlockContentSchema). */
-export const InformBlockContentSchema = z
-  .array(InformBlockMessageSchema)
-  .describe('Inform block messages');
+/** Content shape of an Inform block (messages array). Reused as type of informBlock in API response. */
+export const InformBlockContentSchema = z.object({
+  messages: z.array(InformBlockMessageSchema).describe('Inform block messages'),
+});
 export type InformBlockContent = z.infer<typeof InformBlockContentSchema>;
 
+/** API response: Inform block with relation shape (informBlock.messages). */
 export const InformBlockSchema = BaseBlockSchema.extend({
   type: z.literal('Inform').describe('Block type'),
-  content: InformBlockContentSchema.describe('Inform block content'),
+  informBlock: InformBlockContentSchema,
 });
 export type InformBlock = z.infer<typeof InformBlockSchema>;

@@ -4,6 +4,7 @@ import { GenerateChatResponseChain } from '../../ai/llm/chains/generate-chat-res
 import { GenerateChatResponseRequestDto } from '../dto/request/generate-chat-response.request.dto';
 import { GenerateChatResponseResponseDto } from '../dto/response/generate-chat-response.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
+import { mapChatResponse } from '../utils/block-mapper.utils';
 
 @Injectable()
 export class GenerateChatResponseService {
@@ -78,9 +79,6 @@ export class GenerateChatResponseService {
       },
     });
 
-    // 5. Return response
-    return {
-      response: owlbertMessage.message,
-    };
+    return mapChatResponse(owlbertMessage.message);
   }
 }

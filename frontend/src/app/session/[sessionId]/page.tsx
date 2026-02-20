@@ -55,10 +55,9 @@ export default function SessionPage() {
   // Hydrate Redux store when session data is fetched
   useEffect(() => {
     if (sessionData && needsSessionData) {
-      dispatch(setCurrentSession(sessionData.session.id));
-      dispatch(setCurrentBlockIndex(sessionData.session.currentBlockIndex));
-      dispatch(setTotalBlocks(sessionData.session.totalBlocks));
-      // Use database alreadyViewed values directly
+      dispatch(setCurrentSession(sessionData.id));
+      dispatch(setCurrentBlockIndex(sessionData.currentBlockIndex));
+      dispatch(setTotalBlocks(sessionData.totalBlocks));
       dispatch(setBlockQueue(sessionData.blocks));
     }
   }, [sessionData, needsSessionData, dispatch]);
@@ -121,22 +120,23 @@ export default function SessionPage() {
     }
   };
 
-  // Handle generating summary
+  // Handle generating summary (API returns block + sessionDuration, totalBlocks; sessionInfo from session + result)
   const handleGenerateSummary = async () => {
     try {
       const result = await generateSummary({ sessionId }).unwrap();
-      
-      // Store summary data
-      setSummaryData(result);
-      
-      // Add summary block to queue
-      dispatch(addBlockToQueue(result.block));
-      
-      // Update total blocks
+      const block = result as Block;
+      setSummaryData({
+        block,
+        sessionInfo: {
+          learningGoal: sessionData?.learningGoal?.learningGoal ?? '',
+          bloomsLevel: sessionData?.learningGoal?.bloomsLevel ?? '',
+          totalBlocks: result.totalBlocks,
+          sessionDuration: result.sessionDuration,
+        },
+      });
+      dispatch(addBlockToQueue(block));
       dispatch(setTotalBlocks(totalBlocks + 1));
-      
-      // Navigate to summary block
-      dispatch(setCurrentBlockIndex(result.block.orderIndex));
+      dispatch(setCurrentBlockIndex(result.orderIndex));
     } catch (error) {
       console.error('Failed to generate summary:', error);
       alert('Failed to generate summary. Please try again.');
@@ -150,9 +150,8 @@ export default function SessionPage() {
 
       switch (response.action) {
         case 'navigate':
-          // Navigate to next block in current sequence
-          if (response.nextOrderIndex !== undefined) {
-            dispatch(setCurrentBlockIndex(response.nextOrderIndex));
+          if (response.targetBlockIndex !== undefined) {
+            dispatch(setCurrentBlockIndex(response.targetBlockIndex));
           }
           break;
 

@@ -4,6 +4,10 @@ import { GenerateSessionSummaryChain } from '../../ai/llm/chains/generate-sessio
 import { BlockType } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
+import {
+  mapSessionBlocksToSummaryContext,
+  mapPrismaSummaryBlockToGenerateResponse,
+} from '../utils/block-mapper.utils';
 
 @Injectable()
 export class GenerateSummaryBlockService {
@@ -14,7 +18,6 @@ export class GenerateSummaryBlockService {
 
   @LogService()
   async generate(sessionId: string): Promise<GenerateSummaryBlockResponseDto> {
-    // 1. Fetch session data with all blocks
     const session = await this.prisma.session.findUnique({
       where: { id: sessionId },
       include: {
@@ -23,41 +26,18 @@ export class GenerateSummaryBlockService {
             informBlock: { include: { messages: true } },
             practiceBlock: true,
           },
-          orderBy: {
-            orderIndex: 'asc',
-          },
+          orderBy: { orderIndex: 'asc' },
         },
       },
     });
+    if (!session) throw new NotFoundException('Session not found');
 
-    if (!session) {
-      throw new NotFoundException('Session not found');
-    }
+    const { informContent, practiceResults } = mapSessionBlocksToSummaryContext(session.blocks);
 
-    // 2. Extract inform content (first message from each inform block)
-    const informBlocks = session.blocks.filter(
-      (block) => block.type === BlockType.Inform && block.informBlock,
-    );
-    const informContent = informBlocks.map((block) => {
-      const firstMessage = block.informBlock!.messages?.[0]?.message || '';
-      return firstMessage;
-    });
-
-    // 3. Extract practice results for AI summary generation
-    const practiceBlocks = session.blocks.filter(
-      (block) => block.type === BlockType.Practice && block.practiceBlock,
-    );
-    const practiceResults = practiceBlocks.map((block) => ({
-      question: block.practiceBlock!.question,
-      isCorrect: block.practiceBlock!.studentAnswerIsCorrect || false,
-    }));
-
-    // 4. Calculate session duration (difference between now and startedAt)
     const sessionDuration = Math.floor(
       (Date.now() - new Date(session.startedAt).getTime()) / 1000 / 60,
-    ); // in minutes
+    );
 
-    // 5. Call chain to generate summary
     const summaryBlock = await this.generateSessionSummaryChain.execute({
       topic: session.topic,
       learningGoal: session.learningGoal,
@@ -95,16 +75,10 @@ export class GenerateSummaryBlockService {
       },
     });
 
-    // 9. Return block in schema shape (SummaryBlockSchema) + session metadata; minimal mapping: key summaryBlock -> content
-    return {
-      id: createdSummaryBlock.id,
-      sessionId: createdSummaryBlock.sessionId,
-      orderIndex: createdSummaryBlock.orderIndex,
-      alreadyViewed: createdSummaryBlock.alreadyViewed,
-      type: 'Summary' as const,
-      content: createdSummaryBlock.summaryBlock!,
+    return mapPrismaSummaryBlockToGenerateResponse(
+      createdSummaryBlock as Parameters<typeof mapPrismaSummaryBlockToGenerateResponse>[0],
       sessionDuration,
-      totalBlocks: session.totalBlocks + 1,
-    };
+      session.totalBlocks + 1,
+    ) as GenerateSummaryBlockResponseDto;
   }
 }

@@ -20,7 +20,7 @@ export default function PracticeBlock({
   onContinue,
 }: PracticeBlockProps) {
   const dispatch = useAppDispatch();
-  const practiceBlock = block.practiceBlock;
+  const practiceBlock = block.type === 'Practice' ? block.practiceBlock : undefined;
   const [submitAnswer, { isLoading: isSubmittingAnswer }] =
     useSubmitAnswerMutation();
 
@@ -32,13 +32,13 @@ export default function PracticeBlock({
     practiceBlock?.studentAnswerIsCorrect !== null
   );
 
-  // Reset state when block ID changes (not when practiceBlock data updates)
+  // Sync local state when block or practiceBlock data changes
   useEffect(() => {
     if (practiceBlock) {
       setSelectedOptions(practiceBlock.studentAnswerOptionIndices || []);
       setIsChecked(practiceBlock.studentAnswerIsCorrect !== null);
     }
-  }, [block.id]); // Only depend on block.id, not practiceBlock
+  }, [block.id, practiceBlock]);
 
   if (!practiceBlock) return null;
 

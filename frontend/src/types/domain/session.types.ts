@@ -11,11 +11,11 @@
 import type { components } from '../generated';
 
 // Session-related types
-export type Session = components['schemas']['SessionInfoDto'];
+export type Session = components['schemas']['GetSessionResponseDto'];
 export type CreateSessionRequest = components['schemas']['CreateSessionRequestDto'];
 export type CreateSessionResponse = components['schemas']['CreateSessionResponseDto'];
 export type GetSessionResponse = components['schemas']['GetSessionResponseDto'];
-export type ContinueSessionResponse = components['schemas']['ContinueSessionResponseDto'];
-export type DeleteSessionResponse = components['schemas']['DeleteSessionResponseDto'];
-export type SubmitFeedbackResponse = components['schemas']['SubmitFeedbackResponseDto'];
-export type UpdateCurrentBlockIndexResponse = components['schemas']['UpdateCurrentBlockIndexResponseDto'];
+export type ContinueSessionResponse = components['schemas']['ContinueSessionResponseDto_Output'];
+export type DeleteSessionResponse = components['schemas']['DeleteSessionResponseDto_Output'];
+export type SubmitFeedbackResponse = components['schemas']['SubmitFeedbackResponseDto_Output'];
+export type UpdateCurrentBlockIndexResponse = components['schemas']['UpdateCurrentBlockIndexResponseDto_Output'];

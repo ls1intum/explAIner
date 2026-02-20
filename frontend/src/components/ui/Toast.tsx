@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { removeToast } from "@/store/slices/toastSlice";
+import { removeToast, type Toast } from "@/store/slices/toastSlice";
 import { CrossCircledIcon, CheckCircledIcon, InfoCircledIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 // Toast notification component
@@ -13,7 +13,7 @@ export default function Toast() {
 
   return (
     <div className="fixed top-20 right-4 z-50 flex flex-col gap-3 max-w-sm">
-      {toasts.map((toast) => (
+      {toasts.map((toast: Toast) => (
         <ToastItem
           key={toast.id}
           id={toast.id}

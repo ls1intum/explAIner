@@ -24,35 +24,35 @@ export default function InformBlock({
 }: InformBlockProps) {
   const dispatch = useAppDispatch();
   const [followUpQuestion, setFollowUpQuestion] = useState('');
-  const [localMessages, setLocalMessages] = useState(block.informBlockMessages || []);
+  const informMessages = useMemo(
+    () => (block.type === 'Inform' ? block.informBlock.messages : []),
+    [block]
+  );
+  const [localMessages, setLocalMessages] = useState(informMessages);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousMessageCountRef = useRef(0);
-  
-  // RTK Query mutation for sending messages
+
   const [sendMessage, { isLoading }] = useSendMessageMutation();
-  
-  // Random loading message (memoized so it doesn't change on re-renders)
   const loadingMessage = useMemo(
     () => getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES),
-    [isLoading]
+    []
   );
 
-  // Update local messages when block messages change
   useEffect(() => {
-    setLocalMessages(block.informBlockMessages || []);
-  }, [block.informBlockMessages]);
+    setLocalMessages(informMessages);
+  }, [informMessages]);
 
   // Get inform block messages
   const messages = localMessages;
 
-  // Always scroll to top when block first loads
+  // Scroll to top and sync ref when block or message count changes
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = 0;
     }
     previousMessageCountRef.current = messages.length;
-  }, [block.id]); // Re-run when block changes
+  }, [block.id, messages.length]);
 
   // Auto-scroll to bottom when new messages are added (user sends message or AI responds)
   useEffect(() => {
@@ -207,15 +207,13 @@ export default function InformBlock({
     const message = messageText || followUpQuestion.trim();
     if (!message) return;
     
-    // Add user message immediately to UI
     const userMessage = {
       id: `temp-user-${Date.now()}`,
-      blockId: block.id,
+      informBlockId: block.id,
       message,
       sender: 'User' as const,
       timestamp: new Date().toISOString(),
     };
-    
     setLocalMessages((prev) => [...prev, userMessage]);
     
     // Clear input if it was typed (not from quick action)
@@ -236,10 +234,9 @@ export default function InformBlock({
         message,
       }).unwrap();
       
-      // Add AI response to UI
       const aiMessage = {
         id: `temp-ai-${Date.now()}`,
-        blockId: block.id,
+        informBlockId: block.id,
         message: data.response,
         sender: 'Owlbert' as const,
         timestamp: new Date().toISOString(),

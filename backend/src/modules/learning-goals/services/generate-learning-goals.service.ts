@@ -14,13 +14,14 @@ export class GenerateLearningGoalsService {
   async generate(
     dto: GenerateLearningGoalsRequestDto,
   ): Promise<GenerateLearningGoalsResponseDto> {
-    // Call chain with structured params (chain handles prompt generation)
+
+    // 1. Call chain to generate learning goals
     const goals = await this.generateLearningGoalsChain.execute({
       topic: dto.topic,
       priorKnowledge: dto.priorKnowledge,
     });
 
-    // Return wrapped response (chain already returns correct tuple structure)
+    // 2. Return wrapped learning goals response
     return {
       learningGoals: goals,
     };

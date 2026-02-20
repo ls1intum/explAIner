@@ -14,9 +14,10 @@ export const SummaryBlockContentSchema = PrismaSummaryBlockSchema.extend({
 });
 export type SummaryBlockContent = z.infer<typeof SummaryBlockContentSchema>;
 
+/** API response: Summary block with relation shape (summaryBlock). */
 export const SummaryBlockSchema = BaseBlockSchema.extend({
   type: z.literal('Summary').describe('Block type'),
-  content: SummaryBlockContentSchema.describe('Summary block content'),
+  summaryBlock: SummaryBlockContentSchema.describe('Summary block content'),
 });
 export type SummaryBlock = z.infer<typeof SummaryBlockSchema>;
 

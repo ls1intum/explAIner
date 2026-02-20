@@ -6,12 +6,12 @@ type CreateSessionRequest = components["schemas"]["CreateSessionRequestDto"];
 type CreateSessionResponse = components["schemas"]["CreateSessionResponseDto"];
 type GetSessionResponse = components["schemas"]["GetSessionResponseDto"];
 type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
-type ContinueSessionResponse = components["schemas"]["ContinueSessionResponseDto"];
+type ContinueSessionResponse = components["schemas"]["ContinueSessionResponseDto_Output"];
 type GenerateBlockSequenceResponse = components["schemas"]["GenerateBlockSequenceResponseDto"];
-type GenerateSummaryResponse = components["schemas"]["GenerateSummaryResponseDto"];
-type SubmitFeedbackResponse = components["schemas"]["SubmitFeedbackResponseDto"];
-type UpdateCurrentBlockIndexResponse = components["schemas"]["UpdateCurrentBlockIndexResponseDto"];
-type DeleteSessionResponse = components["schemas"]["DeleteSessionResponseDto"];
+type GenerateSummaryResponse = components["schemas"]["GenerateSummaryBlockResponseDto"];
+type SubmitFeedbackResponse = components["schemas"]["SubmitFeedbackResponseDto_Output"];
+type UpdateCurrentBlockIndexResponse = components["schemas"]["UpdateCurrentBlockIndexResponseDto_Output"];
+type DeleteSessionResponse = components["schemas"]["DeleteSessionResponseDto_Output"];
 
 // Session CRUD + submitFeedback + block navigation
 

@@ -51,7 +51,7 @@ export const sessionSlice = createSlice({
       }>
     ) => {
       const block = state.blockQueue.find((b) => b.id === action.payload.blockId);
-      if (block?.practiceBlock) {
+      if (block?.type === 'Practice' && block.practiceBlock) {
         block.practiceBlock.studentAnswerOptionIndices = action.payload.studentAnswerOptionIndices;
         block.practiceBlock.studentAnswerIsCorrect = action.payload.studentAnswerIsCorrect;
       }
@@ -65,8 +65,8 @@ export const sessionSlice = createSlice({
       }>
     ) => {
       const block = state.blockQueue.find((b) => b.id === action.payload.blockId);
-      if (block?.informBlockMessages) {
-        block.informBlockMessages = action.payload.messages;
+      if (block?.type === 'Inform' && block.informBlock) {
+        block.informBlock.messages = action.payload.messages;
       }
     },
     // Mark block as viewed

@@ -18,7 +18,7 @@ interface SummaryBlockProps {
 
 export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) {
   const router = useRouter();
-  const summaryBlock = block.summaryBlock;
+  const summaryBlock = block.type === 'Summary' ? block.summaryBlock : undefined;
 
   if (!summaryBlock) return null;
 

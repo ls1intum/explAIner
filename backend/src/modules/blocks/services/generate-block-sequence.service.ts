@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateBlockSequenceChain } from '../../ai/llm/chains/generate-block-sequence.chain';
 import { BlockSequenceMode } from '../../../domain/schemas/blocks/block-sequence.schema';
@@ -8,13 +8,13 @@ import type { WrongAnswer } from '../../../domain/schemas/blocks/practice/practi
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
 import { extractWrongAnswersFromLastSequence } from '../utils/block.utils';
-
+import { getSessionWithBlocks } from '../../sessions/utils/session.utils';
+import type { BlockWithIncludes } from '../utils/block-mapper.utils';
+import { blockToResponse } from '../utils/block-mapper.utils';
 
 /**
- * Unified service for generating block sequences (initial or subsequent)
- * Automatically detects mode based on session state:
- * - 0 blocks → INITIAL mode (keyFacts)
- * - Has blocks → SUBSEQUENT mode (keyMisconceptions addressing wrong answers)
+ * Unified service for generating block sequences (initial or subsequent).
+ * Mode: 0 blocks → INITIAL (keyFacts); has blocks → SUBSEQUENT (keyMisconceptions).
  */
 @Injectable()
 export class GenerateBlockSequenceService {
@@ -25,24 +25,7 @@ export class GenerateBlockSequenceService {
 
   @LogService()
   async generate(sessionId: string): Promise<GenerateBlockSequenceResponseDto> {
-    // 1. Fetch session with all blocks
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
-      include: {
-        blocks: {
-          include: {
-            practiceBlock: true,
-          },
-          orderBy: {
-            orderIndex: 'asc',
-          },
-        },
-      },
-    });
-
-    if (!session) {
-      throw new NotFoundException('Session not found');
-    }
+    const session = await getSessionWithBlocks(this.prisma, sessionId);
 
     // 2. Auto-detect mode based on existing blocks
     const mode = session.blocks.length === 0 
@@ -145,45 +128,13 @@ ${blockSequence.informBlock.summary}`;
       data: { totalBlocks: newTotal },
     });
 
-    // 11. Return all blocks mapped to block schema structure
-    const mapPracticeBlock = (block: any) => ({
-      id: block.id,
-      sessionId: block.sessionId,
-      orderIndex: block.orderIndex,
-      alreadyViewed: block.alreadyViewed,
-      type: 'Practice' as const,
-      content: {
-        blockId: block.practiceBlock.blockId,
-        soloLevel: block.practiceBlock.soloLevel,
-        question: block.practiceBlock.question,
-        answerOptions: block.practiceBlock.answerOptions,
-        correctAnswerOptionIndices: block.practiceBlock.correctAnswerOptionIndices,
-        studentAnswerOptionIndices: block.practiceBlock.studentAnswerOptionIndices,
-        studentAnswerIsCorrect: block.practiceBlock.studentAnswerIsCorrect,
-      },
-    });
-
-    const informBlock = informBlockCreated.informBlock!;
     return {
-      informBlock: {
-        id: informBlockCreated.id,
-        sessionId: informBlockCreated.sessionId,
-        orderIndex: informBlockCreated.orderIndex,
-        alreadyViewed: informBlockCreated.alreadyViewed,
-        type: 'Inform' as const,
-        content: informBlock.messages.map((msg) => ({
-          id: msg.id,
-          informBlockId: informBlockCreated.id,
-          message: msg.message,
-          sender: msg.sender,
-          timestamp: (msg.timestamp as Date).toISOString(),
-        })),
-      },
+      informBlock: blockToResponse(informBlockCreated as BlockWithIncludes),
       practiceBlocks: [
-        mapPracticeBlock(practiceBlocks[0]),
-        mapPracticeBlock(practiceBlocks[1]),
-        mapPracticeBlock(practiceBlocks[2]),
+        blockToResponse(practiceBlocks[0] as BlockWithIncludes),
+        blockToResponse(practiceBlocks[1] as BlockWithIncludes),
+        blockToResponse(practiceBlocks[2] as BlockWithIncludes),
       ],
-    };
+    } as GenerateBlockSequenceResponseDto;
   }
 }

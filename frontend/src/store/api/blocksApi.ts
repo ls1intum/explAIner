@@ -3,7 +3,7 @@ import type { components } from "@/types/generated";
 
 // Type aliases for generated API types
 type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
-type SendMessageResponse = components["schemas"]["SendMessageResponseDto"];
+type SendMessageResponse = components["schemas"]["GenerateChatResponseResponseDto_Output"];
 
 // getBlock, submitAnswer, sendMessage
 

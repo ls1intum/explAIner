@@ -10,9 +10,9 @@
 
 import type { components } from '../generated';
 
-// Learning Goals API types
-export type LearningGoal = components['schemas']['LearningGoalDto'];
+type GenerateLearningGoalsOutput = components['schemas']['GenerateLearningGoalsResponseDto_Output'];
+export type LearningGoal = GenerateLearningGoalsOutput['learningGoals'][number];
 export type GenerateLearningGoalsRequest = components['schemas']['GenerateLearningGoalsRequestDto'];
-export type GenerateLearningGoalsResponse = components['schemas']['GenerateLearningGoalsResponseDto'];
+export type GenerateLearningGoalsResponse = GenerateLearningGoalsOutput;
 export type GenerateEasierLearningGoalsRequest = components['schemas']['GenerateEasierLearningGoalsRequestDto'];
-export type GenerateEasierLearningGoalsResponse = components['schemas']['GenerateEasierLearningGoalsResponseDto'];
+export type GenerateEasierLearningGoalsResponse = components['schemas']['GenerateEasierLearningGoalsResponseDto_Output'];

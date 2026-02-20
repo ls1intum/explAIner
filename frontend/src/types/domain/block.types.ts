@@ -1,20 +1,22 @@
 /**
  * Block Domain Types
- * 
- * Re-exports from generated API types for cleaner imports.
- * These types represent the API contract between frontend and backend.
- * 
- * Source: Generated from OpenAPI specification
+ *
+ * Re-exports from generated API types. Block shape matches get-session blocks (Prisma-shaped: informBlock | practiceBlock | summaryBlock).
  * To regenerate: npm run generate:api-types
  */
 
 import type { components } from '../generated';
 
-// Block-related types
-export type Block = components['schemas']['GetBlockResponseDto'];
-export type InformBlockMessage = components['schemas']['InformBlockMessageDto'];
-export type PracticeBlock = components['schemas']['PracticeBlockDto'];
-export type SummaryBlock = components['schemas']['SummaryBlockDto'];
+type GetSessionResponseDto = components['schemas']['GetSessionResponseDto'];
+/** Single block (same shape as get-block and get-session blocks). */
+export type Block = GetSessionResponseDto['blocks'][number];
+/** Inform block message (from block.informBlock.messages). */
+export type InformBlockMessage = Extract<Block, { type: 'Inform' }>['informBlock']['messages'][number];
+/** Practice block content (from block.practiceBlock). */
+export type PracticeBlockContent = Extract<Block, { type: 'Practice' }>['practiceBlock'];
+/** Summary block content (from block.summaryBlock). */
+export type SummaryBlockContent = Extract<Block, { type: 'Summary' }>['summaryBlock'];
+
 export type GenerateBlockSequenceResponse = components['schemas']['GenerateBlockSequenceResponseDto'];
-export type GenerateSummaryResponse = components['schemas']['GenerateSummaryResponseDto'];
-export type SendMessageResponse = components['schemas']['SendMessageResponseDto'];
+export type GenerateSummaryResponse = components['schemas']['GenerateSummaryBlockResponseDto'];
+export type SendMessageResponse = components['schemas']['GenerateChatResponseResponseDto_Output'];

@@ -11,7 +11,7 @@ export default function BlockNavigation() {
   const { currentBlockIndex, blockQueue } = useAppSelector((state) => state.session);
 
   // Filter to only show blocks that have been viewed
-  const viewedBlocks = blockQueue.filter((block) => block.alreadyViewed);
+  const viewedBlocks = blockQueue.filter((block: Block) => block.alreadyViewed);
 
   // Navigate to specific block
   const handleBlockClick = (index: number) => {
@@ -28,7 +28,6 @@ export default function BlockNavigation() {
         const index = block.orderIndex;
         const isActive = index === currentBlockIndex;
         const isPast = index < currentBlockIndex;
-        const isFuture = index > currentBlockIndex;
 
         return (
           <div key={block.id} className="flex items-center">

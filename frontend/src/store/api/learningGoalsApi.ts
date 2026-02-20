@@ -3,9 +3,9 @@ import type { components } from "@/types/generated";
 
 // Type aliases for generated API types
 type GenerateLearningGoalsRequest = components["schemas"]["GenerateLearningGoalsRequestDto"];
-type GenerateLearningGoalsResponse = components["schemas"]["GenerateLearningGoalsResponseDto"];
+type GenerateLearningGoalsResponse = components["schemas"]["GenerateLearningGoalsResponseDto_Output"];
 type GenerateEasierLearningGoalsRequest = components["schemas"]["GenerateEasierLearningGoalsRequestDto"];
-type GenerateEasierLearningGoalsResponse = components["schemas"]["GenerateEasierLearningGoalsResponseDto"];
+type GenerateEasierLearningGoalsResponse = components["schemas"]["GenerateEasierLearningGoalsResponseDto_Output"];
 
 // Learning Goals API endpoints
 

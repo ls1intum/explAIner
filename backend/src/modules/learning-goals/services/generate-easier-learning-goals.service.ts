@@ -15,6 +15,7 @@ export class GenerateEasierLearningGoalsService {
 
   @LogService()
   async generate(dto: GenerateEasierLearningGoalsRequestDto): Promise<GenerateEasierLearningGoalsResponseDto> {
+    
     // 1. Fetch session data with all blocks
     const session = await this.prisma.session.findUnique({
       where: { id: dto.sessionId },

@@ -25,9 +25,10 @@ export const PracticeBlockContentSchema = PrismaPracticeBlockSchema.extend({
 });
 export type PracticeBlockContent = z.infer<typeof PracticeBlockContentSchema>;
 
+/** API response: Practice block with relation shape (practiceBlock). */
 export const PracticeBlockSchema = BaseBlockSchema.extend({
   type: z.literal('Practice').describe('Block type'),
-  content: PracticeBlockContentSchema.describe('Practice block content'),
+  practiceBlock: PracticeBlockContentSchema.describe('Practice block content'),
 });
 export type PracticeBlock = z.infer<typeof PracticeBlockSchema>;
 
