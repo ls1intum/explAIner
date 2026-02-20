@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { CreateSessionRequestDto } from '../dto/request/create-session.request.dto';
 import { GenerateBlockSequenceService } from '../../blocks/services/generate-block-sequence.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { mapSessionToCreateResponse } from '../utils/session-mapper.utils';
+import { mapSessionToCreateResponse } from '../session.utils';
 
 @Injectable()
 export class CreateSessionService {

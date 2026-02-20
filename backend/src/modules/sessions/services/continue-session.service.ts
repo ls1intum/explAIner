@@ -10,8 +10,8 @@ import {
   areAllPracticeBlocksAnswered,
   areAllPracticeBlocksCorrect,
   findNextUnansweredPracticeBlock,
-} from '../utils/session.utils';
-import { mapContinueResponse } from '../utils/session-mapper.utils';
+  mapContinueResponse,
+} from '../session.utils';
 
 @Injectable()
 export class ContinueSessionService {

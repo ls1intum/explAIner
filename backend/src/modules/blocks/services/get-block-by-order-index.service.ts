@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { BlockSchema } from '../../../domain/schemas/blocks/block.schema';
 import { GetBlockResponseDto } from '../dto/response/get-block-by-order-index.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { blockToResponse } from '../utils/block-mapper.utils';
+import { blockToResponse } from '../block.utils';
 
 @Injectable()
 export class GetBlockByOrderIndexService {

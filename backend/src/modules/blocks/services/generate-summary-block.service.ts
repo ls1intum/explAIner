@@ -7,7 +7,7 @@ import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summar
 import {
   mapSessionBlocksToSummaryContext,
   mapPrismaSummaryBlockToGenerateResponse,
-} from '../utils/block-mapper.utils';
+} from '../block.utils';
 
 @Injectable()
 export class GenerateSummaryBlockService {

@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { SubmitAnswerRequestDto } from '../dto/request/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from '../dto/response/submit-answer.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { mapSubmitAnswerResponse } from '../utils/block-mapper.utils';
+import { mapSubmitAnswerResponse } from '../block.utils';
 
 @Injectable()
 export class SubmitAnswerService {

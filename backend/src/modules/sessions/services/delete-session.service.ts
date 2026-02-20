@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { DeleteSessionResponseDto } from '../dto/response/delete-session.response.dto';
-import { mapDeleteSessionResponse } from '../utils/session-mapper.utils';
+import { mapDeleteSessionResponse } from '../session.utils';
 
 @Injectable()
 export class DeleteSessionService {

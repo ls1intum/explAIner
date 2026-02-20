@@ -7,10 +7,12 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import type { WrongAnswer } from '../../../domain/schemas/blocks/practice/practice-block.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
-import { extractWrongAnswersFromLastSequence } from '../utils/block.utils';
-import { getSessionWithBlocks } from '../../sessions/utils/session.utils';
-import type { BlockWithIncludes } from '../utils/block-mapper.utils';
-import { blockToResponse } from '../utils/block-mapper.utils';
+import { getSessionWithBlocks } from '../../sessions/session.utils';
+import {
+  blockToResponse,
+  extractWrongAnswersFromLastSequence,
+  type BlockWithIncludes,
+} from '../block.utils';
 
 /**
  * Unified service for generating block sequences (initial or subsequent).

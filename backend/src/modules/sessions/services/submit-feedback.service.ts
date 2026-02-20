@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { SubmitFeedbackRequestDto } from '../dto/request/submit-feedback.request.dto';
 import { SubmitFeedbackResponseDto } from '../dto/response/submit-feedback.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { mapSubmitFeedbackResponse } from '../utils/session-mapper.utils';
+import { mapSubmitFeedbackResponse } from '../session.utils';
 
 @Injectable()
 export class SubmitFeedbackService {
