@@ -1,7 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
-import { ContinueSessionResponseSchema } from '../../../../domain/schemas/sessions/session.schema';
+import { ContinueSessionResponseDtoSchema } from '../../../../domain/schemas/dto/session.schema';
 
 /**
  * Response body returning the continued session with updated state.
  */
-export class ContinueSessionResponseDto extends createZodDto(ContinueSessionResponseSchema) {}
+export class ContinueSessionResponseDto extends createZodDto(ContinueSessionResponseDtoSchema) {}

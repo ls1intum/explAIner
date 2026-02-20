@@ -2,10 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
-import {
-  LearningGoalsSchema,
-  type LearningGoals,
-} from '../../../../domain/schemas/learning-goals/learning-goals.schema';
+import { LearningGoalsSchema, type LearningGoals } from '../../../../domain/schemas/base/learning-goal.schema';
 import { isLogEnabled } from '../../../../config/logging.config';
 
 /**

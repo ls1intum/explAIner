@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateBlockSequenceChain } from '../../ai/llm/chains/generate-block-sequence.chain';
-import { BlockSequenceMode } from '../../../domain/schemas/blocks/block-sequence.schema';
+import { BlockSequenceMode } from '../../../domain/schemas/enums.schema';
 import { BlockType, SoloLevel } from '@prisma/client';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import type { WrongAnswer } from '../../../domain/schemas/blocks/practice/practice-block.schema';
+import type { WrongAnswer } from '../../../domain/schemas/base/practice-block.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
 import { getSessionWithBlocks } from '../../sessions/session.utils';

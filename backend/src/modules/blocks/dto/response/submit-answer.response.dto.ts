@@ -1,7 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
-import { SubmitAnswerResponseSchema } from '../../../../domain/schemas/blocks/practice/practice-block.schema';
+import { SubmitAnswerResponseDtoSchema } from '../../../../domain/schemas/dto/blocks.schema';
 
 /**
  * Response body returning the result of a submitted practice block answer.
  */
-export class SubmitAnswerResponseDto extends createZodDto(SubmitAnswerResponseSchema) {}
+export class SubmitAnswerResponseDto extends createZodDto(SubmitAnswerResponseDtoSchema) {}

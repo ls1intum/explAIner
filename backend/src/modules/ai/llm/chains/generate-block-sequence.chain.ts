@@ -2,19 +2,19 @@ import { Injectable, Logger } from '@nestjs/common';
 import { LlmService } from '../llm.service';
 import { Parser } from '../llm.parser';
 import { generateBlockSequencePrompt } from '../prompts/generate-block-sequence.prompt';
+import { BlockSequenceMode } from '../../../../domain/schemas/enums.schema';
 import {
-  InitialBlockSequenceParseSchema,
-  SubsequentBlockSequenceParseSchema,
-  BlockSequenceMode,
-  type InitialBlockSequenceParse,
-  type SubsequentBlockSequenceParse,
-} from '../../../../domain/schemas/blocks/block-sequence.schema';
-import type { WrongAnswer } from '../../../../domain/schemas/blocks/practice/practice-block.schema';
+  InitialBlockSequenceParserSchema,
+  SubsequentBlockSequenceParserSchema,
+  type InitialBlockSequenceParser,
+  type SubsequentBlockSequenceParser,
+} from '../../../../domain/schemas/llm-parser/block-sequence.schema';
+import type { WrongAnswer } from '../../../../domain/schemas/base/practice-block.schema';
 import { SoloLevel } from '@prisma/client';
 import { isLogEnabled } from '../../../../config/logging.config';
 
 /** Union return type for block sequence chain (initial or subsequent). */
-export type BlockSequenceParse = InitialBlockSequenceParse | SubsequentBlockSequenceParse;
+export type BlockSequenceParse = InitialBlockSequenceParser | SubsequentBlockSequenceParser;
 
 /**
  * Chain for generating block sequences (initial or subsequent).
@@ -61,10 +61,10 @@ export class GenerateBlockSequenceChain {
     };
 
     if (params.mode === BlockSequenceMode.INITIAL) {
-      const parser = new Parser(InitialBlockSequenceParseSchema, retryFn);
+      const parser = new Parser(InitialBlockSequenceParserSchema, retryFn);
       return parser.parseWithRetry(rawResponse);
     }
-    const parser = new Parser(SubsequentBlockSequenceParseSchema, retryFn);
+    const parser = new Parser(SubsequentBlockSequenceParserSchema, retryFn);
     return parser.parseWithRetry(rawResponse);
   }
 }

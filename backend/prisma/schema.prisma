@@ -5,15 +5,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator zod {
-  provider                         = "zod-prisma-types"
-  output                           = "./generated/zod"
-  createInputTypes                 = false
-  createArgTypes                   = false
-  createOptionalDefaultValuesTypes = false
-  createPartialTypes               = false
-}
-
 // Prisma 7.x: 'url' moved from schema to prisma.config.ts for migrations
 datasource db {
   provider = "postgresql"
