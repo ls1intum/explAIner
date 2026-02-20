@@ -4,7 +4,7 @@
 
 import { BlockType } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
-import type { WrongAnswer } from '../../domain/schemas/base/practice-block.schema';
+import type { WrongAnswer } from '../../domain/schemas/base/blocks/practice-block.schema';
 
 /** One block sequence = 1 INFORM + 3 PRACTICE blocks */
 const BLOCKS_PER_SEQUENCE = 4;

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SoloLevelSchema } from '../enums.schema';
+import { SoloLevelSchema } from '../../enums.schema';
 import { BaseBlockSchema } from './base-block.schema';
 
 // Practice block content

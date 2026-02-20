@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { InformBlockSchema } from './inform-block.schema';
-import { PracticeBlockSchema } from './practice-block.schema';
+import { InformBlockSchema } from './blocks/inform-block.schema';
+import { PracticeBlockSchema } from './blocks/practice-block.schema';
 
 // Block sequence
 export const BlockSequenceSchema = z.object({

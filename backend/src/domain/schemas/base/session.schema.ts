@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BlockSchema } from './block.schema';
+import { BlockSchema } from './blocks/block.schema';
 import { LearningGoalSchema } from './learning-goal.schema';
 
 // Session

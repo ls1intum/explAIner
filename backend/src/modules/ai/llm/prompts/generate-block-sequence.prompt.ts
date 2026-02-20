@@ -1,6 +1,6 @@
 import { SOLO_TAXONOMY_DESCRIPTION } from '../../../../domain/didactical-frameworks/solo-taxonomy.util';
 import { BlockSequenceMode } from '../../../../domain/schemas/enums.schema';
-import type { WrongAnswer } from '../../../../domain/schemas/base/practice-block.schema';
+import type { WrongAnswer } from '../../../../domain/schemas/base/blocks/practice-block.schema';
 
 interface GenerateBlockSequencePromptParams {
   mode: BlockSequenceMode;

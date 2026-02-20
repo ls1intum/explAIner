@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SummaryBlockSchema } from '../base/summary-block.schema';
+import { SummaryBlockSchema } from '../base/blocks/summary-block.schema';
 
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/blocks/sequence
@@ -54,7 +54,6 @@ export const SubmitAnswerRequestDtoSchema = z.object({
   studentAnswerOptionIndices: studentAnswerOptionIndicesSchema,
 });
 export type SubmitAnswerRequest = z.infer<typeof SubmitAnswerRequestDtoSchema>;
-
 
 
 

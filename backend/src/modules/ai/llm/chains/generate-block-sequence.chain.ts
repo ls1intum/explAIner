@@ -9,7 +9,7 @@ import {
   type InitialBlockSequenceParser,
   type SubsequentBlockSequenceParser,
 } from '../../../../domain/schemas/llm-parser/block-sequence.schema';
-import type { WrongAnswer } from '../../../../domain/schemas/base/practice-block.schema';
+import type { WrongAnswer } from '../../../../domain/schemas/base/blocks/practice-block.schema';
 import { SoloLevel } from '@prisma/client';
 import { isLogEnabled } from '../../../../config/logging.config';
 

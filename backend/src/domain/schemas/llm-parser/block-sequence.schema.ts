@@ -1,13 +1,13 @@
 import { z } from 'zod';
-import { PracticeBlockContentSchema } from '../base/practice-block.schema';
+import { PracticeBlockContentSchema } from '../base/blocks/practice-block.schema';
 
 ////////////////////////////////////////////////////////////
 // chain: generate-block-sequence
-// modes: initial and subsequent
+// block-sequence-modes: INITIAL and SUBSEQUENT
 ////////////////////////////////////////////////////////////
 
 ///////////////////////////////////
-// independent of block sequence mode
+// independent of block-sequence-mode
 ///////////////////////////////////
 
 // Practice block question
@@ -22,7 +22,7 @@ export type PracticeBlockQuestionParser = z.infer<typeof PracticeBlockQuestionPa
 
 
 ///////////////////////////////////
-// block-sequence-mode: initial
+// block-sequence-mode: INITIAL
 ///////////////////////////////////
 
 // First inform block message
@@ -43,7 +43,7 @@ export type InitialBlockSequenceParser = z.infer<typeof InitialBlockSequencePars
 
 
 ///////////////////////////////////
-// block-sequence-mode: subsequent
+// block-sequence-mode: SUBSEQUENT
 ///////////////////////////////////
 
 // First inform block message

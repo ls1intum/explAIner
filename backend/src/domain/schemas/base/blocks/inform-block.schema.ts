@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { MessageSenderSchema } from '../enums.schema';
+import { MessageSenderSchema } from '../../enums.schema';
 import { BaseBlockSchema } from './base-block.schema';
 
 // Inform block message

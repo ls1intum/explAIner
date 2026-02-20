@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SummaryBlockContentSchema } from '../base/summary-block.schema';
+import { SummaryBlockContentSchema } from '../base/blocks/summary-block.schema';
 
 ////////////////////////////////////////////////////////////
 // chain: generate-session-summary
