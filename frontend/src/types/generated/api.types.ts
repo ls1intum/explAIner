@@ -253,7 +253,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         GenerateLearningGoalsRequestDto: {
-            /** @description The learning topic or question */
+            /** @description Learning topic or question */
             topic: string;
             /** @description Prior knowledge (optional) */
             priorKnowledge?: string;
@@ -262,28 +262,28 @@ export interface components {
             /** @description Array of exactly 3 generated learning goals */
             learningGoals: [
                 {
-                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                    /** @description Learning goal text */
                     learningGoal: string;
                     /**
-                     * @description Bloom's taxonomy level for this learning goal
+                     * @description Bloom's taxonomy level
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
                 },
                 {
-                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                    /** @description Learning goal text */
                     learningGoal: string;
                     /**
-                     * @description Bloom's taxonomy level for this learning goal
+                     * @description Bloom's taxonomy level
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
                 },
                 {
-                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                    /** @description Learning goal text */
                     learningGoal: string;
                     /**
-                     * @description Bloom's taxonomy level for this learning goal
+                     * @description Bloom's taxonomy level
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
@@ -291,12 +291,12 @@ export interface components {
             ];
         };
         GenerateEasierLearningGoalsRequestDto: {
-            /** @description Session ID to generate easier learning goals for */
+            /** @description Session ID */
             sessionId: string;
         };
         GenerateEasierLearningGoalsResponseDto_Output: {
             /**
-             * @description The learning topic from the previous session
+             * @description Learning topic from the previous session
              * @example Photosynthesis
              */
             topic: string;
@@ -308,28 +308,28 @@ export interface components {
             /** @description Array of exactly 3 easier learning goals */
             learningGoals: [
                 {
-                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                    /** @description Learning goal text */
                     learningGoal: string;
                     /**
-                     * @description Bloom's taxonomy level for this learning goal
+                     * @description Bloom's taxonomy level
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
                 },
                 {
-                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                    /** @description Learning goal text */
                     learningGoal: string;
                     /**
-                     * @description Bloom's taxonomy level for this learning goal
+                     * @description Bloom's taxonomy level
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
                 },
                 {
-                    /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                    /** @description Learning goal text */
                     learningGoal: string;
                     /**
-                     * @description Bloom's taxonomy level for this learning goal
+                     * @description Bloom's taxonomy level
                      * @enum {string}
                      */
                     bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
@@ -337,42 +337,45 @@ export interface components {
             ];
         };
         CreateSessionRequestDto: {
-            /** @description The learning topic or question */
+            /** @description Learning topic or question */
             topic: string;
             /** @description Prior knowledge (optional) */
             priorKnowledge?: string;
             /** @description Selected learning goal for this session */
             learningGoal: {
-                /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                /** @description Learning goal text */
                 learningGoal: string;
                 /**
-                 * @description Bloom's taxonomy level for this learning goal
+                 * @description Bloom's taxonomy level
                  * @enum {string}
                  */
                 bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
             };
         };
         CreateSessionResponseDto: {
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description Session ID
+             */
             id: string;
-            /** @description Total number of blocks in the session */
-            totalBlocks: number;
-            /** @description Current block index (0-based) */
-            currentBlockIndex: number;
             /** @description Learning topic or question */
             topic: string;
             /** @description Prior knowledge keywords */
-            priorKnowledge?: string | null;
+            priorKnowledge?: string;
             /** @description Selected learning goal */
             learningGoal: {
-                /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                /** @description Learning goal text */
                 learningGoal: string;
                 /**
-                 * @description Bloom's taxonomy level for this learning goal
+                 * @description Bloom's taxonomy level
                  * @enum {string}
                  */
                 bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
             };
+            /** @description Total number of blocks in the session */
+            totalBlocks: number;
+            /** @description Current block index (0-based) */
+            currentBlockIndex: number;
             /** @description All blocks in the session */
             blocks: ({
                 /**
@@ -380,7 +383,10 @@ export interface components {
                  * @description Block ID
                  */
                 id: string;
-                /** @description Session ID this block belongs to */
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
                 sessionId: string;
                 /** @description Order index of the block (0-based) */
                 orderIndex: number;
@@ -395,20 +401,23 @@ export interface components {
                     /** @description Inform block messages */
                     messages: {
                         /**
-                         * @description Message sender
-                         * @enum {string}
-                         */
-                        sender: "User" | "Owlbert";
-                        /**
                          * Format: uuid
                          * @description Message ID
                          */
                         id: string;
-                        /** @description Inform block this message belongs to */
+                        /**
+                         * Format: uuid
+                         * @description Inform block this message belongs to
+                         */
                         informBlockId: string;
                         /** @description Message content */
                         message: string;
-                        /** @description Message timestamp (ISO 8601 format) */
+                        /**
+                         * @description Message sender
+                         * @enum {string}
+                         */
+                        sender: "User" | "Owlbert";
+                        /** @description Message timestamp (ISO 8601) */
                         timestamp: string;
                     }[];
                 };
@@ -418,7 +427,10 @@ export interface components {
                  * @description Block ID
                  */
                 id: string;
-                /** @description Session ID this block belongs to */
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
                 sessionId: string;
                 /** @description Order index of the block (0-based) */
                 orderIndex: number;
@@ -432,21 +444,24 @@ export interface components {
                 /** @description Practice block content */
                 practiceBlock: {
                     /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
+                    blockId: string;
+                    /**
                      * @description SOLO taxonomy level
                      * @enum {string}
                      */
                     soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
-                    /** @description Block ID */
-                    blockId: string;
                     /** @description Practice question */
                     question: string;
                     /** @description Available answer options */
                     answerOptions: string[];
                     /** @description Indices of correct answer options */
                     correctAnswerOptionIndices: number[];
-                    /** @description Indices of student's selected answer options */
+                    /** @description Student's selected answer option indices */
                     studentAnswerOptionIndices: number[];
-                    /** @description Whether the student's answer is correct (null if not yet answered) */
+                    /** @description Whether the student answer is correct (null if not yet answered) */
                     studentAnswerIsCorrect: boolean | null;
                 };
             } | {
@@ -455,7 +470,10 @@ export interface components {
                  * @description Block ID
                  */
                 id: string;
-                /** @description Session ID this block belongs to */
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
                 sessionId: string;
                 /** @description Order index of the block (0-based) */
                 orderIndex: number;
@@ -468,7 +486,10 @@ export interface components {
                 type: "Summary";
                 /** @description Summary block content */
                 summaryBlock: {
-                    /** @description Block ID */
+                    /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
                     blockId: string;
                     /** @description Session summary content */
                     sessionSummary: string;
@@ -477,26 +498,29 @@ export interface components {
         };
         GetSessionRequestDto: Record<string, never>;
         GetSessionResponseDto: {
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description Session ID
+             */
             id: string;
-            /** @description Total number of blocks in the session */
-            totalBlocks: number;
-            /** @description Current block index (0-based) */
-            currentBlockIndex: number;
             /** @description Learning topic or question */
             topic: string;
             /** @description Prior knowledge keywords */
-            priorKnowledge?: string | null;
+            priorKnowledge?: string;
             /** @description Selected learning goal */
             learningGoal: {
-                /** @description The learning goal following the format "After this session, you will be able to <BloomsLevel> <objective>." */
+                /** @description Learning goal text */
                 learningGoal: string;
                 /**
-                 * @description Bloom's taxonomy level for this learning goal
+                 * @description Bloom's taxonomy level
                  * @enum {string}
                  */
                 bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
             };
+            /** @description Total number of blocks in the session */
+            totalBlocks: number;
+            /** @description Current block index (0-based) */
+            currentBlockIndex: number;
             /** @description All blocks in the session */
             blocks: ({
                 /**
@@ -504,7 +528,10 @@ export interface components {
                  * @description Block ID
                  */
                 id: string;
-                /** @description Session ID this block belongs to */
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
                 sessionId: string;
                 /** @description Order index of the block (0-based) */
                 orderIndex: number;
@@ -519,20 +546,23 @@ export interface components {
                     /** @description Inform block messages */
                     messages: {
                         /**
-                         * @description Message sender
-                         * @enum {string}
-                         */
-                        sender: "User" | "Owlbert";
-                        /**
                          * Format: uuid
                          * @description Message ID
                          */
                         id: string;
-                        /** @description Inform block this message belongs to */
+                        /**
+                         * Format: uuid
+                         * @description Inform block this message belongs to
+                         */
                         informBlockId: string;
                         /** @description Message content */
                         message: string;
-                        /** @description Message timestamp (ISO 8601 format) */
+                        /**
+                         * @description Message sender
+                         * @enum {string}
+                         */
+                        sender: "User" | "Owlbert";
+                        /** @description Message timestamp (ISO 8601) */
                         timestamp: string;
                     }[];
                 };
@@ -542,7 +572,10 @@ export interface components {
                  * @description Block ID
                  */
                 id: string;
-                /** @description Session ID this block belongs to */
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
                 sessionId: string;
                 /** @description Order index of the block (0-based) */
                 orderIndex: number;
@@ -556,21 +589,24 @@ export interface components {
                 /** @description Practice block content */
                 practiceBlock: {
                     /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
+                    blockId: string;
+                    /**
                      * @description SOLO taxonomy level
                      * @enum {string}
                      */
                     soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
-                    /** @description Block ID */
-                    blockId: string;
                     /** @description Practice question */
                     question: string;
                     /** @description Available answer options */
                     answerOptions: string[];
                     /** @description Indices of correct answer options */
                     correctAnswerOptionIndices: number[];
-                    /** @description Indices of student's selected answer options */
+                    /** @description Student's selected answer option indices */
                     studentAnswerOptionIndices: number[];
-                    /** @description Whether the student's answer is correct (null if not yet answered) */
+                    /** @description Whether the student answer is correct (null if not yet answered) */
                     studentAnswerIsCorrect: boolean | null;
                 };
             } | {
@@ -579,7 +615,10 @@ export interface components {
                  * @description Block ID
                  */
                 id: string;
-                /** @description Session ID this block belongs to */
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
                 sessionId: string;
                 /** @description Order index of the block (0-based) */
                 orderIndex: number;
@@ -592,7 +631,10 @@ export interface components {
                 type: "Summary";
                 /** @description Summary block content */
                 summaryBlock: {
-                    /** @description Block ID */
+                    /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
                     blockId: string;
                     /** @description Session summary content */
                     sessionSummary: string;
@@ -605,7 +647,7 @@ export interface components {
             success: boolean;
         };
         UpdateCurrentBlockIndexRequestDto: {
-            /** @description The index of the current block being viewed (0-based) by the user */
+            /** @description Current block index (0-based) */
             currentBlockIndex: number;
         };
         UpdateCurrentBlockIndexResponseDto_Output: {
@@ -617,7 +659,7 @@ export interface components {
         ContinueSessionRequestDto: Record<string, never>;
         ContinueSessionResponseDto_Output: {
             /**
-             * @description Next action to take in the session flow
+             * @description Next action
              * @example navigate
              * @enum {string}
              */
@@ -629,13 +671,13 @@ export interface components {
             targetBlockIndex?: number;
         };
         SubmitFeedbackRequestDto: {
-            /** @description User rating for the session (1-5 stars) - 1: "very unhelpful", 5: "very helpful" */
+            /** @description User rating (1–5 stars) */
             rating: number;
         };
         SubmitFeedbackResponseDto_Output: {
             /** @description Whether the operation succeeded */
             success: boolean;
-            /** @description The submitted rating (1-5) - 1: "very unhelpful", 5: "very helpful" */
+            /** @description The submitted rating (1–5) */
             rating: number;
         };
         GenerateBlockSequenceRequestDto: Record<string, never>;
@@ -647,7 +689,10 @@ export interface components {
                  * @description Block ID
                  */
                 id: string;
-                /** @description Session ID this block belongs to */
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
                 sessionId: string;
                 /** @description Order index of the block (0-based) */
                 orderIndex: number;
@@ -662,20 +707,23 @@ export interface components {
                     /** @description Inform block messages */
                     messages: {
                         /**
-                         * @description Message sender
-                         * @enum {string}
-                         */
-                        sender: "User" | "Owlbert";
-                        /**
                          * Format: uuid
                          * @description Message ID
                          */
                         id: string;
-                        /** @description Inform block this message belongs to */
+                        /**
+                         * Format: uuid
+                         * @description Inform block this message belongs to
+                         */
                         informBlockId: string;
                         /** @description Message content */
                         message: string;
-                        /** @description Message timestamp (ISO 8601 format) */
+                        /**
+                         * @description Message sender
+                         * @enum {string}
+                         */
+                        sender: "User" | "Owlbert";
+                        /** @description Message timestamp (ISO 8601) */
                         timestamp: string;
                     }[];
                 };
@@ -688,7 +736,10 @@ export interface components {
                      * @description Block ID
                      */
                     id: string;
-                    /** @description Session ID this block belongs to */
+                    /**
+                     * Format: uuid
+                     * @description Session ID this block belongs to
+                     */
                     sessionId: string;
                     /** @description Order index of the block (0-based) */
                     orderIndex: number;
@@ -702,21 +753,24 @@ export interface components {
                     /** @description Practice block content */
                     practiceBlock: {
                         /**
+                         * Format: uuid
+                         * @description Block ID
+                         */
+                        blockId: string;
+                        /**
                          * @description SOLO taxonomy level
                          * @enum {string}
                          */
                         soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
-                        /** @description Block ID */
-                        blockId: string;
                         /** @description Practice question */
                         question: string;
                         /** @description Available answer options */
                         answerOptions: string[];
                         /** @description Indices of correct answer options */
                         correctAnswerOptionIndices: number[];
-                        /** @description Indices of student's selected answer options */
+                        /** @description Student's selected answer option indices */
                         studentAnswerOptionIndices: number[];
-                        /** @description Whether the student's answer is correct (null if not yet answered) */
+                        /** @description Whether the student answer is correct (null if not yet answered) */
                         studentAnswerIsCorrect: boolean | null;
                     };
                 },
@@ -726,7 +780,10 @@ export interface components {
                      * @description Block ID
                      */
                     id: string;
-                    /** @description Session ID this block belongs to */
+                    /**
+                     * Format: uuid
+                     * @description Session ID this block belongs to
+                     */
                     sessionId: string;
                     /** @description Order index of the block (0-based) */
                     orderIndex: number;
@@ -740,21 +797,24 @@ export interface components {
                     /** @description Practice block content */
                     practiceBlock: {
                         /**
+                         * Format: uuid
+                         * @description Block ID
+                         */
+                        blockId: string;
+                        /**
                          * @description SOLO taxonomy level
                          * @enum {string}
                          */
                         soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
-                        /** @description Block ID */
-                        blockId: string;
                         /** @description Practice question */
                         question: string;
                         /** @description Available answer options */
                         answerOptions: string[];
                         /** @description Indices of correct answer options */
                         correctAnswerOptionIndices: number[];
-                        /** @description Indices of student's selected answer options */
+                        /** @description Student's selected answer option indices */
                         studentAnswerOptionIndices: number[];
-                        /** @description Whether the student's answer is correct (null if not yet answered) */
+                        /** @description Whether the student answer is correct (null if not yet answered) */
                         studentAnswerIsCorrect: boolean | null;
                     };
                 },
@@ -764,7 +824,10 @@ export interface components {
                      * @description Block ID
                      */
                     id: string;
-                    /** @description Session ID this block belongs to */
+                    /**
+                     * Format: uuid
+                     * @description Session ID this block belongs to
+                     */
                     sessionId: string;
                     /** @description Order index of the block (0-based) */
                     orderIndex: number;
@@ -778,21 +841,24 @@ export interface components {
                     /** @description Practice block content */
                     practiceBlock: {
                         /**
+                         * Format: uuid
+                         * @description Block ID
+                         */
+                        blockId: string;
+                        /**
                          * @description SOLO taxonomy level
                          * @enum {string}
                          */
                         soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
-                        /** @description Block ID */
-                        blockId: string;
                         /** @description Practice question */
                         question: string;
                         /** @description Available answer options */
                         answerOptions: string[];
                         /** @description Indices of correct answer options */
                         correctAnswerOptionIndices: number[];
-                        /** @description Indices of student's selected answer options */
+                        /** @description Student's selected answer option indices */
                         studentAnswerOptionIndices: number[];
-                        /** @description Whether the student's answer is correct (null if not yet answered) */
+                        /** @description Whether the student answer is correct (null if not yet answered) */
                         studentAnswerIsCorrect: boolean | null;
                     };
                 }
@@ -805,7 +871,10 @@ export interface components {
              * @description Block ID
              */
             id: string;
-            /** @description Session ID this block belongs to */
+            /**
+             * Format: uuid
+             * @description Session ID this block belongs to
+             */
             sessionId: string;
             /** @description Order index of the block (0-based) */
             orderIndex: number;
@@ -818,7 +887,10 @@ export interface components {
             type: "Summary";
             /** @description Summary block content */
             summaryBlock: {
-                /** @description Block ID */
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
                 blockId: string;
                 /** @description Session summary content */
                 sessionSummary: string;
@@ -830,7 +902,7 @@ export interface components {
         };
         GetBlockByOrderIndexRequestDto: Record<string, never>;
         GenerateChatResponseRequestDto: {
-            /** @description User message / follow-up question sent in the inform block chat */
+            /** @description User message / follow-up question */
             message: string;
         };
         GenerateChatResponseResponseDto_Output: {
@@ -838,14 +910,14 @@ export interface components {
             response: string;
         };
         SubmitAnswerRequestDto: {
-            /** @description Array of selected answer option indices (0-based) */
+            /** @description Selected answer option indices (0-based) */
             studentAnswerOptionIndices: number[];
         };
         SubmitAnswerResponseDto_Output: {
-            /** @description Whether the student answer was successfully persisted */
+            /** @description Whether the answer was persisted */
             success: boolean;
             /**
-             * @description Array of selected answer option indices (0-based)
+             * @description Selected indices (0-based)
              * @example [
              *       0,
              *       2

@@ -1,10 +1,8 @@
 import { z } from 'zod';
-import { LearningGoalSchema } from '../base/learning-goal.schema';
-import { SessionSchema, TopicWithPriorKnowledgeSchema } from '../base/session.schema';
+import { LearningGoalSchema, TopicWithPriorKnowledgeSchema } from '../base/learning-goal.schema';
+import { SessionSchema } from '../base/session.schema';
 
 const successField = z.boolean().describe('Whether the operation succeeded');
-
-
 
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions

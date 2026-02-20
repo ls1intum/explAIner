@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { BlockSchema } from './block.schema';
-import { LearningGoalSchema, TopicWithPriorKnowledgeSchema } from './learning-goal.schema';
+import { LearningGoalSchema } from './learning-goal.schema';
 
+// Session
 export const SessionSchema = z.object({
   id: z.string().uuid().describe('Session ID'),
   topic: z.string().describe('Learning topic or question'),
@@ -12,5 +13,3 @@ export const SessionSchema = z.object({
   blocks: z.array(BlockSchema).describe('All blocks in the session'),
 });
 export type Session = z.infer<typeof SessionSchema>;
-
-export { TopicWithPriorKnowledgeSchema };

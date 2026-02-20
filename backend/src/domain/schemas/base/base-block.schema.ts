@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// Base block
 export const BaseBlockSchema = z.object({
   id: z.string().uuid().describe('Block ID'),
   sessionId: z.string().uuid().describe('Session ID this block belongs to'),

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { SoloLevelSchema } from '../enums.schema';
 import { BaseBlockSchema } from './base-block.schema';
 
+// Practice block content
 export const PracticeBlockContentSchema = z.object({
   blockId: z.string().uuid().describe('Block ID'),
   soloLevel: SoloLevelSchema.describe('SOLO taxonomy level'),
@@ -13,12 +14,14 @@ export const PracticeBlockContentSchema = z.object({
 });
 export type PracticeBlockContent = z.infer<typeof PracticeBlockContentSchema>;
 
+// Practice block
 export const PracticeBlockSchema = BaseBlockSchema.extend({
   type: z.literal('Practice').describe('Block type'),
   practiceBlock: PracticeBlockContentSchema.describe('Practice block content'),
 });
 export type PracticeBlock = z.infer<typeof PracticeBlockSchema>;
 
+// Wrong answer (LLM context for subsequent block sequence generation)
 export const WrongAnswerSchema = z.object({
   question: z.string(),
   correctAnswerOptions: z.array(z.string()),
