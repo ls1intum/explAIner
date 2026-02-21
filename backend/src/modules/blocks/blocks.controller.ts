@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Patch, Put, Body, Param, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { ZodResponse } from 'nestjs-zod';
-import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
+import { GetBlockService } from './services/get-block.service';
 import { GenerateBlockSequenceService } from './services/generate-block-sequence.service';
 import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
 import { GenerateChatResponseService } from './services/generate-chat-response.service';
@@ -10,7 +10,7 @@ import { GenerateChatResponseRequestDto } from './dto/request/generate-chat-resp
 import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto';
 import { GenerateBlockSequenceRequestDto } from './dto/request/generate-block-sequence.request.dto';
 import { GenerateSummaryBlockRequestDto } from './dto/request/generate-summary-block.request.dto';
-import { GetBlockByOrderIndexRequestDto } from './dto/request/get-block-by-order-index.request.dto';
+import { GetBlockRequestDto } from './dto/request/get-block.request.dto';
 import { GenerateBlockSequenceResponseDto } from './dto/response/generate-block-sequence.response.dto';
 import { GenerateSummaryBlockResponseDto } from './dto/response/generate-summary-block.response.dto';
 import { GenerateChatResponseResponseDto } from './dto/response/generate-chat-response.response.dto';
@@ -22,7 +22,7 @@ export class BlocksController {
   constructor(
     private readonly generateBlockSequenceService: GenerateBlockSequenceService,
     private readonly generateSummaryBlockService: GenerateSummaryBlockService,
-    private readonly getBlockByOrderIndexService: GetBlockByOrderIndexService,
+    private readonly getBlockService: GetBlockService,
     private readonly generateChatResponseService: GenerateChatResponseService,
     private readonly submitAnswerService: SubmitAnswerService,
   ) {}
@@ -58,15 +58,15 @@ export class BlocksController {
   @ApiOperation({ summary: 'Get block by order index', description: 'Retrieves a specific block by its order index within the session' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
-  @ApiBody({ type: GetBlockByOrderIndexRequestDto })
+  @ApiBody({ type: GetBlockRequestDto })
   @ApiResponse({ status: 200, description: 'Block found (Inform | Practice | Summary)' })
   @ApiResponse({ status: 404, description: 'Block not found' })
   getBlock(
     @Param('sessionId') sessionId: string,
     @Param('orderIndex') orderIndex: string,
-    @Body() dto: GetBlockByOrderIndexRequestDto,
+    @Body() dto: GetBlockRequestDto,
   ) {
-    return this.getBlockByOrderIndexService.getBlock(sessionId, parseInt(orderIndex));
+    return this.getBlockService.getBlock(sessionId, parseInt(orderIndex));
   }
 
   @Post(':orderIndex/messages')

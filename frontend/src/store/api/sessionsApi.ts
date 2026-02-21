@@ -33,7 +33,7 @@ export const sessionsApi = baseApi.injectEndpoints({
       providesTags: ["Session"],
     }),
     // Fetch block by orderIndex with caching support
-    getBlockByOrderIndex: builder.query<
+    getBlock: builder.query<
       GetBlockResponse,
       { sessionId: string; orderIndex: number }
     >({
@@ -119,7 +119,7 @@ export const sessionsApi = baseApi.injectEndpoints({
 export const {
   useCreateSessionMutation,
   useGetSessionQuery,
-  useGetBlockByOrderIndexQuery,
+  useGetBlockQuery,
   useContinueSessionMutation,
   useGenerateNextSequenceMutation,
   useGenerateSummaryMutation,

@@ -3,7 +3,7 @@ import { BlocksController } from './blocks.controller';
 import { SubmitAnswerService } from './services/submit-answer.service';
 import { GenerateBlockSequenceService } from './services/generate-block-sequence.service';
 import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
-import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
+import { GetBlockService } from './services/get-block.service';
 import { GenerateChatResponseService } from './services/generate-chat-response.service';
 import { LlmModule } from '../ai/llm/llm.module';
 
@@ -15,14 +15,14 @@ import { LlmModule } from '../ai/llm/llm.module';
     SubmitAnswerService,
     GenerateBlockSequenceService,
     GenerateSummaryBlockService,
-    GetBlockByOrderIndexService,
+    GetBlockService,
     GenerateChatResponseService,
   ],
   exports: [
     SubmitAnswerService,
     GenerateBlockSequenceService,
     GenerateSummaryBlockService,
-    GetBlockByOrderIndexService,
+    GetBlockService,
     GenerateChatResponseService,
   ],
 })

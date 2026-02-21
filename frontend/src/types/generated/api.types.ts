@@ -900,7 +900,7 @@ export interface components {
             /** @description Total number of blocks in the session */
             totalBlocks: number;
         };
-        GetBlockByOrderIndexRequestDto: Record<string, never>;
+        GetBlockRequestDto: Record<string, never>;
         GenerateChatResponseRequestDto: {
             /** @description User message / follow-up question */
             message: string;
@@ -1279,7 +1279,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["GetBlockByOrderIndexRequestDto"];
+                "application/json": components["schemas"]["GetBlockRequestDto"];
             };
         };
         responses: {

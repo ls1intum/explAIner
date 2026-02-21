@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex, addBlockToQueue, setTotalBlocks, setCurrentSession, setBlockQueue } from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
 import { setLearningGoalsPageData } from '@/store/slices/learningGoalsSlice';
-import { useGetSessionQuery, useGetBlockByOrderIndexQuery, useContinueSessionMutation, useGenerateNextSequenceMutation, useGenerateSummaryMutation } from '@/store/api/sessionsApi';
+import { useGetSessionQuery, useGetBlockQuery, useContinueSessionMutation, useGenerateNextSequenceMutation, useGenerateSummaryMutation } from '@/store/api/sessionsApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import InformBlock from '@/components/blocks/InformBlock/InformBlock';
@@ -67,7 +67,7 @@ export default function SessionPage() {
   const blockExistsInQueue = blockQueue[currentBlockIndex] !== undefined;
 
   // Fetch block from API only if not in queue (e.g., direct URL navigation or page refresh)
-  const { data: fetchedBlock, isLoading: isBlockLoading } = useGetBlockByOrderIndexQuery(
+  const { data: fetchedBlock, isLoading: isBlockLoading } = useGetBlockQuery(
     { sessionId, orderIndex: currentBlockIndex },
     { skip: currentSessionId !== sessionId || blockExistsInQueue }
   );

@@ -3,4 +3,4 @@
  * This file exists intentionally to maintain a consistent request/response DTO
  * pattern across all endpoints in the OpenAPI (Swagger) documentation.
  */
-export class GetBlockByOrderIndexRequestDto {}
+export class GetBlockRequestDto {}
