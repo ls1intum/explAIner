@@ -175,18 +175,6 @@ export function mapContinueResponse(
     : { action };
 }
 
-export function mapUpdateCurrentBlockIndexResponse(currentBlockIndex: number) {
-  return { success: true as const, currentBlockIndex };
-}
-
-export function mapSubmitFeedbackResponse(rating: number) {
-  return { success: true as const, rating };
-}
-
-export function mapDeleteSessionResponse() {
-  return { success: true as const };
-}
-
 /** Session duration in whole minutes since startedAt. */
 export function getSessionDurationMinutes(session: {
   startedAt: Date;

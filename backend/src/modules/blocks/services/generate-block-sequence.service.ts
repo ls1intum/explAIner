@@ -38,7 +38,10 @@ export class GenerateBlockSequenceService {
   ): Promise<GenerateBlockSequenceResponseDto> {
     // When called without tx (e.g. from controller), run in internal atomic transaction.
     if (!tx) {
-      return this.prisma.$transaction((t) => this.generate(sessionId, t));
+      return this.prisma.$transaction(
+        (t) => this.generate(sessionId, t),
+        { timeout: 30_000 },
+      );
     }
     const db = tx;
     // 1. Load session with blocks (for mode detection and wrong-answer extraction)

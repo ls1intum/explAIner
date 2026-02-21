@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { SubmitFeedbackRequestDto } from '../dto/request/submit-feedback.request.dto';
 import { SubmitFeedbackResponseDto } from '../dto/response/submit-feedback.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { requireSessionExists, mapSubmitFeedbackResponse } from '../session.utils';
+import { requireSessionExists } from '../session.utils';
 
 /** Persists user feedback (rating) for a completed session. */
 @Injectable()
@@ -22,6 +22,6 @@ export class SubmitFeedbackService {
       data: { userFeedback: dto.rating },
     });
 
-    return mapSubmitFeedbackResponse(dto.rating);
+    return { success: true as const, rating: dto.rating };
   }
 }

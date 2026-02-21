@@ -6,7 +6,7 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import { sortBlocksByOrderIndex } from '../../blocks/block.utils';
 import { mapSessionToCreateResponse } from '../session.utils';
 
-/** Creates a new session and its initial block sequence (1 inform + 3 practice blocks). */
+/** Creates a new session and the initial block sequence */
 @Injectable()
 export class CreateSessionService {
   constructor(
@@ -14,11 +14,12 @@ export class CreateSessionService {
     private generateBlockSequenceService: GenerateBlockSequenceService,
   ) {}
 
-  /** Create session with learning goal and initial block sequence (1 inform + 3 practice). */
   @LogService()
   async create(dto: CreateSessionRequestDto) {
+
     // Atomic: session + block sequence commit together or roll back on any failure
     return this.prisma.$transaction(async (tx) => {
+
       // Create session
       const session = await tx.session.create({
         data: {
@@ -28,14 +29,17 @@ export class CreateSessionService {
           priorKnowledge: dto.priorKnowledge ?? undefined,
         },
       });
+
       // Generate block sequence
       const { informBlock, practiceBlocks } =
         await this.generateBlockSequenceService.generate(session.id, tx);
       const sortedPracticeBlocks = sortBlocksByOrderIndex(practiceBlocks);
+
+      // Return response
       return mapSessionToCreateResponse(session, dto, [
         informBlock,
         ...sortedPracticeBlocks,
       ]);
-    });
+    }, { timeout: 30_000 });
   }
 }

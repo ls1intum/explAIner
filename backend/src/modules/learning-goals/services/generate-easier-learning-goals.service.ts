@@ -11,7 +11,7 @@ import {
 } from '../../blocks/block.utils';
 import { getSessionWithInformContent } from '../../sessions/session.utils';
 
-/** Generates easier learning goals from session (wrong answers + covered content) via LLM. */
+/** Generates 3 "easier" learning goals for a new session based on current session's covered content & wrong answers */
 @Injectable()
 export class GenerateEasierLearningGoalsService {
   constructor(
@@ -23,18 +23,20 @@ export class GenerateEasierLearningGoalsService {
   async generate(
     dto: GenerateEasierLearningGoalsRequestDto,
   ): Promise<GenerateEasierLearningGoalsResponseDto> {
-    // Fetch session with blocks + inform messages
+
+    // Fetch session
     const session = await getSessionWithInformContent(
       this.prisma,
       dto.sessionId,
     );
-    // Build prompt context: wrong answers (formatted for LLM) + covered content from inform blocks
+
+    // Create context for prompt
     const wrongQuestions = formatWrongAnswersForPrompt(
       extractWrongAnswersFromBlocks(session.blocks),
     );
     const coveredContent = getCoveredContentFromInformBlocks(session.blocks);
-
-    // Call LLM chain and return response
+    
+    // Call chain
     const learningGoals =
       await this.generateEasierLearningGoalsChain.execute({
         topic: session.topic,
@@ -44,6 +46,7 @@ export class GenerateEasierLearningGoalsService {
         coveredContent,
       });
 
+    // Return response
     return {
       topic: session.topic,
       priorKnowledge: session.priorKnowledge ?? undefined,
