@@ -15,7 +15,7 @@ export class UpdateCurrentBlockIndexService {
   @LogService()
   async updateCurrentBlockIndex(sessionId: string, currentBlockIndex: number): Promise<UpdateCurrentBlockIndexResponseDto> {
     
-    // 1. Validate session exists
+    // Validate session exists
     const session = await this.prisma.session.findUnique({
       where: { id: sessionId },
     });
@@ -23,13 +23,13 @@ export class UpdateCurrentBlockIndexService {
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
     }
 
-    // 2. Update current block index
+    // Update current block index
     await this.prisma.session.update({
       where: { id: sessionId },
       data: { currentBlockIndex },
     });
 
-    // 3. Mark the block as viewed in the database
+    // Mark the block as viewed in the database
     await this.prisma.block.updateMany({
       where: {
         sessionId,

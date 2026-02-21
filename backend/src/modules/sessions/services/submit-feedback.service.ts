@@ -12,7 +12,7 @@ export class SubmitFeedbackService {
   @LogService()
   async submit(sessionId: string, dto: SubmitFeedbackRequestDto): Promise<SubmitFeedbackResponseDto> {
 
-    // 1. Check if session exists
+    // Check if session exists
     const session = await this.prisma.session.findUnique({
       where: { id: sessionId },
     });
@@ -20,7 +20,7 @@ export class SubmitFeedbackService {
       throw new NotFoundException('Session not found');
     }
 
-    // 2. Update session with user feedback
+    // Update session with user feedback
     await this.prisma.session.update({
       where: { id: sessionId },
       data: {

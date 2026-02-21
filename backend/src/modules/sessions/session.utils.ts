@@ -67,6 +67,27 @@ export async function getSessionWithBlocks(
   return session;
 }
 
+/** Session with blocks + inform messages (e.g. for covered content / easier learning goals). Throws if not found. */
+export async function getSessionWithInformContent(
+  prisma: PrismaService,
+  sessionId: string,
+) {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    include: {
+      blocks: {
+        include: {
+          practiceBlock: true,
+          informBlock: { include: { messages: true } },
+        },
+        orderBy: { orderIndex: 'asc' },
+      },
+    },
+  });
+  if (!session) throw new NotFoundException('Session not found');
+  return session;
+}
+
 /** Session with blocks (from get-session query) → get-session response shape */
 export function mapSessionToGetResponse(session: {
   id: string;

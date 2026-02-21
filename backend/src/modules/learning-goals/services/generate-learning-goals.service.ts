@@ -15,13 +15,13 @@ export class GenerateLearningGoalsService {
     dto: GenerateLearningGoalsRequestDto,
   ): Promise<GenerateLearningGoalsResponseDto> {
 
-    // 1. Call chain to generate learning goals
+    // Call chain to generate learning goals
     const goals = await this.generateLearningGoalsChain.execute({
       topic: dto.topic,
       priorKnowledge: dto.priorKnowledge,
     });
 
-    // 2. Return wrapped learning goals response
+    // Return wrapped learning goals response
     return {
       learningGoals: goals,
     };

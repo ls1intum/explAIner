@@ -20,7 +20,7 @@ export const generateEasierLearningGoalsPrompt = ({
     : '';
 
   const contentContext = coveredContent
-    ? `\n\nContent already covered in the session:\n${coveredContent.substring(0, 1500)}...`
+    ? `\n\nContent already covered in the session:\n${coveredContent.substring(0, 10000)}...`
     : '';
 
   return `You are an expert instructional designer. A student was working on a learning session but found it too challenging. Your task is to generate 3 SIMPLER, more accessible learning goals that focus on FOUNDATIONAL CONCEPTS.

@@ -102,34 +102,69 @@ export function getPracticeBlocks<T extends { type: BlockType }>(
   return blocks.filter((b) => b.type === BlockType.Practice) as T[];
 }
 
+/** Block shape for wrong-answer extraction (practice block with answer data). */
+type BlockWithPracticeAnswer = {
+  type: BlockType;
+  practiceBlock?: {
+    question: string;
+    answerOptions: string[];
+    correctAnswerOptionIndices: number[];
+    studentAnswerOptionIndices: number[];
+    studentAnswerIsCorrect: boolean | null;
+  } | null;
+};
+
+function mapBlockToWrongAnswer(block: BlockWithPracticeAnswer): WrongAnswer {
+  const pb = block.practiceBlock!;
+  return {
+    question: pb.question,
+    correctAnswerOptions: pb.correctAnswerOptionIndices.map(
+      (idx) => pb.answerOptions[idx],
+    ),
+    wrongStudentAnswerOptions: pb.studentAnswerOptionIndices.map(
+      (idx) => pb.answerOptions[idx],
+    ),
+  };
+}
+
 /** Extracts wrong answers from the last sequence of practice blocks (for subsequent block sequences). */
 export function extractWrongAnswersFromLastSequence(
-  blocks: Array<{
-    type: BlockType;
-    practiceBlock?: {
-      question: string;
-      answerOptions: string[];
-      correctAnswerOptionIndices: number[];
-      studentAnswerOptionIndices: number[];
-      studentAnswerIsCorrect: boolean | null;
-    } | null;
-  }>,
+  blocks: BlockWithPracticeAnswer[],
 ): WrongAnswer[] {
   const lastSequenceBlocks = getCurrentBlockSequenceBlocks(blocks);
   const lastSequencePracticeBlocks = getPracticeBlocks(lastSequenceBlocks);
-
   return lastSequencePracticeBlocks
     .filter((block) => block.practiceBlock?.studentAnswerIsCorrect === false)
-    .map((block) => {
-      const pb = block.practiceBlock!;
-      return {
-        question: pb.question,
-        correctAnswerOptions: pb.correctAnswerOptionIndices.map(
-          (idx) => pb.answerOptions[idx],
-        ),
-        wrongStudentAnswerOptions: pb.studentAnswerOptionIndices.map(
-          (idx) => pb.answerOptions[idx],
-        ),
-      };
-    });
+    .map(mapBlockToWrongAnswer);
+}
+
+/** Extracts all wrong answers from all practice blocks (e.g. for easier learning goals). */
+export function extractWrongAnswersFromBlocks(
+  blocks: BlockWithPracticeAnswer[],
+): WrongAnswer[] {
+  const practiceBlocks = getPracticeBlocks(blocks);
+  return practiceBlocks
+    .filter((block) => block.practiceBlock?.studentAnswerIsCorrect === false)
+    .map(mapBlockToWrongAnswer);
+}
+
+/** Format wrong answers as strings for LLM prompts. */
+export function formatWrongAnswersForPrompt(wrongAnswers: WrongAnswer[]): string[] {
+  return wrongAnswers.map(
+    (wa) =>
+      `Question: ${wa.question}\nCorrect Answer(s): ${wa.correctAnswerOptions.join(', ')}\nStudent's Answer(s): ${wa.wrongStudentAnswerOptions.join(', ')}`,
+  );
+}
+
+/** Concatenate all inform block messages into one string (covered content). */
+export function getCoveredContentFromInformBlocks(
+  blocks: Array<{
+    type: BlockType;
+    informBlock?: { messages: { message: string }[] } | null;
+  }>,
+): string {
+  return blocks
+    .filter((b) => b.type === BlockType.Inform && b.informBlock?.messages)
+    .map((b) => b.informBlock!.messages.map((m) => m.message).join('\n'))
+    .join('\n\n');
 }

@@ -15,7 +15,7 @@ export class DeleteSessionService {
   @LogService()
   async delete(sessionId: string): Promise<DeleteSessionResponseDto> {
 
-    // 1. Check if session exists
+    // Check if session exists
     const session = await this.prisma.session.findUnique({
       where: { id: sessionId },
     });
@@ -24,7 +24,7 @@ export class DeleteSessionService {
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
     }
 
-    // 2. Delete session (cascade will delete all related blocks and their data)
+    // Delete session (cascade will delete all related blocks and their data)
     await this.prisma.session.delete({
       where: { id: sessionId },
     });
