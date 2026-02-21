@@ -13,6 +13,7 @@ import {
   mapContinueResponse,
 } from '../session.utils';
 
+/** Determines next step after a block: navigate, next sequence, summary, or prompt user. */
 @Injectable()
 export class ContinueSessionService {
   constructor(private prisma: PrismaService) {}
@@ -21,22 +22,16 @@ export class ContinueSessionService {
   async continue(sessionId: string): Promise<ContinueSessionResponseDto> {
     const session = await getSessionWithBlocks(this.prisma, sessionId);
     const blockSequenceCounter = getBlockSequenceCounter(session.blocks);
-    const currentBlockSequenceBlocks = getCurrentBlockSequenceBlocks(session.blocks);
-    const currentBlockSequencePracticeBlocks = getPracticeBlocks(currentBlockSequenceBlocks);
-    const allPracticeBlocksAnswered = areAllPracticeBlocksAnswered(
-      currentBlockSequencePracticeBlocks,
-    );
-    const allPracticeBlocksCorrect = areAllPracticeBlocksCorrect(
-      currentBlockSequencePracticeBlocks,
-    );
+    const currentSequenceBlocks = getCurrentBlockSequenceBlocks(session.blocks);
+    const currentPracticeBlocks = getPracticeBlocks(currentSequenceBlocks);
+    const allAnswered = areAllPracticeBlocksAnswered(currentPracticeBlocks);
+    const allCorrect = areAllPracticeBlocksCorrect(currentPracticeBlocks);
 
-    if (!allPracticeBlocksAnswered) {
-      const nextUnanswered = findNextUnansweredPracticeBlock(currentBlockSequenceBlocks);
-      if (nextUnanswered) {
-        return mapContinueResponse('navigate', nextUnanswered.orderIndex);
-      }
+    if (!allAnswered) {
+      const next = findNextUnansweredPracticeBlock(currentSequenceBlocks);
+      if (next) return mapContinueResponse('navigate', next.orderIndex);
     }
-    if (allPracticeBlocksCorrect) return mapContinueResponse('summary');
+    if (allCorrect) return mapContinueResponse('summary');
     if (blockSequenceCounter >= 2) return mapContinueResponse('prompt-user');
     return mapContinueResponse('next-sequence');
   }

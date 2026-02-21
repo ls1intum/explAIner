@@ -3,8 +3,12 @@ import { PrismaService } from 'prisma/prisma.service';
 import { SubmitAnswerRequestDto } from '../dto/request/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from '../dto/response/submit-answer.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { mapSubmitAnswerResponse } from '../block.utils';
+import {
+  isStudentAnswerCorrect,
+  mapSubmitAnswerResponse,
+} from '../block.utils';
 
+/** Saves student answer for a practice block and computes correctness. */
 @Injectable()
 export class SubmitAnswerService {
   constructor(private prisma: PrismaService) {}
@@ -20,40 +24,29 @@ export class SubmitAnswerService {
     // 1. Get the block with practice block data
     const block = await this.prisma.block.findUnique({
       where: {
-        sessionId_orderIndex: {
-          sessionId,
-          orderIndex: orderIndexNum,
-        },
+        sessionId_orderIndex: { sessionId, orderIndex: orderIndexNum },
       },
-      include: {
-        practiceBlock: true,
-      },
+      include: { practiceBlock: true },
     });
-    if (!block || !block.practiceBlock) {
+    if (!block?.practiceBlock) {
       throw new NotFoundException('Practice block not found');
     }
 
-    // 2. Get correct answer option indices and student answer option indices
-    const { correctAnswerOptionIndices } = block.practiceBlock;
-    const { studentAnswerOptionIndices } = dto;
+    // 2. Calculate correctness (compare student indices to correct indices)
+    const studentAnswerIsCorrect = isStudentAnswerCorrect(
+      block.practiceBlock.correctAnswerOptionIndices,
+      dto.studentAnswerOptionIndices,
+    );
 
-    // 3. Calculate correctness for analytics/record-keeping
-    const studentAnswerIsCorrect =
-      studentAnswerOptionIndices.length ===
-        correctAnswerOptionIndices.length &&
-      studentAnswerOptionIndices.every((idx) =>
-        correctAnswerOptionIndices.includes(idx),
-      );
-
-    // 4. Update practice block with student answer and correctness
+    // 3. Update practice block with student answer and correctness
     await this.prisma.practiceBlock.update({
       where: { blockId: block.id },
       data: {
-        studentAnswerOptionIndices,
+        studentAnswerOptionIndices: dto.studentAnswerOptionIndices,
         studentAnswerIsCorrect,
       },
     });
 
-    return mapSubmitAnswerResponse(studentAnswerOptionIndices);
+    return mapSubmitAnswerResponse(dto.studentAnswerOptionIndices);
   }
 }

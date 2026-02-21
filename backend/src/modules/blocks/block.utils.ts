@@ -168,3 +168,37 @@ export function getCoveredContentFromInformBlocks(
     .map((b) => b.informBlock!.messages.map((m) => m.message).join('\n'))
     .join('\n\n');
 }
+
+/** Compare student answer indices to correct indices (order-independent match). */
+export function isStudentAnswerCorrect(
+  correctAnswerOptionIndices: number[],
+  studentAnswerOptionIndices: number[],
+): boolean {
+  return (
+    studentAnswerOptionIndices.length === correctAnswerOptionIndices.length &&
+    studentAnswerOptionIndices.every((idx) =>
+      correctAnswerOptionIndices.includes(idx),
+    )
+  );
+}
+
+/** Build inform block display text: explanation + label + key points + summary. */
+export function formatInformBlockMessage(
+  explanation: string,
+  label: string,
+  keyPoints: string[],
+  summary: string,
+): string {
+  const keyPointsText = keyPoints.map((item) => `${item}`).join('\n');
+  return `${explanation}\n\n${label}\n${keyPointsText}\n\nSUMMARY\n${summary}`;
+}
+
+/** Build conversation history string from messages; appends new user message if given. */
+export function buildConversationHistory(
+  messages: Array<{ sender: string; message: string }>,
+  newUserMessage?: string,
+): string {
+  const lines = messages.map((msg) => `${msg.sender}: ${msg.message}`);
+  if (newUserMessage) lines.push(`User: ${newUserMessage}`);
+  return lines.join('\n');
+}

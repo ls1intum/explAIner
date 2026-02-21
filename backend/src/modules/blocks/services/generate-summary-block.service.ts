@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateSessionSummaryChain } from '../../ai/llm/chains/generate-session-summary.chain';
 import { BlockType } from '@prisma/client';
@@ -8,7 +8,9 @@ import {
   mapSessionBlocksToSummaryContext,
   mapPrismaSummaryBlockToGenerateResponse,
 } from '../block.utils';
+import { getSessionWithInformContent } from '../../sessions/session.utils';
 
+/** Creates the session summary block and marks the session as completed. */
 @Injectable()
 export class GenerateSummaryBlockService {
   constructor(
@@ -18,23 +20,11 @@ export class GenerateSummaryBlockService {
 
   @LogService()
   async generate(sessionId: string): Promise<GenerateSummaryBlockResponseDto> {
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
-      include: {
-        blocks: {
-          include: {
-            informBlock: { include: { messages: true } },
-            practiceBlock: true,
-          },
-          orderBy: { orderIndex: 'asc' },
-        },
-      },
-    });
-    if (!session) throw new NotFoundException('Session not found');
+    const session = await getSessionWithInformContent(this.prisma, sessionId);
+    const { informContent, practiceResults } =
+      mapSessionBlocksToSummaryContext(session.blocks);
 
-    const { informContent, practiceResults } = mapSessionBlocksToSummaryContext(session.blocks);
-
-    const sessionDuration = Math.floor(
+    const sessionDurationMinutes = Math.floor(
       (Date.now() - new Date(session.startedAt).getTime()) / 1000 / 60,
     );
 
@@ -69,8 +59,10 @@ export class GenerateSummaryBlockService {
     ]);
 
     return mapPrismaSummaryBlockToGenerateResponse(
-      createdSummaryBlock as Parameters<typeof mapPrismaSummaryBlockToGenerateResponse>[0],
-      sessionDuration,
+      createdSummaryBlock as Parameters<
+        typeof mapPrismaSummaryBlockToGenerateResponse
+      >[0],
+      sessionDurationMinutes,
       newTotalBlocks,
     ) as GenerateSummaryBlockResponseDto;
   }

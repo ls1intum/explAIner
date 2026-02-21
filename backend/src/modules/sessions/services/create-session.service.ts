@@ -5,6 +5,7 @@ import { GenerateBlockSequenceService } from '../../blocks/services/generate-blo
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { mapSessionToCreateResponse } from '../session.utils';
 
+/** Creates a new session and its initial block sequence (1 inform + 3 practice blocks). */
 @Injectable()
 export class CreateSessionService {
   constructor(
@@ -29,6 +30,7 @@ export class CreateSessionService {
       // Generate block sequence
       const { informBlock, practiceBlocks } =
         await this.generateBlockSequenceService.generate(session.id, tx);
+      // Blocks are created in order; sort ensures consistent response order
       const sortedPracticeBlocks = practiceBlocks.sort(
         (a, b) => a.orderIndex - b.orderIndex,
       );

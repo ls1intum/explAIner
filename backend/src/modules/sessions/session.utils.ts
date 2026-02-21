@@ -49,7 +49,22 @@ export function findNextUnansweredPracticeBlock(
   );
 }
 
-/** Session with blocks (practiceBlock included), ordered by orderIndex. Throws if not found. */
+/** Ensures session exists; throws NotFoundException if not found. */
+export async function requireSessionExists(
+  prisma: PrismaService,
+  sessionId: string,
+): Promise<{ id: string }> {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    select: { id: true },
+  });
+  if (!session) {
+    throw new NotFoundException(`Session with ID ${sessionId} not found`);
+  }
+  return session;
+}
+
+/** Session with blocks (practiceBlock only), ordered by orderIndex. Throws if not found. */
 export async function getSessionWithBlocks(
   prisma: PrismaService,
   sessionId: string,
@@ -64,6 +79,27 @@ export async function getSessionWithBlocks(
     },
   });
   if (!session) throw new NotFoundException('Session not found');
+  return session;
+}
+
+/** Session with full blocks for get-session response (inform, practice, summary). Throws if not found. */
+export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: string) {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    include: {
+      blocks: {
+        orderBy: { orderIndex: 'asc' },
+        include: {
+          informBlock: {
+            include: { messages: { orderBy: { timestamp: 'asc' } } },
+          },
+          practiceBlock: true,
+          summaryBlock: true,
+        },
+      },
+    },
+  });
+  if (!session) throw new NotFoundException(`Session with ID ${sessionId} not found`);
   return session;
 }
 

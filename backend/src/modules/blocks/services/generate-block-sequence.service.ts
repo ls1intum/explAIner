@@ -11,6 +11,7 @@ import { getSessionWithBlocks } from '../../sessions/session.utils';
 import {
   blockToResponse,
   extractWrongAnswersFromLastSequence,
+  formatInformBlockMessage,
   type BlockWithIncludes,
 } from '../block.utils';
 
@@ -18,8 +19,10 @@ import {
 type PrismaLike = Pick<PrismaService, 'session' | 'block'>;
 
 /**
- * Unified service for generating block sequences (initial or subsequent).
- * Mode: 0 blocks → INITIAL (keyFacts); has blocks → SUBSEQUENT (keyMisconceptions).
+ * Generates a block sequence (1 inform + 3 practice). 
+ * INITIAL = first block sequence of the session (key facts);
+ * SUBSEQUENT = any subsequent block sequences of the session using wrong answers from last practice set (key misconceptions).
+ * Atomic: all DB ops commit together or roll back on any failure.
  */
 @Injectable()
 export class GenerateBlockSequenceService {
@@ -38,55 +41,48 @@ export class GenerateBlockSequenceService {
       return this.prisma.$transaction((t) => this.generate(sessionId, t));
     }
     const db = tx;
+    // 1. Load session with blocks (for mode detection and wrong-answer extraction)
     const session = await getSessionWithBlocks(db as PrismaService, sessionId);
 
-    // 2. Auto-detect mode based on existing blocks
-    const mode = session.blocks.length === 0 
-      ? BlockSequenceMode.INITIAL 
-      : BlockSequenceMode.SUBSEQUENT;
-
-    // 3. Calculate starting order index
-    const nextOrderIndexStart = mode === BlockSequenceMode.INITIAL 
-      ? 0 
-      : session.blocks.length;
-
-    // 4. Extract wrong answers (only for SUBSEQUENT mode)
-    const wrongAnswers: WrongAnswer[] = 
+    // 2. Auto-detect mode based on existing blocks (0 → INITIAL, else SUBSEQUENT)
+    const mode =
+      session.blocks.length === 0
+        ? BlockSequenceMode.INITIAL
+        : BlockSequenceMode.SUBSEQUENT;
+    // 3. Calculate starting order index for new blocks
+    const nextOrderIndexStart =
+      mode === BlockSequenceMode.INITIAL ? 0 : session.blocks.length;
+    // 4. Extract wrong answers from last sequence (only for SUBSEQUENT mode)
+    const wrongAnswers: WrongAnswer[] =
       mode === BlockSequenceMode.SUBSEQUENT
         ? extractWrongAnswersFromLastSequence(session.blocks)
         : [];
 
-    // 5. Get prior knowledge context
-    const priorKnowledge = session.priorKnowledge ?? '';
-
-    // 6. Determine appropriate SOLO levels based on Bloom's level
-    const soloLevels = getSOLOLevelsForBlooms(session.learningGoalBloomsLevel);
-
-    // 7. Call unified chain with mode parameter
+    // 5. Call chain with mode, context, prior knowledge, wrong answers, SOLO levels
     const blockSequence = await this.generateBlockSequenceChain.execute({
       mode,
       topic: session.topic,
       learningGoal: session.learningGoal,
       bloomsLevel: session.learningGoalBloomsLevel,
-      priorKnowledge,
-      wrongAnswers: mode === BlockSequenceMode.SUBSEQUENT ? wrongAnswers : undefined,
-      soloLevels,
+      priorKnowledge: session.priorKnowledge ?? '',
+      wrongAnswers:
+        mode === BlockSequenceMode.SUBSEQUENT ? wrongAnswers : undefined,
+      soloLevels: getSOLOLevelsForBlooms(session.learningGoalBloomsLevel),
     });
 
-    // 8. Create inform block with formatted message
-    const label = mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
+    // 6. Create inform block with formatted message (explanation + label + key points + summary)
+    const label =
+      mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
     const keyPoints =
       'keyFacts' in blockSequence.informBlock
         ? blockSequence.informBlock.keyFacts
         : blockSequence.informBlock.keyMisconceptions;
-
-    const formattedMessage = `${blockSequence.informBlock.explanation}
-
-${label}
-${keyPoints.map(item => `${item}`).join('\n')}
-
-SUMMARY
-${blockSequence.informBlock.summary}`;
+    const formattedMessage = formatInformBlockMessage(
+      blockSequence.informBlock.explanation,
+      label,
+      keyPoints,
+      blockSequence.informBlock.summary,
+    );
 
     const informBlockCreated = await db.block.create({
       data: {
@@ -107,7 +103,7 @@ ${blockSequence.informBlock.summary}`;
       },
     });
 
-    // 9. Create 3 practice blocks
+    // 7. Create 3 practice blocks
     const practiceBlocks = await Promise.all(
       blockSequence.practiceBlocks.map(async (practiceBlock, index) => {
         return db.block.create({
@@ -131,11 +127,9 @@ ${blockSequence.informBlock.summary}`;
       }),
     );
 
-    // 10. Update session total blocks count
-    const newTotal = mode === BlockSequenceMode.INITIAL 
-      ? 4 
-      : session.totalBlocks + 4;
-    
+    // 8. Update session total blocks count
+    const newTotal =
+      mode === BlockSequenceMode.INITIAL ? 4 : session.totalBlocks + 4;
     await db.session.update({
       where: { id: sessionId },
       data: { totalBlocks: newTotal },
