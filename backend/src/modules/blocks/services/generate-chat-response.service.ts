@@ -21,7 +21,6 @@ export class GenerateChatResponseService {
     dto: GenerateChatResponseRequestDto,
   ): Promise<GenerateChatResponseResponseDto> {
     const orderIndexNum = parseInt(orderIndex, 10);
-
     const block = await this.prisma.block.findUnique({
       where: {
         sessionId_orderIndex: { sessionId, orderIndex: orderIndexNum },

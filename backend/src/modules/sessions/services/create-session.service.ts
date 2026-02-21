@@ -3,6 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { CreateSessionRequestDto } from '../dto/request/create-session.request.dto';
 import { GenerateBlockSequenceService } from '../../blocks/services/generate-block-sequence.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
+import { sortBlocksByOrderIndex } from '../../blocks/block.utils';
 import { mapSessionToCreateResponse } from '../session.utils';
 
 /** Creates a new session and its initial block sequence (1 inform + 3 practice blocks). */
@@ -30,10 +31,7 @@ export class CreateSessionService {
       // Generate block sequence
       const { informBlock, practiceBlocks } =
         await this.generateBlockSequenceService.generate(session.id, tx);
-      // Blocks are created in order; sort ensures consistent response order
-      const sortedPracticeBlocks = practiceBlocks.sort(
-        (a, b) => a.orderIndex - b.orderIndex,
-      );
+      const sortedPracticeBlocks = sortBlocksByOrderIndex(practiceBlocks);
       return mapSessionToCreateResponse(session, dto, [
         informBlock,
         ...sortedPracticeBlocks,

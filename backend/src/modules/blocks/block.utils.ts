@@ -1,5 +1,5 @@
 /**
- * Block utils: response mappers, summary context, and wrong-answer extraction.
+ * Block utils: response mappers, summary context, wrong-answer extraction, and block-sequence helpers.
  */
 
 import { BlockType } from '@prisma/client';
@@ -201,4 +201,11 @@ export function buildConversationHistory(
   const lines = messages.map((msg) => `${msg.sender}: ${msg.message}`);
   if (newUserMessage) lines.push(`User: ${newUserMessage}`);
   return lines.join('\n');
+}
+
+/** Returns a copy of blocks sorted by orderIndex (for consistent API response order). */
+export function sortBlocksByOrderIndex<T extends { orderIndex: number }>(
+  blocks: T[],
+): T[] {
+  return [...blocks].sort((a, b) => a.orderIndex - b.orderIndex);
 }

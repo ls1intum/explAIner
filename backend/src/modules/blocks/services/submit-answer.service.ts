@@ -21,7 +21,7 @@ export class SubmitAnswerService {
   ): Promise<SubmitAnswerResponseDto> {
     const orderIndexNum = parseInt(orderIndex, 10);
 
-    // 1. Get the block with practice block data
+    // Get the block with practice block data
     const block = await this.prisma.block.findUnique({
       where: {
         sessionId_orderIndex: { sessionId, orderIndex: orderIndexNum },
@@ -32,13 +32,13 @@ export class SubmitAnswerService {
       throw new NotFoundException('Practice block not found');
     }
 
-    // 2. Calculate correctness (compare student indices to correct indices)
+    // Calculate correctness (compare student indices to correct indices)
     const studentAnswerIsCorrect = isStudentAnswerCorrect(
       block.practiceBlock.correctAnswerOptionIndices,
       dto.studentAnswerOptionIndices,
     );
 
-    // 3. Update practice block with student answer and correctness
+    // Update practice block with student answer and correctness
     await this.prisma.practiceBlock.update({
       where: { blockId: block.id },
       data: {

@@ -186,3 +186,13 @@ export function mapSubmitFeedbackResponse(rating: number) {
 export function mapDeleteSessionResponse() {
   return { success: true as const };
 }
+
+/** Session duration in whole minutes since startedAt. */
+export function getSessionDurationMinutes(session: {
+  startedAt: Date;
+}): number {
+  return Math.floor(
+    (Date.now() - new Date(session.startedAt).getTime()) / 1000 / 60,
+  );
+}
+
