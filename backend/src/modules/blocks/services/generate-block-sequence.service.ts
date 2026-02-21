@@ -14,6 +14,9 @@ import {
   type BlockWithIncludes,
 } from '../block.utils';
 
+/** Prisma-like client for DB ops (supports transaction client from $transaction). */
+type PrismaLike = Pick<PrismaService, 'session' | 'block'>;
+
 /**
  * Unified service for generating block sequences (initial or subsequent).
  * Mode: 0 blocks → INITIAL (keyFacts); has blocks → SUBSEQUENT (keyMisconceptions).
@@ -26,8 +29,16 @@ export class GenerateBlockSequenceService {
   ) {}
 
   @LogService()
-  async generate(sessionId: string): Promise<GenerateBlockSequenceResponseDto> {
-    const session = await getSessionWithBlocks(this.prisma, sessionId);
+  async generate(
+    sessionId: string,
+    tx?: PrismaLike, // When provided, all DB ops run inside caller's atomic transaction.
+  ): Promise<GenerateBlockSequenceResponseDto> {
+    // When called without tx (e.g. from controller), run in internal atomic transaction.
+    if (!tx) {
+      return this.prisma.$transaction((t) => this.generate(sessionId, t));
+    }
+    const db = tx;
+    const session = await getSessionWithBlocks(db as PrismaService, sessionId);
 
     // 2. Auto-detect mode based on existing blocks
     const mode = session.blocks.length === 0 
@@ -77,7 +88,7 @@ ${keyPoints.map(item => `${item}`).join('\n')}
 SUMMARY
 ${blockSequence.informBlock.summary}`;
 
-    const informBlockCreated = await this.prisma.block.create({
+    const informBlockCreated = await db.block.create({
       data: {
         sessionId,
         orderIndex: nextOrderIndexStart,
@@ -99,7 +110,7 @@ ${blockSequence.informBlock.summary}`;
     // 9. Create 3 practice blocks
     const practiceBlocks = await Promise.all(
       blockSequence.practiceBlocks.map(async (practiceBlock, index) => {
-        return this.prisma.block.create({
+        return db.block.create({
           data: {
             sessionId,
             orderIndex: nextOrderIndexStart + index + 1,
@@ -125,7 +136,7 @@ ${blockSequence.informBlock.summary}`;
       ? 4 
       : session.totalBlocks + 4;
     
-    await this.prisma.session.update({
+    await db.session.update({
       where: { id: sessionId },
       data: { totalBlocks: newTotal },
     });

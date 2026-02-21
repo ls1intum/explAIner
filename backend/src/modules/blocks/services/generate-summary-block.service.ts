@@ -46,39 +46,32 @@ export class GenerateSummaryBlockService {
       practiceResults,
     });
 
-    // 6. Calculate next order index
     const nextOrderIndex = session.blocks.length;
+    const newTotalBlocks = session.totalBlocks + 1;
 
-    // 7. Create summary block
-    const createdSummaryBlock = await this.prisma.block.create({
-      data: {
-        sessionId,
-        orderIndex: nextOrderIndex,
-        type: BlockType.Summary,
-        summaryBlock: {
-          create: {
-            sessionSummary: summaryBlock.sessionSummary,
+    // Atomic: summary block and session completion commit together or roll back.
+    const [createdSummaryBlock] = await this.prisma.$transaction([
+      this.prisma.block.create({
+        data: {
+          sessionId,
+          orderIndex: nextOrderIndex,
+          type: BlockType.Summary,
+          summaryBlock: {
+            create: { sessionSummary: summaryBlock.sessionSummary },
           },
         },
-      },
-      include: {
-        summaryBlock: true,
-      },
-    });
-
-    // 8. Update session completion status
-    await this.prisma.session.update({
-      where: { id: sessionId },
-      data: {
-        totalBlocks: session.totalBlocks + 1,
-        completedAt: new Date(),
-      },
-    });
+        include: { summaryBlock: true },
+      }),
+      this.prisma.session.update({
+        where: { id: sessionId },
+        data: { totalBlocks: newTotalBlocks, completedAt: new Date() },
+      }),
+    ]);
 
     return mapPrismaSummaryBlockToGenerateResponse(
       createdSummaryBlock as Parameters<typeof mapPrismaSummaryBlockToGenerateResponse>[0],
       sessionDuration,
-      session.totalBlocks + 1,
+      newTotalBlocks,
     ) as GenerateSummaryBlockResponseDto;
   }
 }

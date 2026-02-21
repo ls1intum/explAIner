@@ -43,25 +43,16 @@ export class GenerateChatResponseService {
       throw new NotFoundException('Block not found');
     }
 
-    // 1. Persist user message
-    await this.prisma.informBlockMessage.create({
-      data: {
-        informBlockId: block.informBlock!.blockId,
-        message: dto.message,
-        sender: 'User',
-      },
-    });
-
-    // 2. Build conversation history (re-fetch to include new user message)
-    const messages = await this.prisma.informBlockMessage.findMany({
-      where: { informBlockId: block.informBlock!.blockId },
-      orderBy: { timestamp: 'asc' },
-    });
-    const conversationHistory = messages
+    const informBlockId = block.informBlock.blockId;
+    // Build conversation history in memory (include new user message for LLM context).
+    const existingHistory = block.informBlock.messages
       .map((msg) => `${msg.sender}: ${msg.message}`)
       .join('\n');
+    const conversationHistory = existingHistory
+      ? `${existingHistory}\nUser: ${dto.message}`
+      : `User: ${dto.message}`;
 
-    // 3. Generate AI response
+    // Generate AI response before any DB writes (keep transaction short).
     const chatResponse = await this.generateChatResponseChain.execute({
       topic: block.session.topic,
       learningGoal: block.session.learningGoal,
@@ -70,14 +61,19 @@ export class GenerateChatResponseService {
       conversationHistory,
     });
 
-    // 4. Persist Owlbert response
-    const owlbertMessage = await this.prisma.informBlockMessage.create({
-      data: {
-        informBlockId: block.informBlock!.blockId,
-        message: chatResponse.response,
-        sender: 'Owlbert',
-      },
-    });
+    // Atomic: both messages commit together or roll back.
+    const [, owlbertMessage] = await this.prisma.$transaction([
+      this.prisma.informBlockMessage.create({
+        data: { informBlockId, message: dto.message, sender: 'User' },
+      }),
+      this.prisma.informBlockMessage.create({
+        data: {
+          informBlockId,
+          message: chatResponse.response,
+          sender: 'Owlbert',
+        },
+      }),
+    ]);
 
     return mapChatResponse(owlbertMessage.message);
   }

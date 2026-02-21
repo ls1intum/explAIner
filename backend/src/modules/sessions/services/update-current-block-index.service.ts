@@ -23,22 +23,19 @@ export class UpdateCurrentBlockIndexService {
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
     }
 
-    // Update current block index
-    await this.prisma.session.update({
-      where: { id: sessionId },
-      data: { currentBlockIndex },
-    });
-
-    // Mark the block as viewed in the database
-    await this.prisma.block.updateMany({
-      where: {
-        sessionId,
-        orderIndex: currentBlockIndex,
-      },
-      data: {
-        alreadyViewed: true,
-      },
-    });
+    // Atomic: both updates commit together or roll back
+    await this.prisma.$transaction([
+      // Update current block index
+      this.prisma.session.update({
+        where: { id: sessionId },
+        data: { currentBlockIndex },
+      }),
+      // Update already viewed flag for the block
+      this.prisma.block.updateMany({
+        where: { sessionId, orderIndex: currentBlockIndex },
+        data: { alreadyViewed: true },
+      }),
+    ]);
 
     return mapUpdateCurrentBlockIndexResponse(currentBlockIndex);
   }
