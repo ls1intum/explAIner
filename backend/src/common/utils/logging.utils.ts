@@ -1,30 +1,18 @@
 /**
- * Extract parameter names and their types from method arguments
+ * Extract parameter names from a function's signature (parses toString()).
  */
-export function extractParamNames(args: any[]): string[] {
-  const params: string[] = [];
-  
-  args.forEach((arg, index) => {
-    if (arg !== undefined && arg !== null) {
-      if (typeof arg === 'string') {
-        params.push(`param${index}: string`);
-      } else if (typeof arg === 'number') {
-        params.push(`param${index}: number`);
-      } else if (typeof arg === 'object') {
-        // For objects, try to get meaningful property names
-        const keys = Object.keys(arg);
-        if (keys.length > 0 && keys.length <= 3) {
-          params.push(...keys);
-        } else if (keys.length > 3) {
-          params.push(`${keys.slice(0, 3).join(', ')}...`);
-        } else {
-          params.push(`param${index}: object`);
-        }
-      }
-    }
-  });
-
-  return params;
+export function getParamNames(fn: Function): string[] {
+  const s = fn.toString();
+  const open = s.indexOf('(');
+  if (open === -1) return [];
+  const close = s.indexOf(')', open);
+  if (close === -1) return [];
+  const inner = s.slice(open + 1, close).trim();
+  if (!inner) return [];
+  return inner
+    .split(',')
+    .map((part) => part.trim().replace(/\s*[=:].*$/, '').replace(/^\.\.\./, '').trim())
+    .filter(Boolean);
 }
 
 /**

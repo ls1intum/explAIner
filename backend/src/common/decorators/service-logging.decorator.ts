@@ -1,18 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { isLogEnabled } from '../../config/logging.config';
-import { extractParamNames } from '../utils/logging.utils';
+import { getParamNames } from '../utils/logging.utils';
 
 /**
- * Service method logging decorator
+ * Service method logging decorator.
  * Format: [SERVICE] <ServiceName>.<methodName> (<param names>)
- * Format: [SERVICE INTERNAL] <ServiceName>.<methodName> (<param names>)
- * 
- * Usage: 
- *   @LogService() - logs as [SERVICE]
- *   @LogService('service-internal') - logs as [SERVICE INTERNAL]
+ * Usage: @LogService()
  */
-export function LogService(type: 'service' | 'service-internal' = 'service') {
-  const logger = new Logger(type === 'service' ? 'SERVICE' : 'SERVICE INTERNAL');
+export function LogService() {
+  const logger = new Logger('SERVICE');
 
   return function (
     target: any,
@@ -21,13 +17,11 @@ export function LogService(type: 'service' | 'service-internal' = 'service') {
   ) {
     const originalMethod = descriptor.value;
     const serviceName = target.constructor.name;
+    const paramNames = getParamNames(originalMethod);
 
     descriptor.value = async function (...args: any[]) {
       if (isLogEnabled('service')) {
-        // Extract parameter names from method signature
-        const paramNames = extractParamNames(args);
         const paramsStr = paramNames.length > 0 ? paramNames.join(', ') : 'no params';
-        
         logger.log(`${serviceName}.${propertyKey} (${paramsStr})`);
       }
 
