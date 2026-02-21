@@ -35,7 +35,7 @@ export class GenerateBlockSequenceChain {
     wrongAnswers?: WrongAnswer[];
     soloLevels: SoloLevel[];
   }): Promise<BlockSequenceParse> {
-    if (isLogEnabled('ai')) {
+    if (isLogEnabled('ai-chain')) {
       this.logger.log(`generate-block-sequence-${params.mode}`);
     }
 

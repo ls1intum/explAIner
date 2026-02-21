@@ -30,7 +30,7 @@ export class GenerateChatResponseChain {
     userMessage: string;
     conversationHistory?: string;
   }): Promise<FollowUpAnswerMessage> {
-    if (isLogEnabled('ai')) {
+    if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-chat-response');
     }
 

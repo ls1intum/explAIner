@@ -32,7 +32,7 @@ export class GenerateEasierLearningGoalsChain {
     coveredContent?: string;
   }): Promise<LearningGoals> {
     // Log chain execution
-    if (isLogEnabled('ai')) {
+    if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-easier-learning-goals');
     }
 

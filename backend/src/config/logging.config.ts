@@ -6,7 +6,7 @@ export const LOGGING_CONFIG = {
   http: true,
   controller: true,
   service: true,
-  ai: true,
+  'ai-chain': true,
 };
 
 /**

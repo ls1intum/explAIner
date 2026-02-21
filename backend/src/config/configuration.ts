@@ -1,5 +1,17 @@
 // Maps environment variables to typed configuration object (validated by Joi schema)
-import { AppConfiguration } from './configuration.interface';
+
+export interface AppConfiguration {
+  nodeEnv: string;
+  port: number;
+  frontendUrl: string;
+  database: {
+    url: string;
+  };
+  anthropic: {
+    apiKey: string;
+    model: string;
+  };
+}
 
 export default (): AppConfiguration => ({
   nodeEnv: process.env.NODE_ENV!,

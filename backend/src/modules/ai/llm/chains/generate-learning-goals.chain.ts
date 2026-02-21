@@ -29,7 +29,7 @@ export class GenerateLearningGoalsChain {
     priorKnowledge?: string;
   }): Promise<LearningGoals> {
     // Log chain execution
-    if (isLogEnabled('ai')) {
+    if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-learning-goals');
     }
 

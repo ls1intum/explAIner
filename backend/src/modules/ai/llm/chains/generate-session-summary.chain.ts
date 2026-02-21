@@ -30,7 +30,7 @@ export class GenerateSessionSummaryChain {
     informContent: string[];
     practiceResults: Array<{ question: string; isCorrect: boolean }>;
   }): Promise<SessionSummaryParser> {
-    if (isLogEnabled('ai')) {
+    if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-session-summary');
     }
 
