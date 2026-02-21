@@ -8,7 +8,7 @@ import {
   mapSubmitAnswerResponse,
 } from '../block.utils';
 
-/** Saves student answer for a practice block and computes correctness. */
+/** Persists student answer for a practice block question and computes correctness */
 @Injectable()
 export class SubmitAnswerService {
   constructor(private prisma: PrismaService) {}
@@ -19,9 +19,11 @@ export class SubmitAnswerService {
     orderIndex: string,
     dto: SubmitAnswerRequestDto,
   ): Promise<SubmitAnswerResponseDto> {
+
+    // Convert orderIndex to number (URL parameters are always strings)
     const orderIndexNum = parseInt(orderIndex, 10);
 
-    // Get the block with practice block data
+    // Fetch practice block data
     const block = await this.prisma.block.findUnique({
       where: {
         sessionId_orderIndex: { sessionId, orderIndex: orderIndexNum },
@@ -32,13 +34,13 @@ export class SubmitAnswerService {
       throw new NotFoundException('Practice block not found');
     }
 
-    // Calculate correctness (compare student indices to correct indices)
+    // Evaluate correctness
     const studentAnswerIsCorrect = isStudentAnswerCorrect(
       block.practiceBlock.correctAnswerOptionIndices,
       dto.studentAnswerOptionIndices,
     );
 
-    // Update practice block with student answer and correctness
+    // Persist student answer & correctness in database
     await this.prisma.practiceBlock.update({
       where: { blockId: block.id },
       data: {
@@ -47,6 +49,7 @@ export class SubmitAnswerService {
       },
     });
 
+    // Return response
     return mapSubmitAnswerResponse(dto.studentAnswerOptionIndices);
   }
 }

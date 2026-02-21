@@ -12,7 +12,7 @@ export class DeleteSessionService {
   @LogService()
   async delete(sessionId: string): Promise<DeleteSessionResponseDto> {
 
-    // Check if session exists
+    // Ensure session exists
     await requireSessionExists(this.prisma, sessionId);
 
     // Delete session

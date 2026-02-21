@@ -15,14 +15,12 @@ import {
   type BlockWithIncludes,
 } from '../block.utils';
 
-/** Prisma-like client for DB ops (supports transaction client from $transaction). */
+/** Prisma-like client for DB ops (supports transaction client from $transaction) */
 type PrismaLike = Pick<PrismaService, 'session' | 'block'>;
 
 /**
- * Generates a block sequence (1 inform + 3 practice). 
- * INITIAL = first block sequence of the session (key facts);
- * SUBSEQUENT = any subsequent block sequences of the session using wrong answers from last practice set (key misconceptions).
- * Atomic: all DB ops commit together or roll back on any failure.
+ * Generates a block sequence (1 inform + 3 practice)
+ * Atomic: all DB ops commit together or roll back on any failure
  */
 @Injectable()
 export class GenerateBlockSequenceService {
@@ -34,9 +32,9 @@ export class GenerateBlockSequenceService {
   @LogService()
   async generate(
     sessionId: string,
-    tx?: PrismaLike, // When provided, all DB ops run inside caller's atomic transaction.
+    tx?: PrismaLike, // When provided, all DB ops run inside caller's atomic transaction
   ): Promise<GenerateBlockSequenceResponseDto> {
-    // When called without tx (e.g. from controller), run in internal atomic transaction.
+    // When called without tx (e.g. from controller), run in internal atomic transaction
     if (!tx) {
       return this.prisma.$transaction(
         (t) => this.generate(sessionId, t),
@@ -44,24 +42,29 @@ export class GenerateBlockSequenceService {
       );
     }
     const db = tx;
-    // 1. Load session with blocks (for mode detection and wrong-answer extraction)
+
+    // Fetch session data
     const session = await getSessionWithBlocks(db as PrismaService, sessionId);
 
-    // 2. Auto-detect mode based on existing blocks (0 → INITIAL, else SUBSEQUENT)
+    // Detect block-sequence mode
+    // > INITIAL      = first block sequence of the session             -> provides information
+    // > SUBSEQUENT   = any subsequent block sequences of the session   -> provide further information and clarify misconceptions of previous block sequence
     const mode =
       session.blocks.length === 0
         ? BlockSequenceMode.INITIAL
         : BlockSequenceMode.SUBSEQUENT;
-    // 3. Calculate starting order index for new blocks
+
+    // Calculate starting order index for new block sequence blocks
     const nextOrderIndexStart =
       mode === BlockSequenceMode.INITIAL ? 0 : session.blocks.length;
-    // 4. Extract wrong answers from last sequence (only for SUBSEQUENT mode)
+
+    // Only if mode = SUBSEQUENT: extract wrong student answers from last block sequence practice questions
     const wrongAnswers: WrongAnswer[] =
       mode === BlockSequenceMode.SUBSEQUENT
         ? extractWrongAnswersFromLastSequence(session.blocks)
         : [];
 
-    // 5. Call chain with mode, context, prior knowledge, wrong answers, SOLO levels
+    // Call chain
     const blockSequence = await this.generateBlockSequenceChain.execute({
       mode,
       topic: session.topic,
@@ -73,7 +76,9 @@ export class GenerateBlockSequenceService {
       soloLevels: getSOLOLevelsForBlooms(session.learningGoalBloomsLevel),
     });
 
-    // 6. Create inform block with formatted message (explanation + label + key points + summary)
+    // Format inform block message depending on block-sequence mode
+    // > INITIAL      message = explanation + key facts + summary
+    // > SUBSEQUENT   message = explanation + key misconceptions + summary
     const label =
       mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
     const keyPoints =
@@ -87,12 +92,13 @@ export class GenerateBlockSequenceService {
       blockSequence.informBlock.summary,
     );
 
+    // Create inform block and persist in database
     const informBlockCreated = await db.block.create({
       data: {
         sessionId,
         orderIndex: nextOrderIndexStart,
         type: BlockType.Inform,
-        alreadyViewed: mode === BlockSequenceMode.INITIAL, // Only initial block is pre-viewed
+        alreadyViewed: mode === BlockSequenceMode.INITIAL, // Only initial block is pre-viewed (to allow page reload during creation)
         informBlock: {
           create: {
             messages: {
@@ -106,7 +112,7 @@ export class GenerateBlockSequenceService {
       },
     });
 
-    // 7. Create 3 practice blocks
+    // Persist 3 practice blocks in database
     const practiceBlocks = await Promise.all(
       blockSequence.practiceBlocks.map(async (practiceBlock, index) => {
         return db.block.create({
@@ -130,7 +136,7 @@ export class GenerateBlockSequenceService {
       }),
     );
 
-    // 8. Update session total blocks count
+    // Update session total blocks count
     const newTotal =
       mode === BlockSequenceMode.INITIAL ? 4 : session.totalBlocks + 4;
     await db.session.update({
@@ -138,6 +144,7 @@ export class GenerateBlockSequenceService {
       data: { totalBlocks: newTotal },
     });
 
+    // Return response
     return {
       informBlock: blockToResponse(informBlockCreated as BlockWithIncludes),
       practiceBlocks: [

@@ -14,16 +14,20 @@ export class UpdateCurrentBlockIndexService {
     sessionId: string,
     currentBlockIndex: number,
   ): Promise<UpdateCurrentBlockIndexResponseDto> {
+
+    // Ensure session exists
     await requireSessionExists(this.prisma, sessionId);
 
     // Atomic: both updates commit together or roll back
     await this.prisma.$transaction([
+
       // Update current block index
       this.prisma.session.update({
         where: { id: sessionId },
         data: { currentBlockIndex },
       }),
-      // Update already viewed flag for the block
+      
+      // Set already_viewed flag for current block
       this.prisma.block.updateMany({
         where: { sessionId, orderIndex: currentBlockIndex },
         data: { alreadyViewed: true },

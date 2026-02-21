@@ -11,6 +11,7 @@ import {
   areAllPracticeBlocksCorrect,
   findNextUnansweredPracticeBlock,
   mapContinueResponse,
+  requireSessionExists
 } from '../session.utils';
 
 /** Determines next action after user clicked "Continue" button on any block:
@@ -27,6 +28,9 @@ export class ContinueSessionService {
 
   @LogService()
   async continue(sessionId: string): Promise<ContinueSessionResponseDto> {
+
+    // Ensure session exists
+    await requireSessionExists(this.prisma, sessionId);
 
     // Fetch session and current block sequence counter
     const session = await getSessionWithBlocks(this.prisma, sessionId);

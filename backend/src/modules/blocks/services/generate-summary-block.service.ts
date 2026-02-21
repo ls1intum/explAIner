@@ -13,7 +13,7 @@ import {
   getSessionWithInformContent,
 } from '../../sessions/session.utils';
 
-/** Creates the session summary block and marks the session as completed. */
+/** Generates session summary block and marks the session as completed */
 @Injectable()
 export class GenerateSummaryBlockService {
   constructor(
@@ -23,11 +23,15 @@ export class GenerateSummaryBlockService {
 
   @LogService()
   async generate(sessionId: string): Promise<GenerateSummaryBlockResponseDto> {
+
+    // Fetch session data
     const session = await getSessionWithInformContent(this.prisma, sessionId);
+
+    // Build context for session summary text
     const { informContent, practiceResults } =
       mapSessionBlocksToSummaryContext(session.blocks);
-    const sessionDurationMinutes = getSessionDurationMinutes(session);
 
+    // Call chain
     const summaryBlock = await this.generateSessionSummaryChain.execute({
       topic: session.topic,
       learningGoal: session.learningGoal,
@@ -36,15 +40,17 @@ export class GenerateSummaryBlockService {
       practiceResults,
     });
 
-    const nextOrderIndex = session.blocks.length;
+    // Increment total blocks counter
     const newTotalBlocks = session.totalBlocks + 1;
 
-    // Atomic: summary block and session completion commit together or roll back.
+    // Atomic: summary block and session completion commit together or roll back
     const [createdSummaryBlock] = await this.prisma.$transaction([
+
+      // Create summary block and persist in database
       this.prisma.block.create({
         data: {
           sessionId,
-          orderIndex: nextOrderIndex,
+          orderIndex: session.blocks.length,
           type: BlockType.Summary,
           summaryBlock: {
             create: { sessionSummary: summaryBlock.sessionSummary },
@@ -52,12 +58,18 @@ export class GenerateSummaryBlockService {
         },
         include: { summaryBlock: true },
       }),
+
+      // Update session metadata (total blocks & completedAt)
       this.prisma.session.update({
         where: { id: sessionId },
         data: { totalBlocks: newTotalBlocks, completedAt: new Date() },
       }),
     ]);
 
+    // Calculate session duration
+    const sessionDurationMinutes = getSessionDurationMinutes(session);
+
+    // Return response
     return mapPrismaSummaryBlockToGenerateResponse(
       createdSummaryBlock as Parameters<
         typeof mapPrismaSummaryBlockToGenerateResponse

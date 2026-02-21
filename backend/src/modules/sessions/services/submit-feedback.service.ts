@@ -15,13 +15,17 @@ export class SubmitFeedbackService {
     sessionId: string,
     dto: SubmitFeedbackRequestDto,
   ): Promise<SubmitFeedbackResponseDto> {
+
+    // Ensure session exists
     await requireSessionExists(this.prisma, sessionId);
 
+    // Persist rating in database
     await this.prisma.session.update({
       where: { id: sessionId },
       data: { userFeedback: dto.rating },
     });
 
+    // Return response
     return { success: true as const, rating: dto.rating };
   }
 }

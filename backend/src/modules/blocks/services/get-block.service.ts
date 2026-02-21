@@ -5,7 +5,7 @@ import { GetBlockResponseDto } from '../dto/response/get-block.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { blockToResponse } from '../block.utils';
 
-/** Fetches a single block by session and order index; returns DTO validated by BlockSchema. */
+/** Fetches a single block by order index */
 @Injectable()
 export class GetBlockService {
   constructor(private prisma: PrismaService) {}
@@ -15,6 +15,8 @@ export class GetBlockService {
     sessionId: string,
     orderIndex: number,
   ): Promise<GetBlockResponseDto> {
+
+    // Fetch block data
     const block = await this.prisma.block.findUnique({
       where: { sessionId_orderIndex: { sessionId, orderIndex } },
       include: {
@@ -25,13 +27,13 @@ export class GetBlockService {
         summaryBlock: true,
       },
     });
-
     if (!block) {
       throw new NotFoundException(
         `Block not found for session ${sessionId} at order index ${orderIndex}`,
       );
     }
 
+    // Return response
     try {
       return BlockSchema.parse(blockToResponse(block));
     } catch {
