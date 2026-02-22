@@ -24,14 +24,17 @@ export const generateBlockSequencePrompt = ({
   soloLevels,
   wrongAnswers,
 }: GenerateBlockSequencePromptParams): string => {
-  // Mode-specific configuration
+
+  // Block-sequence-mode specific configuration
+  // > INITIAL      = first block sequence of the session             -> provides information (key facts)
+  // > SUBSEQUENT   = any subsequent block sequences of the session   -> provide further information and clarify misconceptions (key misconceptions) of previous block sequence
   const isInitial = mode === BlockSequenceMode.INITIAL;
   const keyPointsLabel = isInitial ? 'keyFacts' : 'keyMisconceptions';
   const informBlockInstructions = isInitial
     ? 'Create educational content that teaches EVERYTHING needed to answer the practice questions:\n1. Start with a brief explanation (2-3 sentences) that connects the concepts\n2. List EXACTLY 3 or 4 key facts (NO MORE THAN 4) that directly address ALL concepts needed for the questions\n3. End with a one-sentence summary that frames the topic'
     : 'Create educational content that addresses misconceptions and teaches EVERYTHING needed to answer the practice questions:\n1. Start with a brief explanation (2-3 sentences) that connects the concepts\n2. List 2-4 key misconceptions that address the student\'s previous mistakes and clarify them\n3. End with a one-sentence summary that frames the topic';
 
-  // Format wrong answers section (only for subsequent mode)
+  // Only if mode = SUBSEQUENT: format wrong student answers section
   const wrongAnswersText = !isInitial && wrongAnswers && wrongAnswers.length > 0
     ? `\n\n**Student's Previous Mistakes (to address in ${keyPointsLabel}):**
 ${wrongAnswers.map((wa) => `
@@ -46,7 +49,7 @@ Student Selected: ${wa.wrongStudentAnswerOptions.join(', ')}
     ? `\n\n**Prior Knowledge Context:**\nThe learner already has knowledge about: ${priorKnowledge}\nEnsure the questions and explanations build upon this existing knowledge appropriately.`
     : '';
 
-  return `You are ExplAIner, an AI tutor. Generate a complete learning block sequence.
+  return `You are ExplAIner, an AI tutor guiding learners through inform–practice cycles with "blocks" as learning units. A block sequence consists of 1 inform block and 3 practice blocks. Generate a new block sequence.
 
 ${SOLO_TAXONOMY_DESCRIPTION}
 
@@ -65,9 +68,11 @@ Respond in English.
 Create 3 multiple choice practice questions that PROGRESSIVELY build understanding:
 
 **Question Design Requirements:**
-1. Question 1 (${soloLevels[0]} level): Test a single key concept or fact
-2. Question 2 (${soloLevels[0]} or Multistructural level): Test multiple aspects or elements  
-3. Question 3 (${soloLevels[1] || 'Relational'} level): Test integration, relationships, or application
+1. Question 1: ${soloLevels[0]} level
+2. Question 2: ${soloLevels[0]} level
+3. Question 3: ${soloLevels[1]} level
+
+- IMPORTANT: refer to the SOLO Taxonomy Description above to create the 3 questions aligned with the SOLO level requirements
 
 **Format Requirements:**
 - Each question has exactly 4 answer options (A, B, C, D)
@@ -75,6 +80,7 @@ Create 3 multiple choice practice questions that PROGRESSIVELY build understandi
 - Randomize correct answer positions across A, B, C, D
 - Use plausible distractors reflecting common misconceptions (lower SOLO levels)
 - NEVER use meta-options like "All of the above" or "None of the above"
+
 
 **PART 2: INFORM BLOCK (Generate AFTER practice questions)**
 ${informBlockInstructions}
@@ -90,7 +96,7 @@ Return ONLY a pure JSON object. Do NOT wrap it in markdown code blocks or backti
 Do NOT include \`\`\`json or \`\`\` before or after the JSON.
 Your response should start with { and end with }
 
-Expected format:
+Expected format (example):
 {
   "practiceBlocks": [
     {
@@ -100,16 +106,16 @@ Expected format:
       "soloLevel": "Unistructural"
     },
     {
-      "question": "Question testing multiple aspects?",
+      "question": "Question testing single concept?",
       "answerOptions": ["Option A", "Option B", "Option C", "Option D"],
       "correctAnswerOptionIndices": [0, 3],
-      "soloLevel": "Multistructural"
+      "soloLevel": "Unistructural"
     },
     {
-      "question": "Question requiring integration/application?",
+      "question": "Question testing multiple aspects?",
       "answerOptions": ["Option A", "Option B", "Option C", "Option D"],
       "correctAnswerOptionIndices": [1],
-      "soloLevel": "Relational"
+      "soloLevel": "Multistructural"
     }
   ],
   "informBlock": {

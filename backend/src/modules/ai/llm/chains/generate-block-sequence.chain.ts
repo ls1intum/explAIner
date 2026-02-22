@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { isLogEnabled } from '../../../../config/logging.config';
-
 import { LlmService } from '../llm.service';
-
 import { generateBlockSequencePrompt } from '../prompts/generate-block-sequence.prompt';
 import {
   BlockSequenceMode,

@@ -30,7 +30,8 @@ CRITICAL REQUIREMENTS:
    - Goal 3: Apply or Analyze level (practical application or analysis)
 4. Each goal MUST be BRIEF (max 30 words total)
 5. Do NOT repeat similar content across goals
-6. ${priorKnowledge ? 'SKIP any content the learner already knows based on their prior knowledge. Focus ONLY on new concepts.' : 'Cover the fundamentals if no prior knowledge is indicated.'}
+6. Goals should be BRIEF (max 30 words total)
+7. ${priorKnowledge ? 'SKIP any content the learner already knows based on their prior knowledge. Focus ONLY on new concepts.' : 'Cover the fundamentals if no prior knowledge is indicated.'}
 
 ${BLOOMS_TAXONOMY_DESCRIPTION}
 

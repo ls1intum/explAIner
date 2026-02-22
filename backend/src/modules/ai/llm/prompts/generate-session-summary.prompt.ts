@@ -25,7 +25,7 @@ export const generateSessionSummaryPrompt = ({
     ? practiceResults.map((p) => `Q: ${p.question} - ${p.isCorrect ? 'Correct' : 'Incorrect'}`).join('\n')
     : 'No practice';
 
-  return `You are ExplAIner. Generate a session summary.
+  return `You are ExplAIner, an AI tutor that guides learners through structured learning sessions. The learning session was just completed by the learner. Generate a session summary.
 
 Topic: ${topic}
 Learning Goal: ${learningGoal}
