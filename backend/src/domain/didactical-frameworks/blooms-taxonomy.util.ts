@@ -4,6 +4,8 @@
  * Bloom's Taxonomy is a hierarchical framework that classifies cognitive learning objectives
  * into six levels of increasing complexity: Remember, Understand, Apply, Analyze, Evaluate, and Create.
  * It helps design learning goals that progress from basic recall to higher-order thinking skills.
+ * 
+ * This file provides a description which is used as context in the AI prompts.
  */
 
 export const BLOOMS_TAXONOMY_DESCRIPTION = `
