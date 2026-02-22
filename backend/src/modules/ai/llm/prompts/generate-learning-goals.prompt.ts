@@ -5,6 +5,7 @@ interface GenerateLearningGoalsPromptParams {
   priorKnowledge?: string;
 }
 
+/** Prompt for generating 3 learning goals based on a topic and (optional) prior knowledge */
 export const generateLearningGoalsPrompt = ({ topic, priorKnowledge }: GenerateLearningGoalsPromptParams): string => {
   const priorKnowledgeContext = priorKnowledge
     ? `\n\nIMPORTANT - PRIOR KNOWLEDGE: The learner already knows about: ${priorKnowledge}

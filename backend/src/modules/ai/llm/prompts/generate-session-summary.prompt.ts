@@ -9,6 +9,7 @@ interface GenerateSessionSummaryPromptParams {
   }>;
 }
 
+/** Prompt for generating the session summary text that is displayed on summary block */
 export const generateSessionSummaryPrompt = ({
   topic,
   learningGoal,

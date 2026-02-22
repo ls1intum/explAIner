@@ -5,6 +5,7 @@ interface GenerateChatResponsePromptParams {
   currentBlockContext?: string;
 }
 
+/** Prompt for generating a chat response to user follow-up question on inform block */
 export const generateChatResponsePrompt = ({
   topic,
   learningGoal,

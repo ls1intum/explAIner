@@ -13,7 +13,7 @@ interface GenerateBlockSequencePromptParams {
 }
 
 /**
- * Unified prompt for generating block sequences (initial or subsequent)
+ * Prompt for generating a block sequence = 1 x inform block + 3 x practice block
  */
 export const generateBlockSequencePrompt = ({
   mode,

@@ -8,6 +8,7 @@ interface GenerateEasierLearningGoalsPromptParams {
   coveredContent?: string;
 }
 
+/** Prompt for generating 3 easier learning goals for a new session based on previous session content & wrong answers to previous practice questions */
 export const generateEasierLearningGoalsPrompt = ({
   topic,
   originalGoal,
