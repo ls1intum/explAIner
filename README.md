@@ -70,13 +70,6 @@ dc-prd logs -f     # View logs
 - **Playwright** - End-to-end testing
 - **Jest** - Unit and integration testing
 
-**Type Architecture**
-- **Prisma Schema**: Single source of truth for backend enums (BlockType, SoloLevel, BloomsLevel)
-- **Backend**: Imports all enums from `@prisma/client` for type safety and database alignment
-- **Frontend**: Maintains isolated type definitions in `/frontend/src/types/` for frontend independence
-
-
-
 
 
 ## How ExplAIner Works
