@@ -14,7 +14,7 @@ import {
   requireSessionExists
 } from '../session.utils';
 
-/** Determines next action after user clicked "Continue" button on any block:
+/** Service determining next action after user clicked "Continue" button on any block:
  *  - "navigate"      → to next unanswered practice block
  *  - "next sequence" → to generate next block sequence
  *  - "summary"       → to generate summary block

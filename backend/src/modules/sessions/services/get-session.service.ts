@@ -4,7 +4,7 @@ import { GetSessionResponseDto } from '../dto/response/get-session.response.dto'
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { getSessionWithAllBlocks, mapSessionToGetResponse, requireSessionExists} from '../session.utils';
 
-/** Fetches a complete session incl. all blocks for frontend rehydration (e.g. on page reload). */
+/** Service fetching entire session data incl. all blocks (e.g. for frontend rehydration on page reload) */
 @Injectable()
 export class GetSessionService {
   constructor(private prisma: PrismaService) {}

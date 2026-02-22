@@ -8,7 +8,7 @@ import {
   mapSubmitAnswerResponse,
 } from '../block.utils';
 
-/** Persists student answer for a practice block question and computes correctness */
+/** Service evaluating correctness of a student answer on a practice block question */
 @Injectable()
 export class SubmitAnswerService {
   constructor(private prisma: PrismaService) {}

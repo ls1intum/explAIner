@@ -1,24 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { isLogEnabled } from '../../../../config/logging.config';
 import { LlmService } from '../llm.service';
-import { Parser } from '../llm.parser';
 import { generateSessionSummaryPrompt } from '../prompts/generate-session-summary.prompt';
 import {
   SessionSummaryParserSchema,
   type SessionSummaryParser,
 } from '../../../../domain/schemas/llm-parser/block.schema';
-import { isLogEnabled } from '../../../../config/logging.config';
 
-/**
- * Chain for generating session summary. Orchestrates: Prompt -> LLM Call -> Parse -> Validate
- */
+/** Chain generating the session summary text that is displayed on summary block */
 @Injectable()
 export class GenerateSessionSummaryChain {
   private readonly logger = new Logger('AI-CHAIN');
-  private parser: Parser<SessionSummaryParser>;
 
-  constructor(private llmService: LlmService) {
-    this.parser = new Parser(SessionSummaryParserSchema, (p) => this.llmService.callClaude(p));
-  }
+  constructor(private llmService: LlmService) {}
 
   async execute(params: {
     topic: string;
@@ -31,7 +25,7 @@ export class GenerateSessionSummaryChain {
       this.logger.log('generate-session-summary');
     }
 
-    // 1. Generate prompt
+    // Generate prompt
     const prompt = generateSessionSummaryPrompt({
       topic: params.topic,
       learningGoal: params.learningGoal,
@@ -40,12 +34,10 @@ export class GenerateSessionSummaryChain {
       practiceResults: params.practiceResults,
     });
 
-    // 2. Call LLM with generated prompt
+    // Call LLM with prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
-    // 3. Parse and validate response (with retry on schema/parse failure)
-    const sessionSummary = await this.parser.parseWithRetry(rawResponse);
-
-    return sessionSummary;
+    // Parse LLM output against schema and return response
+    return this.llmService.createParser(SessionSummaryParserSchema).parseWithRetry(rawResponse);
   }
 }

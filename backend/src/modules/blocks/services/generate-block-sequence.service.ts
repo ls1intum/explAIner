@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateBlockSequenceChain } from '../../ai/llm/chains/generate-block-sequence.chain';
-import { BlockSequenceMode } from '../../../domain/schemas/enums.schema';
-import { BlockType, SoloLevel } from '@prisma/client';
+import {
+  BlockSequenceMode,
+  BlockType,
+  SoloLevel,
+} from '../../../domain/schemas/enums.schema';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import type { WrongAnswer } from '../../../domain/schemas/base/blocks/practice-block.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
@@ -19,8 +22,7 @@ import {
 type PrismaLike = Pick<PrismaService, 'session' | 'block'>;
 
 /**
- * Generates a block sequence (1 inform + 3 practice)
- * Atomic: all DB ops commit together or roll back on any failure
+ * Service generating a block sequence = 1 x inform block + 3 x practice block
  */
 @Injectable()
 export class GenerateBlockSequenceService {
@@ -30,6 +32,7 @@ export class GenerateBlockSequenceService {
   ) {}
 
   @LogService()
+  // Atomic: all DB ops commit together or roll back on any failure
   async generate(
     sessionId: string,
     tx?: PrismaLike, // When provided, all DB ops run inside caller's atomic transaction

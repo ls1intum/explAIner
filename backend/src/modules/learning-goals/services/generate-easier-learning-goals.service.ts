@@ -11,7 +11,8 @@ import {
 } from '../../blocks/block.utils';
 import { getSessionWithInformContent } from '../../sessions/session.utils';
 
-/** Generates 3 "easier" learning goals for a new session based on current session's covered content & wrong answers */
+
+/** Service generating 3 easier learning goals for a new session based on previous session content & wrong answers to previous practice questions */
 @Injectable()
 export class GenerateEasierLearningGoalsService {
   constructor(

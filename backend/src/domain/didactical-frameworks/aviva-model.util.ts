@@ -2,9 +2,9 @@
  * AVIVA Model for Learning Session Design
  *
  * AVIVA is a five-stage didactical model that structures effective learning sessions.
- * The model ensures learners progress through essential stages from arrival to assessment.
+ * The model ensures learners progress through 5 essential stages from arrival to assessment.
  *
- * This file provides the AVIVA model description for context in AI prompts.
+ * This file provides a description which is used as context in the AI prompts.
  */
 
 export const AVIVA_MODEL_DESCRIPTION = `

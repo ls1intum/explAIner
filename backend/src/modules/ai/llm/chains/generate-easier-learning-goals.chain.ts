@@ -1,26 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { LlmService } from '../llm.service';
-import { Parser } from '../llm.parser';
 import { generateEasierLearningGoalsPrompt } from '../prompts/generate-easier-learning-goals.prompt';
 import { LearningGoalsSchema, type LearningGoals } from '../../../../domain/schemas/base/learning-goal.schema';
 import { isLogEnabled } from '../../../../config/logging.config';
 
-/**
- * Chain for generating easier learning goals. Orchestrates: Prompt -> LLM Call -> Parse -> Validate
- */
+/** Chain generating 3 easier learning goals for a new session based on previous session content & wrong answers to previous practice questions */
 @Injectable()
 export class GenerateEasierLearningGoalsChain {
   private readonly logger = new Logger('AI-CHAIN');
-  private parser: Parser<LearningGoals>;
 
-  constructor(private llmService: LlmService) {
-    this.parser = new Parser(LearningGoalsSchema, (p) => this.llmService.callClaude(p));
-  }
+  constructor(private llmService: LlmService) {}
 
-  /**
-   * Execute the chain with structured parameters
-   * @param params - Structured input parameters for generating easier learning goals
-   */
   async execute(params: {
     topic: string;
     originalGoal: string;
@@ -28,12 +18,11 @@ export class GenerateEasierLearningGoalsChain {
     wrongQuestions?: string[];
     coveredContent?: string;
   }): Promise<LearningGoals> {
-    // Log chain execution
     if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-easier-learning-goals');
     }
 
-    // 1. Generate prompt
+    // Generate prompt
     const prompt = generateEasierLearningGoalsPrompt({
       topic: params.topic,
       originalGoal: params.originalGoal,
@@ -42,12 +31,10 @@ export class GenerateEasierLearningGoalsChain {
       coveredContent: params.coveredContent,
     });
 
-    // 2. Call LLM with generated prompt
+    // Call LLM with prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
-    // 3. Parse and validate response (with retry on schema/parse failure)
-    const learningGoals = await this.parser.parseWithRetry(rawResponse);
-
-    return learningGoals;
+    // Parse LLM output against schema and return response
+    return this.llmService.createParser(LearningGoalsSchema).parseWithRetry(rawResponse);
   }
 }

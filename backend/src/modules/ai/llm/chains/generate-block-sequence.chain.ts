@@ -1,24 +1,22 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { isLogEnabled } from '../../../../config/logging.config';
+
 import { LlmService } from '../llm.service';
-import { Parser } from '../llm.parser';
+
 import { generateBlockSequencePrompt } from '../prompts/generate-block-sequence.prompt';
-import { BlockSequenceMode } from '../../../../domain/schemas/enums.schema';
+import {
+  BlockSequenceMode,
+  SoloLevel,
+} from '../../../../domain/schemas/enums.schema';
 import {
   InitialBlockSequenceParserSchema,
   SubsequentBlockSequenceParserSchema,
-  type InitialBlockSequenceParser,
-  type SubsequentBlockSequenceParser,
+  type BlockSequenceParser,
 } from '../../../../domain/schemas/llm-parser/block-sequence.schema';
 import type { WrongAnswer } from '../../../../domain/schemas/base/blocks/practice-block.schema';
-import { SoloLevel } from '@prisma/client';
-import { isLogEnabled } from '../../../../config/logging.config';
-
-/** Union return type for block sequence chain (initial or subsequent). */
-export type BlockSequenceParse = InitialBlockSequenceParser | SubsequentBlockSequenceParser;
 
 /**
- * Chain for generating block sequences (initial or subsequent).
- * Uses mode-specific schema: keyFacts (initial) or keyMisconceptions (subsequent).
+ * Chain generating a block sequence = 1 x inform block + 3 x practice block
  */
 @Injectable()
 export class GenerateBlockSequenceChain {
@@ -34,12 +32,12 @@ export class GenerateBlockSequenceChain {
     priorKnowledge?: string;
     wrongAnswers?: WrongAnswer[];
     soloLevels: SoloLevel[];
-  }): Promise<BlockSequenceParse> {
+  }): Promise<BlockSequenceParser> {
     if (isLogEnabled('ai-chain')) {
       this.logger.log(`generate-block-sequence-${params.mode}`);
     }
 
-    // 1. Generate prompt
+    // Generate prompt
     const prompt = generateBlockSequencePrompt({
       mode: params.mode,
       topic: params.topic,
@@ -50,14 +48,13 @@ export class GenerateBlockSequenceChain {
       wrongAnswers: params.wrongAnswers,
     });
 
-    // 2. Call LLM with generated prompt
+    // Call LLM with prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
-    // 3. Parse and validate (retry on schema/parse failure; fix message lives in parser)
-    const llmCall = (p: string) => this.llmService.callClaude(p);
+    // Parse LLM output against schema and return response
     if (params.mode === BlockSequenceMode.INITIAL) {
-      return new Parser(InitialBlockSequenceParserSchema, llmCall).parseWithRetry(rawResponse);
+      return this.llmService.createParser(InitialBlockSequenceParserSchema).parseWithRetry(rawResponse);
     }
-    return new Parser(SubsequentBlockSequenceParserSchema, llmCall).parseWithRetry(rawResponse);
+    return this.llmService.createParser(SubsequentBlockSequenceParserSchema).parseWithRetry(rawResponse);
   }
 }

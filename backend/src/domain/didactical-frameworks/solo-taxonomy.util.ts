@@ -1,17 +1,12 @@
-import { SoloLevel } from '@prisma/client';
+import { SoloLevel } from '../schemas/enums.schema';
 
 /**
  * SOLO (Structure of Observed Learning Outcomes) Taxonomy for Practice Question Design
  *
- * SOLO taxonomy provides a framework for designing practice questions that progressively
- * build understanding from simple recall to complex application.
- *
- * Unlike Bloom's focus on cognitive processes, SOLO measures the structural quality of
- * a learner's response—how many elements they connect and how abstractly they can extend
- * their understanding.
- *
- * This file provides SOLO taxonomy descriptions and helper functions for AI prompts.
- * SoloLevel enum is imported from Prisma (single source of truth).
+ * The SOLO taxonomy is a framework for designing practice questions in a way that
+ * allows to assess the structural quality of a learner's response.
+ * 
+ * This file provides a description which is used as context in the AI prompts.
  */
 
 export const SOLO_TAXONOMY_DESCRIPTION = `
@@ -47,13 +42,7 @@ SOLO (Structure of Observed Learning Outcomes) Taxonomy for Multiple Choice Ques
 `;
 
 /**
- * Maps Bloom's taxonomy levels to appropriate SOLO levels for practice questions.
- *
- * Mapping guide:
- * - Remember → Unistructural, Multistructural (single/multiple connections)
- * - Understand → Multistructural, Relational (multiple separate connections to integrated)
- * - Apply/Analyze → Relational, Extended Abstract (integrated to generalized)
- * - Evaluate/Create → Relational, Extended Abstract (generalization to new contexts)
+ * Maps Bloom's taxonomy levels to appropriate SOLO levels for practice questions
  */
 export function getSOLOLevelsForBlooms(bloomsLevel: string): SoloLevel[] {
   switch (bloomsLevel) {

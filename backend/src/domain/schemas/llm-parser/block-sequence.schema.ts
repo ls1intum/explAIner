@@ -10,6 +10,9 @@ import { PracticeBlockContentSchema } from '../base/blocks/practice-block.schema
 // independent of block-sequence-mode
 ///////////////////////////////////
 
+// Block sequence (initial or subsequent)
+export type BlockSequenceParser = InitialBlockSequenceParser | SubsequentBlockSequenceParser;
+
 // Practice block question
 export const PracticeBlockQuestionParserSchema = PracticeBlockContentSchema.pick({
   soloLevel: true,
@@ -60,3 +63,4 @@ export const SubsequentBlockSequenceParserSchema = z.object({
   practiceBlocks: z.array(PracticeBlockQuestionParserSchema).length(3, 'Must have exactly 3 practice blocks'),
 });
 export type SubsequentBlockSequenceParser = z.infer<typeof SubsequentBlockSequenceParserSchema>;
+

@@ -6,7 +6,7 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import { sortBlocksByOrderIndex } from '../../blocks/block.utils';
 import { mapSessionToCreateResponse } from '../session.utils';
 
-/** Creates a new session and the initial block sequence */
+/** Service creating a new session including the initial block sequence */
 @Injectable()
 export class CreateSessionService {
   constructor(

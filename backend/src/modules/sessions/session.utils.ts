@@ -3,7 +3,7 @@
  */
 
 import { NotFoundException } from '@nestjs/common';
-import { BlockType } from '@prisma/client';
+import { BlockType } from '../../domain/schemas/enums.schema';
 import type { PrismaService } from 'prisma/prisma.service';
 import {
   blockToResponse,

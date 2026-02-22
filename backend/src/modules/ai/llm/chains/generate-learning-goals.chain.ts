@@ -1,47 +1,34 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { LlmService } from '../llm.service';
-import { Parser } from '../llm.parser';
 import { generateLearningGoalsPrompt } from '../prompts/generate-learning-goals.prompt';
 import { LearningGoalsSchema, type LearningGoals } from '../../../../domain/schemas/base/learning-goal.schema';
 import { isLogEnabled } from '../../../../config/logging.config';
 
-/**
- * Chain for generating learning goals. Orchestrates: Prompt -> LLM Call -> Parse -> Validate
- */
+/** Chain generating 3 learning goals based on a topic and (optional) prior knowledge */
 @Injectable()
 export class GenerateLearningGoalsChain {
   private readonly logger = new Logger('AI-CHAIN');
-  private parser: Parser<LearningGoals>;
 
-  constructor(private llmService: LlmService) {
-    this.parser = new Parser(LearningGoalsSchema, (p) => this.llmService.callClaude(p));
-  }
+  constructor(private llmService: LlmService) {}
 
-  /**
-   * Execute the chain with structured parameters
-   * @param params - Structured input parameters for generating learning goals
-   */
   async execute(params: {
     topic: string;
     priorKnowledge?: string;
   }): Promise<LearningGoals> {
-    // Log chain execution
     if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-learning-goals');
     }
 
-    // 1. Generate prompt
+    // Generate prompt
     const prompt = generateLearningGoalsPrompt({
       topic: params.topic,
       priorKnowledge: params.priorKnowledge,
     });
 
-    // 2. Call LLM with generated prompt
+    // Call LLM with prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
-    // 3. Parse and validate response (with retry on schema/parse failure)
-    const learningGoals = await this.parser.parseWithRetry(rawResponse);
-
-    return learningGoals;
+    // Parse LLM output against schema and return response
+    return this.llmService.createParser(LearningGoalsSchema).parseWithRetry(rawResponse);
   }
 }

@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
+import { Parser } from './llm.parser';
 
 @Injectable()
 export class LlmService {
   private anthropic: Anthropic;
   private readonly model: string;
+
+  /** Parser with retry wired to this service; pass only the schema. */
+  createParser<T>(schema: z.ZodSchema<T>): Parser<T> {
+    return new Parser(schema, (p) => this.callClaude(p));
+  }
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('anthropic.apiKey');

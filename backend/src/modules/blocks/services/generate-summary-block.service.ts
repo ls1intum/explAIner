@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateSessionSummaryChain } from '../../ai/llm/chains/generate-session-summary.chain';
-import { BlockType } from '@prisma/client';
+import { BlockType } from '../../../domain/schemas/enums.schema';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
 import {
@@ -13,7 +13,7 @@ import {
   getSessionWithInformContent,
 } from '../../sessions/session.utils';
 
-/** Generates session summary block and marks the session as completed */
+/** Service generating a session summary block and marking the session as completed */
 @Injectable()
 export class GenerateSummaryBlockService {
   constructor(

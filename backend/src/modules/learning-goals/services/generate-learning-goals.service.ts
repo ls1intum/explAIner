@@ -4,7 +4,8 @@ import { GenerateLearningGoalsResponseDto } from '../dto/response/generate-learn
 import { GenerateLearningGoalsChain } from '../../ai/llm/chains/generate-learning-goals.chain';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
-/** Generates 3 learning goal suggestions based on topic and (optional) prior knowledge */
+
+/** Service generating 3 learning goals based on a topic and (optional) prior knowledge */
 @Injectable()
 export class GenerateLearningGoalsService {
   constructor(

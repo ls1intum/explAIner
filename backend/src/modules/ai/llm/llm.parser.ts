@@ -1,20 +1,22 @@
 import { z } from 'zod';
 import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util';
 
+export const MAX_RETRIES = 1;
+
 const RETRY_FIX_MESSAGE = (error: string) =>
   `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
 
 /**
  * Generic parser for LLM outputs.
  * Extracts JSON from markdown, parses, and validates using provided Zod schema.
- * Optional llmCall enables parseWithRetry: on validation failure, the LLM is re-called with a fix prompt.
+ * Create via LlmService.createParser(schema) to get retry-on-failure; parseWithRetry then uses the bound LLM call automatically.
  */
 export class Parser<T> {
   private readonly schemaName: string;
 
   constructor(
     private readonly schema: z.ZodSchema<T>,
-    /** When provided, parseWithRetry uses this to request a corrected response from the LLM on parse failure */
+    /** Set by LlmService.createParser; used by parseWithRetry to request a corrected response */
     private readonly llmCall?: (prompt: string) => Promise<string>,
   ) {
     this.schemaName = (this.schema as any)._def?.typeName || 'Unknown';
@@ -37,11 +39,9 @@ export class Parser<T> {
   }
 
   /**
-   * Parse with retry: on failure and if llmCall is set, sends a fix prompt to the LLM and retries with the new output.
-   * @param text Initial LLM output (or transformed text)
-   * @param maxRetries Number of retry attempts (default 1)
+   * Parse with retry: on failure and if llmCall is set, sends a fix prompt to the LLM and retries (up to MAX_RETRIES).
    */
-  async parseWithRetry(text: string, maxRetries = 1): Promise<T> {
+  async parseWithRetry(text: string, maxRetries = MAX_RETRIES): Promise<T> {
     let lastError = '';
     let currentText = text;
 

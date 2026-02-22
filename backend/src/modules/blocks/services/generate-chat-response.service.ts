@@ -6,7 +6,7 @@ import { GenerateChatResponseResponseDto } from '../dto/response/generate-chat-r
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { buildConversationHistory, mapChatResponse } from '../block.utils';
 
-/** Generates chat responses to users' follow-up questions on inform blocks */
+/** Service generating a chat response to user follow-up question on inform block */
 @Injectable()
 export class GenerateChatResponseService {
   constructor(

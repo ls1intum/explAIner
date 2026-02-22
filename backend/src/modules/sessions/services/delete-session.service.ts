@@ -4,7 +4,7 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import { DeleteSessionResponseDto } from '../dto/response/delete-session.response.dto';
 import { requireSessionExists } from '../session.utils';
 
-/** Deletes a session; Prisma cascade removes all blocks and related data. */
+/** Service deleting a session (removes all blocks and entire data) */
 @Injectable()
 export class DeleteSessionService {
   constructor(private prisma: PrismaService) {}

@@ -4,7 +4,7 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import { UpdateCurrentBlockIndexResponseDto } from '../dto/response/update-current-block-index.response.dto';
 import { requireSessionExists } from '../session.utils';
 
-/** Updates the session's current block index and marks that block as viewed. */
+/** Service updating the session's current block index and marking that block as viewed */
 @Injectable()
 export class UpdateCurrentBlockIndexService {
   constructor(private prisma: PrismaService) {}

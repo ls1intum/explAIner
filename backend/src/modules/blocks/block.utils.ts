@@ -2,7 +2,7 @@
  * Block utils: response mappers, summary context, wrong-answer extraction, and block-sequence helpers.
  */
 
-import { BlockType } from '@prisma/client';
+import { BlockType } from '../../domain/schemas/enums.schema';
 import type { Prisma } from '@prisma/client';
 import type { WrongAnswer } from '../../domain/schemas/base/blocks/practice-block.schema';
 

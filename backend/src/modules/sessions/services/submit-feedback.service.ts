@@ -5,7 +5,7 @@ import { SubmitFeedbackResponseDto } from '../dto/response/submit-feedback.respo
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { requireSessionExists } from '../session.utils';
 
-/** Persists user feedback (rating) for a completed session. */
+/** Service persisting user feedback (rating) for a completed session */
 @Injectable()
 export class SubmitFeedbackService {
   constructor(private prisma: PrismaService) {}

@@ -5,7 +5,7 @@ import { GetBlockResponseDto } from '../dto/response/get-block.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { blockToResponse } from '../block.utils';
 
-/** Fetches a single block by order index */
+/** Service fetching a single block by order index */
 @Injectable()
 export class GetBlockService {
   constructor(private prisma: PrismaService) {}
