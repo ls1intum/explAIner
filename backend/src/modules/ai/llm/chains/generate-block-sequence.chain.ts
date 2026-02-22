@@ -53,18 +53,11 @@ export class GenerateBlockSequenceChain {
     // 2. Call LLM with generated prompt
     const rawResponse = await this.llmService.callClaude(prompt);
 
-    // 3. Parse and validate response (with retry on schema/parse failure)
-    // depending on the mode (initial or subsequent) => use the appropriate schema
-    const retryFn = async (error: string) => {
-      const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
-      return this.llmService.callClaude(fixPrompt);
-    };
-
+    // 3. Parse and validate (retry on schema/parse failure; fix message lives in parser)
+    const llmCall = (p: string) => this.llmService.callClaude(p);
     if (params.mode === BlockSequenceMode.INITIAL) {
-      const parser = new Parser(InitialBlockSequenceParserSchema, retryFn);
-      return parser.parseWithRetry(rawResponse);
+      return new Parser(InitialBlockSequenceParserSchema, llmCall).parseWithRetry(rawResponse);
     }
-    const parser = new Parser(SubsequentBlockSequenceParserSchema, retryFn);
-    return parser.parseWithRetry(rawResponse);
+    return new Parser(SubsequentBlockSequenceParserSchema, llmCall).parseWithRetry(rawResponse);
   }
 }

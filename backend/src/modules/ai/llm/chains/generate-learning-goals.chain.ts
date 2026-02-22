@@ -14,10 +14,7 @@ export class GenerateLearningGoalsChain {
   private parser: Parser<LearningGoals>;
 
   constructor(private llmService: LlmService) {
-    this.parser = new Parser(LearningGoalsSchema, async (error: string) => {
-      const fixPrompt = `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
-      return this.llmService.callClaude(fixPrompt);
-    });
+    this.parser = new Parser(LearningGoalsSchema, (p) => this.llmService.callClaude(p));
   }
 
   /**
