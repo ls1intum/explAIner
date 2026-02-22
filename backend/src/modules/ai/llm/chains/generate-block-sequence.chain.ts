@@ -47,12 +47,12 @@ export class GenerateBlockSequenceChain {
     });
 
     // Call LLM with prompt
-    const rawResponse = await this.llmService.callClaude(prompt);
+    const llmResponse = await this.llmService.callClaude(prompt);
 
     // Parse LLM output against schema and return response
     if (params.mode === BlockSequenceMode.INITIAL) {
-      return this.llmService.createParser(InitialBlockSequenceParserSchema).parseWithRetry(rawResponse);
+      return this.llmService.createParser(InitialBlockSequenceParserSchema).parse(llmResponse);
     }
-    return this.llmService.createParser(SubsequentBlockSequenceParserSchema).parseWithRetry(rawResponse);
+    return this.llmService.createParser(SubsequentBlockSequenceParserSchema).parse(llmResponse);
   }
 }

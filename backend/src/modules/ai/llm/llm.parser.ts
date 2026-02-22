@@ -1,65 +1,48 @@
 import { z } from 'zod';
 import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util';
 
+// Maximum number of retries if LLM output does not match the schema
 export const MAX_RETRIES = 1;
 
+// Message added to LLM prompt if parse fails
 const RETRY_FIX_MESSAGE = (error: string) =>
   `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
 
 /**
- * Generic parser for LLM outputs.
- * Extracts JSON from markdown, parses, and validates using provided Zod schema.
- * Create via LlmService.createParser(schema) to get retry-on-failure; parseWithRetry then uses the bound LLM call automatically.
+ * Generic parser for LLM output
  */
 export class Parser<T> {
-  private readonly schemaName: string;
-
   constructor(
-    private readonly schema: z.ZodSchema<T>,
-    /** Set by LlmService.createParser; used by parseWithRetry to request a corrected response */
-    private readonly llmCall?: (prompt: string) => Promise<string>,
-  ) {
-    this.schemaName = (this.schema as any)._def?.typeName || 'Unknown';
-  }
+    private readonly schema: z.ZodSchema<T>, // Schema to validate against
+    private readonly llmCall?: (prompt: string) => Promise<string>, // LLM call function to request a fix if parse fails
+  ) {}
 
   /**
-   * Parse and validate LLM output (sync). Use parseWithRetry when retry on failure is desired.
+   * Parse LLM output against schema
    */
-  parse(text: string): T {
-    try {
-      const jsonText = extractJsonFromMarkdown(text);
-      const parsed = JSON.parse(jsonText);
-      return this.schema.parse(parsed);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to parse LLM output against Schema ${this.schemaName}: ${error.message}`);
-      }
-      throw new Error(`Failed to parse LLM output against Schema ${this.schemaName}: Unknown error`);
-    }
-  }
-
-  /**
-   * Parse with retry: on failure and if llmCall is set, sends a fix prompt to the LLM and retries (up to MAX_RETRIES).
-   */
-  async parseWithRetry(text: string, maxRetries = MAX_RETRIES): Promise<T> {
+  async parse(llmResponse: string, maxRetries = MAX_RETRIES): Promise<T> {
     let lastError = '';
-    let currentText = text;
+    let textToParse = llmResponse;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const jsonText = extractJsonFromMarkdown(currentText);
-        const parsed = JSON.parse(jsonText);
-        return this.schema.parse(parsed);
+        // Extract JSON object (remove markdown if present)
+        const jsonText = extractJsonFromMarkdown(textToParse);
+        const jsonObject = JSON.parse(jsonText);
+        // Validate against schema
+        return this.schema.parse(jsonObject);
       } catch (error) {
+        // Store error message
         lastError = error instanceof Error ? error.message : 'Unknown error';
         if (attempt < maxRetries && this.llmCall) {
-          currentText = await this.llmCall(RETRY_FIX_MESSAGE(lastError));
+          // Request a fix from the LLM
+          const prompt_with_fix_request = RETRY_FIX_MESSAGE(lastError);
+          textToParse = await this.llmCall(prompt_with_fix_request); 
         } else {
           break;
         }
       }
     }
-
     throw new Error(`Failed to parse LLM output after ${maxRetries + 1} attempts: ${lastError}`);
   }
 }

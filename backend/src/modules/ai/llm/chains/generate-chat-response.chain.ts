@@ -36,9 +36,9 @@ export class GenerateChatResponseChain {
     });
 
     // Call LLM with prompt
-    const rawResponse = await this.llmService.callClaude(prompt);
+    const llmResponse = await this.llmService.callClaude(prompt);
 
     // Parse LLM output against schema and return response
-    return this.llmService.createParser(FollowUpAnswerMessageDtoSchema).parseWithRetry(rawResponse);
+    return this.llmService.createParser(FollowUpAnswerMessageDtoSchema).parse(llmResponse);
   }
 }
