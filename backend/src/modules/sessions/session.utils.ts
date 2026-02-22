@@ -4,6 +4,7 @@
 
 import { NotFoundException } from '@nestjs/common';
 import { BlockType } from '../../domain/schemas/enums.schema';
+import type { LearningGoal } from '../../domain/schemas/base/learning-goal.schema';
 import type { PrismaService } from 'prisma/prisma.service';
 import {
   blockToResponse,
@@ -152,7 +153,7 @@ export function mapSessionToGetResponse(session: {
 /** Create-session response: session + dto + blocks (blocks already serialized). */
 export function mapSessionToCreateResponse(
   session: { id: string },
-  dto: { topic: string; priorKnowledge?: string; learningGoal: { learningGoal: string; bloomsLevel: string } },
+  dto: { topic: string; priorKnowledge?: string; learningGoal: LearningGoal },
   blocks: Array<ReturnType<typeof blockToResponse>>,
 ) {
   return {

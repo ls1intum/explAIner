@@ -2,7 +2,8 @@
  * Block utils: response mappers, summary context, wrong-answer extraction, and block-sequence helpers.
  */
 
-import { BlockType } from '../../domain/schemas/enums.schema';
+import { BlockType, type MessageSender } from '../../domain/schemas/enums.schema';
+import type { Block } from '../../domain/schemas/base/blocks/block.schema';
 import type { Prisma } from '@prisma/client';
 import type { WrongAnswer } from '../../domain/schemas/base/blocks/practice-block.schema';
 
@@ -18,31 +19,34 @@ export type BlockWithIncludes = Prisma.BlockGetPayload<{
   };
 }>;
 
-/** Serialize block for JSON response: dates to ISO, omit null relation keys. */
-export function blockToResponse(block: BlockWithIncludes) {
+/** Serialize block for JSON response: dates to ISO, omit null relation keys. Uses schema literals so return type matches Block. */
+export function blockToResponse(block: BlockWithIncludes): Block {
   const base = {
     id: block.id,
     sessionId: block.sessionId,
     orderIndex: block.orderIndex,
     alreadyViewed: block.alreadyViewed,
-    type: block.type,
   };
   if (block.type === 'Inform' && block.informBlock) {
     return {
       ...base,
+      type: 'Inform',
       informBlock: {
         messages: block.informBlock.messages.map((msg) => ({
-          ...msg,
+          id: msg.id,
+          informBlockId: msg.informBlockId,
+          message: msg.message,
+          sender: msg.sender as MessageSender,
           timestamp: (msg.timestamp as Date).toISOString(),
         })),
       },
     };
   }
   if (block.type === 'Practice' && block.practiceBlock) {
-    return { ...base, practiceBlock: block.practiceBlock };
+    return { ...base, type: 'Practice', practiceBlock: block.practiceBlock };
   }
   if (block.type === 'Summary' && block.summaryBlock) {
-    return { ...base, summaryBlock: block.summaryBlock };
+    return { ...base, type: 'Summary', summaryBlock: block.summaryBlock };
   }
   throw new Error('Invalid block type or missing block content');
 }

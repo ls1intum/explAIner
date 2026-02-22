@@ -35,9 +35,9 @@ export class SessionsController {
   @Post()
   @ApiOperation({ summary: 'Create a new learning session', description: 'Creates a new session with learning goals and initial block sequence (1 inform + 3 practice blocks)' })
   @ApiBody({ type: CreateSessionRequestDto })
-  @ApiResponse({ status: 201, description: 'Session created successfully', type: CreateSessionResponseDto })
+  @ZodResponse({ status: 201, description: 'Session created successfully', type: CreateSessionResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid request data' })
-  create(@Body() dto: CreateSessionRequestDto) {
+  create(@Body() dto: CreateSessionRequestDto): Promise<CreateSessionResponseDto> {
     return this.createSessionService.create(dto);
   }
 
@@ -45,7 +45,7 @@ export class SessionsController {
   @ApiOperation({ summary: 'Get session by ID', description: 'Retrieves session details with all blocks for rehydrating frontend state' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: GetSessionRequestDto })
-  @ApiResponse({ status: 200, description: 'Session found', type: GetSessionResponseDto })
+  @ZodResponse({ status: 200, description: 'Session found', type: GetSessionResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   findOne(@Param('sessionId') sessionId: string, @Body() dto: GetSessionRequestDto): Promise<GetSessionResponseDto> {
     return this.getSessionService.getById(sessionId);

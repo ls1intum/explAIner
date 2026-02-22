@@ -31,7 +31,7 @@ export class BlocksController {
   @ApiOperation({ summary: 'Generate block sequence', description: 'Generates next block sequence (1 inform + 3 practice blocks). Mode ("INITIAL" for first block sequence, "SUBSEQUENT" for subsequent block sequences) is automatically detected based on session state.' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: GenerateBlockSequenceRequestDto })
-  @ApiResponse({ status: 201, description: 'Block sequence generated successfully', type: GenerateBlockSequenceResponseDto })
+  @ZodResponse({ status: 201, description: 'Block sequence generated successfully', type: GenerateBlockSequenceResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   generateSequence(
     @Param('sessionId') sessionId: string,
@@ -45,7 +45,7 @@ export class BlocksController {
   @ApiOperation({ summary: 'Generate summary block', description: 'Generates a summary block for the session with learning outcomes and performance summary' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiBody({ type: GenerateSummaryBlockRequestDto })
-  @ApiResponse({ status: 201, description: 'Summary block generated successfully', type: GenerateSummaryBlockResponseDto })
+  @ZodResponse({ status: 201, description: 'Summary block generated successfully', type: GenerateSummaryBlockResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
   generateSummary(
     @Param('sessionId') sessionId: string,
