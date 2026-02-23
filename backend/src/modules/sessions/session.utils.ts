@@ -22,12 +22,9 @@ export type SessionBlockWithPractice = {
   practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null;
 };
 
-
-
 ////////////////////////////////////////////////////////////
 // Session helpers
 ////////////////////////////////////////////////////////////
-
 
 /** Ensures session exists; throws NotFoundException if not found. */
 export async function requireSessionExists(
@@ -53,22 +50,18 @@ export function getSessionDurationMinutes(session: {
   );
 }
 
-/** todo */
+/** True if every practice block has studentAnswerIsCorrect !== null. */
 export function areAllPracticeBlocksAnswered(
   blocks: SessionBlockWithPractice[],
 ): boolean {
-  return blocks.every(
-    (b) => b.practiceBlock?.studentAnswerIsCorrect !== null,
-  );
+  return blocks.every((b) => b.practiceBlock?.studentAnswerIsCorrect !== null);
 }
 
-/** todo */
+/** True if every practice block has studentAnswerIsCorrect === true. */
 export function areAllPracticeBlocksCorrect(
   blocks: SessionBlockWithPractice[],
 ): boolean {
-  return blocks.every(
-    (b) => b.practiceBlock?.studentAnswerIsCorrect === true,
-  );
+  return blocks.every((b) => b.practiceBlock?.studentAnswerIsCorrect === true);
 }
 
 /** First practice block in list that has no answer yet */
@@ -81,7 +74,6 @@ export function findNextUnansweredPracticeBlock(
       b.practiceBlock?.studentAnswerIsCorrect === null,
   );
 }
-
 
 /** Session with full blocks for get-session response (inform, practice, summary). Throws if not found. */
 export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: string) {
@@ -104,7 +96,6 @@ export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: 
   return session;
 }
 
-
 /** Session with blocks + inform messages (e.g. for covered content / easier learning goals). Throws if not found. */
 export async function getSessionWithInformContent(
   prisma: PrismaService,
@@ -126,7 +117,6 @@ export async function getSessionWithInformContent(
   return session;
 }
 
-
 /** Session with blocks (practiceBlock only), ordered by orderIndex. Throws if not found. */
 export async function getSessionWithBlocks(
   prisma: PrismaService,
@@ -144,8 +134,6 @@ export async function getSessionWithBlocks(
   if (!session) throw new NotFoundException('Session not found');
   return session;
 }
-
-
 
 ////////////////////////////////////////////////////////////
 // Session response mappers
@@ -193,6 +181,7 @@ export function mapSessionToCreateResponse(
   };
 }
 
+/** Continue-session response shape (action + optional targetBlockIndex). */
 export function mapContinueResponse(
   action: 'navigate' | 'next-sequence' | 'summary' | 'prompt-user',
   targetBlockIndex?: number,

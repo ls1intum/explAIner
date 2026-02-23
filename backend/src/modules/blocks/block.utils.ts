@@ -3,10 +3,6 @@ import type { Block } from '../../domain/schemas/base/blocks/block.schema';
 import type { Prisma } from '@prisma/client';
 import type { WrongAnswer } from '../../domain/schemas/base/blocks/practice-block.schema';
 
-
-
-
-
 /** Block shape for wrong-answer extraction (practice block with answer data). */
 type BlockWithPracticeAnswer = {
   type: BlockType;
@@ -18,8 +14,6 @@ type BlockWithPracticeAnswer = {
     studentAnswerIsCorrect: boolean | null;
   } | null;
 };
-
-
 
 /** Prisma block with all relation includes (used by get-block, get-session, etc.). */
 export type BlockWithIncludes = Prisma.BlockGetPayload<{
@@ -79,25 +73,28 @@ export function getPracticeBlocks<T extends { type: BlockType }>(
   return blocks.filter((b) => b.type === BlockType.Practice) as T[];
 }
 
+/** Shared: filter practice blocks to wrong answers and map to WrongAnswer[]. */
+function extractWrongAnswersFromPracticeBlocks(
+  blocks: BlockWithPracticeAnswer[],
+): WrongAnswer[] {
+  return blocks
+    .filter((block) => block.practiceBlock?.studentAnswerIsCorrect === false)
+    .map(mapBlockToWrongAnswer);
+}
+
 /** Extracts wrong answers from the last sequence of practice blocks (for subsequent block sequences). */
 export function extractWrongAnswersFromLastSequence(
   blocks: BlockWithPracticeAnswer[],
 ): WrongAnswer[] {
   const lastSequenceBlocks = getCurrentBlockSequenceBlocks(blocks);
-  const lastSequencePracticeBlocks = getPracticeBlocks(lastSequenceBlocks);
-  return lastSequencePracticeBlocks
-    .filter((block) => block.practiceBlock?.studentAnswerIsCorrect === false)
-    .map(mapBlockToWrongAnswer);
+  return extractWrongAnswersFromPracticeBlocks(getPracticeBlocks(lastSequenceBlocks));
 }
 
 /** Extracts all wrong answers from all practice blocks (e.g. for easier learning goals). */
 export function extractWrongAnswersFromBlocks(
   blocks: BlockWithPracticeAnswer[],
 ): WrongAnswer[] {
-  const practiceBlocks = getPracticeBlocks(blocks);
-  return practiceBlocks
-    .filter((block) => block.practiceBlock?.studentAnswerIsCorrect === false)
-    .map(mapBlockToWrongAnswer);
+  return extractWrongAnswersFromPracticeBlocks(getPracticeBlocks(blocks));
 }
 
 
@@ -124,13 +121,6 @@ export function formatInformBlockMessage(
   const keyPointsText = keyPoints.map((item) => `${item}`).join('\n');
   return `${explanation}\n\n${label}\n${keyPointsText}\n\nSUMMARY\n${summary}`;
 }
-
-
-
-
-
-
-
 
 
 
