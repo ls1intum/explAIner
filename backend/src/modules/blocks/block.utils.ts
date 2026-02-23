@@ -1,6 +1,6 @@
+import type { Prisma } from '@prisma/client';
 import { BlockSequenceMode, BlockType, type MessageSender } from '../../domain/schemas/enums.schema';
 import type { Block } from '../../domain/schemas/base/blocks/block.schema';
-import type { Prisma } from '@prisma/client';
 import type { WrongAnswer } from '../../domain/schemas/llm-parser/block-sequence.schema';
 
 ////////////////////////////////////////////////////////////
@@ -76,17 +76,17 @@ export function extractWrongAnswersFromPracticeBlocks(
   }>,
   scope: 'all' | 'lastSequence',
 ): WrongAnswer[] {
-  // filter practice blocks
+  // Filter practice blocks
   const practiceBlocks =
     scope === 'lastSequence'
       ? getCurrentBlockSequencePracticeBlocks(blocks)
       : blocks.filter((b) => b.type === BlockType.Practice);
-  // filter again to only keep practice blocks where the student answered incorrectly
+  // Filter again to only keep practice blocks where the student answered incorrectly
   return practiceBlocks
     .filter((b) => b.practiceBlock?.studentAnswerIsCorrect === false)
     .map((b) => {
       const p = b.practiceBlock!;
-      // map to WrongAnswer schema
+      // Map to WrongAnswer schema
       return {
         question: p.question,
         correctAnswerOptions: p.correctAnswerOptionIndices.map((i) => p.answerOptions[i]),

@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
+import type { PrismaService } from 'prisma/prisma.service';
 import { BlockType } from '../../domain/schemas/enums.schema';
 import type { LearningGoal } from '../../domain/schemas/base/learning-goal.schema';
-import type { PrismaService } from 'prisma/prisma.service';
 import { mapToBlockResponseDto } from '../blocks/block.utils';
 
 ////////////////////////////////////////////////////////////
