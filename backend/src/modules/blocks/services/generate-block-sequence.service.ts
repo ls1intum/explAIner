@@ -9,7 +9,7 @@ import {
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import type { WrongAnswer } from '../../../domain/schemas/llm-parser/block-sequence.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
-import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
+import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy';
 import { getSessionWithAllBlocks } from '../../sessions/session.utils';
 import {
   mapToBlockResponseDto,

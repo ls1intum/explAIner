@@ -1,4 +1,4 @@
-import { BLOOMS_TAXONOMY_DESCRIPTION } from '../../../../domain/didactical-frameworks/blooms-taxonomy.util';
+import { BLOOMS_TAXONOMY_DESCRIPTION } from '../../../../domain/didactical-frameworks/blooms-taxonomy';
 
 interface GenerateLearningGoalsPromptParams {
   topic: string;

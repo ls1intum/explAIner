@@ -1,4 +1,4 @@
-import { SOLO_TAXONOMY_DESCRIPTION } from '../../../../domain/didactical-frameworks/solo-taxonomy.util';
+import { SOLO_TAXONOMY_DESCRIPTION } from '../../../../domain/didactical-frameworks/solo-taxonomy';
 import { BlockSequenceMode } from '../../../../domain/schemas/enums.schema';
 import type { WrongAnswer } from '../../../../domain/schemas/llm-parser/block-sequence.schema';
 
