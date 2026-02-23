@@ -12,21 +12,11 @@ import type { BlockWithIncludes } from '../blocks/block.utils';
 
 export { getBlockSequenceCounter, getCurrentBlockSequenceBlocks, getPracticeBlocks };
 
-
-
-
-/** Block shape needed for session-flow helpers (session.blocks with practiceBlock included) */
-export type SessionBlockWithPractice = {
-  type: BlockType;
-  orderIndex: number;
-  practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null;
-};
-
 ////////////////////////////////////////////////////////////
 // Session helpers
 ////////////////////////////////////////////////////////////
 
-/** Ensures session exists; throws NotFoundException if not found. */
+/** Ensures session exists; throws NotFoundException if not found */
 export async function requireSessionExists(
   prisma: PrismaService,
   sessionId: string,
@@ -52,22 +42,22 @@ export function getSessionDurationMinutes(session: {
 
 /** True if every practice block has studentAnswerIsCorrect !== null. */
 export function areAllPracticeBlocksAnswered(
-  blocks: SessionBlockWithPractice[],
+  blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
 ): boolean {
   return blocks.every((b) => b.practiceBlock?.studentAnswerIsCorrect !== null);
 }
 
 /** True if every practice block has studentAnswerIsCorrect === true. */
 export function areAllPracticeBlocksCorrect(
-  blocks: SessionBlockWithPractice[],
+  blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
 ): boolean {
   return blocks.every((b) => b.practiceBlock?.studentAnswerIsCorrect === true);
 }
 
-/** First practice block in list that has no answer yet */
+/** First practice block in list that has no answer yet. */
 export function findNextUnansweredPracticeBlock(
-  blocks: SessionBlockWithPractice[],
-): SessionBlockWithPractice | undefined {
+  blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
+): { type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null } | undefined {
   return blocks.find(
     (b) =>
       b.type === BlockType.Practice &&

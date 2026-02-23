@@ -15,17 +15,6 @@ type BlockWithPracticeAnswer = {
   } | null;
 };
 
-/** Prisma block with all relation includes (used by get-block, get-session, etc.). */
-export type BlockWithIncludes = Prisma.BlockGetPayload<{
-  include: {
-    informBlock: { include: { messages: true } };
-    practiceBlock: true;
-    summaryBlock: true;
-  };
-}>;
-
-
-
 ////////////////////////////////////////////////////////////
 // Block helpers
 ////////////////////////////////////////////////////////////
@@ -129,7 +118,15 @@ export function formatInformBlockMessage(
 ////////////////////////////////////////////////////////////
 
 /** Serialize block for JSON response: dates to ISO, omit null relation keys. Uses schema literals so return type matches Block. */
-export function blockToResponse(block: BlockWithIncludes): Block {
+export function blockToResponse(
+  block: Prisma.BlockGetPayload<{
+    include: {
+      informBlock: { include: { messages: true } };
+      practiceBlock: true;
+      summaryBlock: true;
+    };
+  }>,
+): Block {
   const base = {
     id: block.id,
     sessionId: block.sessionId,
@@ -159,6 +156,9 @@ export function blockToResponse(block: BlockWithIncludes): Block {
   }
   throw new Error('Invalid block type or missing block content');
 }
+
+/** Prisma block with all relation includes (used by get-block, get-session, etc.). */
+export type BlockWithIncludes = Parameters<typeof blockToResponse>[0];
 
 /** Session blocks → { informContent, practiceResults } for summary chain */
 export function mapSessionBlocksToSummaryContext(blocks: Array<{ type: string; informBlock?: { messages?: { message?: string }[] } | null; practiceBlock?: { question: string; studentAnswerIsCorrect: boolean | null } | null }>) {
