@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateSessionRequestDto } from '../dto/request/create-session.request.dto';
 import { GenerateBlockSequenceService } from '../../blocks/services/generate-block-sequence.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { mapToCreateSessionResponseDto } from '../session.utils';
+import { mapToCreateSessionResponseDto } from '../sessions.utils';
 import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 

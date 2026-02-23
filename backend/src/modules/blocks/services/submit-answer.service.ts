@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SubmitAnswerRequestDto } from '../dto/request/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from '../dto/response/submit-answer.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { isStudentAnswerCorrect } from '../block.utils';
+import { isStudentAnswerCorrect } from '../blocks.utils';
 import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 
 /** Service evaluating correctness of a student answer on a practice block question */

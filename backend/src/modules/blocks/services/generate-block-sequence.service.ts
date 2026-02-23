@@ -11,7 +11,7 @@ import { SessionsRepository } from '../../shared/database/repositories/sessions.
 import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 import { AtomicDatabaseTransactionRunner, type DatabaseTransactionClient } from '../../shared/database/database.transaction-runner';
 import { mapToBlockResponseDto, extractWrongAnswersFromPracticeBlocks } from '../../shared/shared.utils';
-import { formatInformBlockMessage } from '../block.utils';
+import { formatInformBlockMessage } from '../blocks.utils';
 
 /**
  * Service generating a block sequence = 1 x inform block + 3 x practice block

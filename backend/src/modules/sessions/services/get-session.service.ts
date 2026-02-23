@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 import { GetSessionResponseDto } from '../dto/response/get-session.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { mapToGetSessionResponseDto } from '../session.utils';
+import { mapToGetSessionResponseDto } from '../sessions.utils';
 
 /** Service fetching entire session data incl. all blocks (e.g. for frontend rehydration on page reload) */
 @Injectable()

@@ -3,7 +3,7 @@ import { GenerateChatResponseChain } from '../../shared/llm/chains/generate-chat
 import { GenerateChatResponseRequestDto } from '../dto/request/generate-chat-response.request.dto';
 import { GenerateChatResponseResponseDto } from '../dto/response/generate-chat-response.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { buildChatHistory } from '../block.utils';
+import { buildChatHistory } from '../blocks.utils';
 import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 
 /** Service generating a chat response to user follow-up question on inform block */

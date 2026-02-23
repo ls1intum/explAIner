@@ -6,7 +6,7 @@ import {
   areAllPracticeBlocksCorrect,
   findNextUnansweredPracticeBlock,
   mapToContinueSessionResponseDto,
-} from '../session.utils';
+} from '../sessions.utils';
 import {
   getBlockSequenceCounter,
   getCurrentBlockSequencePracticeBlocks,

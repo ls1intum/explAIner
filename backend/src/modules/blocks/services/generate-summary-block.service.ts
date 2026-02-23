@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GenerateSessionSummaryChain } from '../../shared/llm/chains/generate-session-summary.chain';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
-import { buildContextForSessionSummary } from '../block.utils';
+import { buildContextForSessionSummary } from '../blocks.utils';
 import { mapToBlockResponseDto, calculateSessionDurationMinutes } from '../../shared/shared.utils';
 import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
