@@ -15,7 +15,7 @@ export interface paths {
         put?: never;
         /**
          * Generate learning goals
-         * @description Generates learning goals based on topic and optional prior knowledge keywordsusing AI
+         * @description Generates learning goals based on topic and optional prior knowledge keywords using AI
          */
         post: operations["LearningGoalsController_generate"];
         delete?: never;

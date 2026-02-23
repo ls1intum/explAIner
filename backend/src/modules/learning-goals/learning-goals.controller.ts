@@ -17,7 +17,7 @@ export class LearningGoalsController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Generate learning goals', description: 'Generates learning goals based on topic and optional prior knowledge keywordsusing AI' })
+  @ApiOperation({ summary: 'Generate learning goals', description: 'Generates learning goals based on topic and optional prior knowledge keywords using AI' })
   @ApiBody({ type: GenerateLearningGoalsRequestDto })
   @ZodResponse({ status: 201, description: 'Learning goals generated successfully', type: GenerateLearningGoalsResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid request data' })
