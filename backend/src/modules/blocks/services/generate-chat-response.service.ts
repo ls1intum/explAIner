@@ -4,7 +4,7 @@ import { GenerateChatResponseChain } from '../../ai/llm/chains/generate-chat-res
 import { GenerateChatResponseRequestDto } from '../dto/request/generate-chat-response.request.dto';
 import { GenerateChatResponseResponseDto } from '../dto/response/generate-chat-response.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { buildConversationHistory } from '../block.utils';
+import { buildChatHistory } from '../block.utils';
 
 /** Service generating a chat response to user follow-up question on inform block */
 @Injectable()
@@ -43,7 +43,7 @@ export class GenerateChatResponseService {
     }
 
     // Build conversation history
-    const conversationHistory = buildConversationHistory(
+    const conversationHistory = buildChatHistory(
       block.informBlock.messages,
       dto.message,
     );

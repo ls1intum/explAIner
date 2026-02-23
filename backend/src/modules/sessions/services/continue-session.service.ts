@@ -4,15 +4,16 @@ import { ContinueSessionResponseDto } from '../dto/response/continue-session.res
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import {
   getSessionWithAllBlocks,
-  getBlockSequenceCounter,
-  getCurrentBlockSequenceBlocks,
-  getPracticeBlocks,
   areAllPracticeBlocksAnswered,
   areAllPracticeBlocksCorrect,
   findNextUnansweredPracticeBlock,
   mapToContinueSessionResponseDto,
   requireSessionExists
 } from '../session.utils';
+import {
+  getBlockSequenceCounter,
+  getCurrentBlockSequencePracticeBlocks,
+} from '../../blocks/block.utils';
 
 /** Service determining next action after user clicked "Continue" button on any block:
  *  - "navigate"      → to next unanswered practice block
@@ -37,28 +38,27 @@ export class ContinueSessionService {
     const blockSequenceCounter = getBlockSequenceCounter(session.blocks);
 
     // Fetch current block sequence practice blocks
-    const currentSequenceBlocks = getCurrentBlockSequenceBlocks(session.blocks);
-    const currentPracticeBlocks = getPracticeBlocks(currentSequenceBlocks);
+    const currentBlockSequencePracticeBlocks = getCurrentBlockSequencePracticeBlocks(session.blocks);
 
     // Check if all practice blocks are answered & answered correctly
-    const allAnswered = areAllPracticeBlocksAnswered(currentPracticeBlocks);
-    const allCorrect = areAllPracticeBlocksCorrect(currentPracticeBlocks);
+    const allAnswered = areAllPracticeBlocksAnswered(currentBlockSequencePracticeBlocks);
+    const allCorrect = areAllPracticeBlocksCorrect(currentBlockSequencePracticeBlocks);
 
     // next action = "navigate" (if there is an unanswered practice block)
     if (!allAnswered) {
-      const next = findNextUnansweredPracticeBlock(currentSequenceBlocks);
+      const next = findNextUnansweredPracticeBlock(currentBlockSequencePracticeBlocks);
       if (next) return mapToContinueSessionResponseDto('navigate', next.orderIndex);
     }
 
-    // next action = "summary" (if all practice blocks are answered correctly)
+    // next action = "summary" (if all practice blocks of current block sequence were answered correctly)
     if (allCorrect) 
       return mapToContinueSessionResponseDto('summary');
 
-    // next action = "prompt user" (if block sequence counter >= 2)
+    // next action = "prompt user" (if at least one practice block of current block sequence was not answered correctly & block sequence counter >= 2)
     if (blockSequenceCounter >= 2) 
       return mapToContinueSessionResponseDto('prompt-user');
 
-    // next action = "next sequence" (if block sequence counter < 2)
+    // next action = "next sequence" (if at least one practice block of current block sequence was not answered correctly & block sequence counter < 2)
     return mapToContinueSessionResponseDto('next-sequence');
   }
 }

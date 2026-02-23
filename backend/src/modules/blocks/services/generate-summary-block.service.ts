@@ -5,7 +5,7 @@ import { BlockType } from '../../../domain/schemas/enums.schema';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
 import {
-  mapSessionBlocksToSummaryContext,
+  buildContextForSessionSummary,
   mapToBlockResponseDto,
 } from '../block.utils';
 import {
@@ -28,8 +28,7 @@ export class GenerateSummaryBlockService {
     const session = await getSessionWithAllBlocks(this.prisma, sessionId);
 
     // Build context for session summary text
-    const { informContent, practiceResults } =
-      mapSessionBlocksToSummaryContext(session.blocks);
+    const { informContent, practiceResults } = buildContextForSessionSummary(session.blocks);
 
     // Call chain
     const summaryBlock = await this.generateSessionSummaryChain.execute({

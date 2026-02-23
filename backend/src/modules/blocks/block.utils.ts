@@ -21,8 +21,8 @@ type BlockWithPracticeAnswer = {
 
 const BLOCKS_PER_SEQUENCE = 4; // 1 x inform block + 3 x practice block
 
-/** Build conversation history string from messages; appends new user message if given. */
-export function buildConversationHistory(
+/** Build chat history from all messages on a inform block */
+export function buildChatHistory(
   messages: Array<{ sender: string; message: string }>,
   newUserMessage?: string,
 ): string {
@@ -31,8 +31,8 @@ export function buildConversationHistory(
   return lines.join('\n');
 }
 
-/** Build context Maps from DB-format to API-response format */
-export function mapSessionBlocksToSummaryContext(blocks: Array<{ type: string; informBlock?: { messages?: { message?: string }[] } | null; practiceBlock?: { question: string; studentAnswerIsCorrect: boolean | null } | null }>) {
+/** Build context for session summary text */
+export function buildContextForSessionSummary(blocks: Array<{ type: string; informBlock?: { messages?: { message?: string }[] } | null; practiceBlock?: { question: string; studentAnswerIsCorrect: boolean | null } | null }>) {
   const informContent = blocks
     .filter((b) => b.type === 'Inform' && b.informBlock?.messages)
     .map((b) => b.informBlock!.messages![0]?.message ?? '');
@@ -45,32 +45,25 @@ export function mapSessionBlocksToSummaryContext(blocks: Array<{ type: string; i
   return { informContent, practiceResults };
 }
 
-
-/** Returns a copy of blocks sorted by orderIndex (for consistent API response order). */
-export function sortBlocksByOrderIndex<T extends { orderIndex: number }>(
-  blocks: T[],
-): T[] {
-  return [...blocks].sort((a, b) => a.orderIndex - b.orderIndex);
-}
-
-/** Number of completed block sequences (= number of INFORM blocks) */
+/** Gets current number of block sequences in the session */
 export function getBlockSequenceCounter(
   blocks: Array<{ type: BlockType }>,
 ): number {
   return blocks.filter((b) => b.type === BlockType.Inform).length;
 }
 
-/** Last 4 blocks: current sequence (1 INFORM + 3 PRACTICE) */
-export function getCurrentBlockSequenceBlocks<T extends { type: BlockType }>(
+/** Practice blocks of the current (latest) block sequence (3 practice blocks). */
+export function getCurrentBlockSequencePracticeBlocks<T extends { type: BlockType }>(
   blocks: T[],
 ): T[] {
   const count = getBlockSequenceCounter(blocks);
   if (count === 0) return [];
   const start = (count - 1) * BLOCKS_PER_SEQUENCE;
-  return blocks.slice(start, start + BLOCKS_PER_SEQUENCE);
+  const sequenceBlocks = blocks.slice(start, start + BLOCKS_PER_SEQUENCE);
+  return sequenceBlocks.filter((b) => b.type === BlockType.Practice) as T[];
 }
 
-/** Practice blocks from a slice (e.g. current sequence) */
+/** Practice blocks from a slice (e.g. all blocks or a sequence). */
 export function getPracticeBlocks<T extends { type: BlockType }>(
   blocks: T[],
 ): T[] {
@@ -103,8 +96,8 @@ function mapBlockToWrongAnswer(block: BlockWithPracticeAnswer): WrongAnswer {
 export function extractWrongAnswersFromLastSequence(
   blocks: BlockWithPracticeAnswer[],
 ): WrongAnswer[] {
-  const lastSequenceBlocks = getCurrentBlockSequenceBlocks(blocks);
-  return extractWrongAnswersFromPracticeBlocks(getPracticeBlocks(lastSequenceBlocks));
+  const lastSequencePracticeBlocks = getCurrentBlockSequencePracticeBlocks(blocks);
+  return extractWrongAnswersFromPracticeBlocks(lastSequencePracticeBlocks);
 }
 
 /** Extracts all wrong answers from all practice blocks (e.g. for easier learning goals). */
@@ -203,4 +196,3 @@ export function mapToBlockResponseDto(
   }
   throw new Error('Invalid block type or missing block content');
 }
-export type BlockWithIncludes = Parameters<typeof mapToBlockResponseDto>[0];

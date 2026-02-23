@@ -2,15 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { BlockType } from '../../domain/schemas/enums.schema';
 import type { LearningGoal } from '../../domain/schemas/base/learning-goal.schema';
 import type { PrismaService } from 'prisma/prisma.service';
-import {
-  mapToBlockResponseDto,
-  getBlockSequenceCounter,
-  getCurrentBlockSequenceBlocks,
-  getPracticeBlocks,
-} from '../blocks/block.utils';
-import type { BlockWithIncludes } from '../blocks/block.utils';
-
-export { getBlockSequenceCounter, getCurrentBlockSequenceBlocks, getPracticeBlocks };
+import { mapToBlockResponseDto } from '../blocks/block.utils';
 
 ////////////////////////////////////////////////////////////
 // Session helpers
@@ -99,7 +91,7 @@ export function mapToGetSessionResponseDto(session: {
   learningGoalBloomsLevel: string;
   totalBlocks: number;
   currentBlockIndex: number;
-  blocks: BlockWithIncludes[];
+  blocks: Parameters<typeof mapToBlockResponseDto>[0][];
 }) {
   return {
     id: session.id,
