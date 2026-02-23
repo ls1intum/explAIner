@@ -3,7 +3,7 @@ import { BlockType } from '../../domain/schemas/enums.schema';
 import type { LearningGoal } from '../../domain/schemas/base/learning-goal.schema';
 import type { PrismaService } from 'prisma/prisma.service';
 import {
-  blockToResponse,
+  mapToBlockResponseDto,
   getBlockSequenceCounter,
   getCurrentBlockSequenceBlocks,
   getPracticeBlocks,
@@ -111,7 +111,7 @@ export function mapToGetSessionResponseDto(session: {
     },
     totalBlocks: session.totalBlocks,
     currentBlockIndex: session.currentBlockIndex,
-    blocks: session.blocks.map((b) => blockToResponse(b)),
+    blocks: session.blocks.map((b) => mapToBlockResponseDto(b)),
   };
 }
 
@@ -119,7 +119,7 @@ export function mapToGetSessionResponseDto(session: {
 export function mapToCreateSessionResponseDto(
   session: { id: string },
   dto: { topic: string; priorKnowledge?: string; learningGoal: LearningGoal },
-  blocks: Array<ReturnType<typeof blockToResponse>>,
+  blocks: Array<ReturnType<typeof mapToBlockResponseDto>>,
 ) {
   return {
     id: session.id,

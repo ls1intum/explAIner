@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { BlockSchema } from '../../../domain/schemas/base/blocks/block.schema';
 import { GetBlockResponseDto } from '../dto/response/get-block.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { blockToResponse } from '../block.utils';
+import { mapToBlockResponseDto } from '../block.utils';
 
 /** Service fetching a single block by order index */
 @Injectable()
@@ -35,7 +35,7 @@ export class GetBlockService {
 
     // Return response
     try {
-      return BlockSchema.parse(blockToResponse(block));
+      return BlockSchema.parse(mapToBlockResponseDto(block));
     } catch {
       throw new NotFoundException('Invalid block type or missing block content');
     }

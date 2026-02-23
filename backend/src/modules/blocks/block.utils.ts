@@ -112,13 +112,35 @@ export function formatInformBlockMessage(
 }
 
 
+/** Format wrong answers as strings for LLM prompts. */
+export function formatWrongAnswersForPrompt(wrongAnswers: WrongAnswer[]): string[] {
+  return wrongAnswers.map(
+    (wa) =>
+      `Question: ${wa.question}\nCorrect Answer(s): ${wa.correctAnswerOptions.join(', ')}\nStudent's Answer(s): ${wa.wrongStudentAnswerOptions.join(', ')}`,
+  );
+}
+
+/** Concatenate all inform block messages into one string (covered content). */
+export function getCoveredContentFromInformBlocks(
+  blocks: Array<{
+    type: BlockType;
+    informBlock?: { messages: { message: string }[] } | null;
+  }>,
+): string {
+  return blocks
+    .filter((b) => b.type === BlockType.Inform && b.informBlock?.messages)
+    .map((b) => b.informBlock!.messages.map((m) => m.message).join('\n'))
+    .join('\n\n');
+}
+
+
 
 ////////////////////////////////////////////////////////////
 // Block response mappers
 ////////////////////////////////////////////////////////////
 
-/** Serialize block for JSON response: dates to ISO, omit null relation keys. Uses schema literals so return type matches Block. */
-export function blockToResponse(
+/** Maps from DB-format to API-response format */
+export function mapToBlockResponseDto(
   block: Prisma.BlockGetPayload<{
     include: {
       informBlock: { include: { messages: true } };
@@ -156,11 +178,9 @@ export function blockToResponse(
   }
   throw new Error('Invalid block type or missing block content');
 }
+export type BlockWithIncludes = Parameters<typeof mapToBlockResponseDto>[0];
 
-/** Prisma block with all relation includes (used by get-block, get-session, etc.). */
-export type BlockWithIncludes = Parameters<typeof blockToResponse>[0];
-
-/** Session blocks → { informContent, practiceResults } for summary chain */
+/** Maps from DB-format to API-response format */
 export function mapSessionBlocksToSummaryContext(blocks: Array<{ type: string; informBlock?: { messages?: { message?: string }[] } | null; practiceBlock?: { question: string; studentAnswerIsCorrect: boolean | null } | null }>) {
   const informContent = blocks
     .filter((b) => b.type === 'Inform' && b.informBlock?.messages)
@@ -174,6 +194,7 @@ export function mapSessionBlocksToSummaryContext(blocks: Array<{ type: string; i
   return { informContent, practiceResults };
 }
 
+/** Maps from DB-format to API-response format */
 function mapBlockToWrongAnswer(block: BlockWithPracticeAnswer): WrongAnswer {
   const pb = block.practiceBlock!;
   return {
@@ -185,26 +206,4 @@ function mapBlockToWrongAnswer(block: BlockWithPracticeAnswer): WrongAnswer {
       (idx) => pb.answerOptions[idx],
     ),
   };
-}
-
-
-/** Format wrong answers as strings for LLM prompts. */
-export function formatWrongAnswersForPrompt(wrongAnswers: WrongAnswer[]): string[] {
-  return wrongAnswers.map(
-    (wa) =>
-      `Question: ${wa.question}\nCorrect Answer(s): ${wa.correctAnswerOptions.join(', ')}\nStudent's Answer(s): ${wa.wrongStudentAnswerOptions.join(', ')}`,
-  );
-}
-
-/** Concatenate all inform block messages into one string (covered content). */
-export function getCoveredContentFromInformBlocks(
-  blocks: Array<{
-    type: BlockType;
-    informBlock?: { messages: { message: string }[] } | null;
-  }>,
-): string {
-  return blocks
-    .filter((b) => b.type === BlockType.Inform && b.informBlock?.messages)
-    .map((b) => b.informBlock!.messages.map((m) => m.message).join('\n'))
-    .join('\n\n');
 }

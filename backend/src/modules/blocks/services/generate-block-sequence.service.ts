@@ -12,7 +12,7 @@ import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
 import { getSessionWithAllBlocks } from '../../sessions/session.utils';
 import {
-  blockToResponse,
+  mapToBlockResponseDto,
   extractWrongAnswersFromLastSequence,
   formatInformBlockMessage,
   type BlockWithIncludes,
@@ -149,11 +149,11 @@ export class GenerateBlockSequenceService {
 
     // Return response
     return {
-      informBlock: blockToResponse(informBlockCreated as BlockWithIncludes),
+      informBlock: mapToBlockResponseDto(informBlockCreated as BlockWithIncludes),
       practiceBlocks: [
-        blockToResponse(practiceBlocks[0] as BlockWithIncludes),
-        blockToResponse(practiceBlocks[1] as BlockWithIncludes),
-        blockToResponse(practiceBlocks[2] as BlockWithIncludes),
+        mapToBlockResponseDto(practiceBlocks[0] as BlockWithIncludes),
+        mapToBlockResponseDto(practiceBlocks[1] as BlockWithIncludes),
+        mapToBlockResponseDto(practiceBlocks[2] as BlockWithIncludes),
       ],
     } as GenerateBlockSequenceResponseDto;
   }

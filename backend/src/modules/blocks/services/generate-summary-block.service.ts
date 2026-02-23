@@ -6,7 +6,7 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
 import {
   mapSessionBlocksToSummaryContext,
-  blockToResponse,
+  mapToBlockResponseDto,
   type BlockWithIncludes,
 } from '../block.utils';
 import {
@@ -72,7 +72,7 @@ export class GenerateSummaryBlockService {
 
     // Return response
     return {
-      ...blockToResponse(
+      ...mapToBlockResponseDto(
         createdSummaryBlock as BlockWithIncludes,
       ),
       sessionDuration: sessionDurationMinutes,
