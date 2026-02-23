@@ -20,12 +20,10 @@ export class LlmService {
     this.anthropic = new Anthropic({ apiKey });
   }
 
-  /**
-   * Call Claude with a prompt and return raw text response
-   */
+  /** Call Claude with a prompt and return raw text response */
   async callClaude(prompt: string): Promise<string> {
     try {
-      const message = await this.anthropic.messages.create({
+      const rawResponseMessage = await this.anthropic.messages.create({
         model: this.model,
         max_tokens: 1024,
         messages: [
@@ -37,14 +35,14 @@ export class LlmService {
       });
 
       // Extract text content from response
-      const textContent = message.content.find(
+      const content = rawResponseMessage.content.find(
         (block) => block.type === 'text',
       );
-      if (!textContent || textContent.type !== 'text') {
+      if (!content || content.type !== 'text') {
         throw new Error('No text content in Claude response');
       }
 
-      return textContent.text;
+      return content.text;
     } catch (error) {
       throw new Error(`Failed to call Claude: ${error.message}`);
     }

@@ -1,5 +1,3 @@
-import { NotFoundException } from '@nestjs/common';
-import type { PrismaService } from 'prisma/prisma.service';
 import { BlockType } from '../../domain/schemas/enums.schema';
 import type { LearningGoal } from '../../domain/schemas/base/learning-goal.schema';
 import { mapToBlockResponseDto } from '../blocks/block.utils';
@@ -8,48 +6,10 @@ import { mapToBlockResponseDto } from '../blocks/block.utils';
 // Session helpers
 ////////////////////////////////////////////////////////////
 
-/** Ensures session exists, throws NotFoundException if not found */
-export async function requireSessionExists(
-  prisma: PrismaService,
-  sessionId: string,
-): Promise<{ id: string }> {
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    select: { id: true },
-  });
-  if (!session) {
-    throw new NotFoundException(`Session with ID ${sessionId} not found`);
-  }
-  return session;
-}
-
-/** Gets full session including all blocks, throws if not found */
-export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: string) {
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    include: {
-      blocks: {
-        orderBy: { orderIndex: 'asc' },
-        include: {
-          informBlock: {
-            include: { messages: { orderBy: { timestamp: 'asc' } } },
-          },
-          practiceBlock: true,
-          summaryBlock: true,
-        },
-      },
-    },
-  });
-  if (!session) throw new NotFoundException(`Session with ID ${sessionId} not found`);
-  return session;
-}
-
-/** Calculates session duration in whole minutes */
-export function calculateSessionDurationMinutes(session: {
-  startedAt: Date;
-}): number {
+/** Calculates session duration in whole minutes (from startedAt to now) */
+export function calculateSessionDurationMinutes(startedAt: Date): number {
   return Math.floor(
-    (Date.now() - new Date(session.startedAt).getTime()) / 1000 / 60,
+    (Date.now() - new Date(startedAt).getTime()) / 1000 / 60,
   );
 }
 

@@ -5,7 +5,7 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { LearningGoalsModule } from './modules/learning-goals/learning-goals.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { BlocksModule } from './modules/blocks/blocks.module';
-import { LlmModule } from './modules/ai/llm/llm.module';
+import { LlmModule } from './modules/shared/llm/llm.module';
 import { ZodSerializerInterceptor } from 'nestjs-zod';
 
 

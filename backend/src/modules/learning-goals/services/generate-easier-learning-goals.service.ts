@@ -2,21 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { GenerateEasierLearningGoalsRequestDto } from '../dto/request/generate-easier-learning-goals.request.dto';
 import { GenerateEasierLearningGoalsResponseDto } from '../dto/response/generate-easier-learning-goals.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { PrismaService } from 'prisma/prisma.service';
-import { GenerateEasierLearningGoalsChain } from '../../ai/llm/chains/generate-easier-learning-goals.chain';
+import { GenerateEasierLearningGoalsChain } from '../../shared/llm/chains/generate-easier-learning-goals.chain';
 import {
   formatWrongAnswersForPrompt,
   extractWrongAnswersFromPracticeBlocks,
   extractCoveredContentFromInformBlocks,
 } from '../../blocks/block.utils';
-import { getSessionWithAllBlocks } from '../../sessions/session.utils';
-
+import { SessionsRepository } from '../../shared/database/sessions.repository';
 
 /** Service generating 3 easier learning goals for a new session based on previous session content & wrong answers to previous practice questions */
 @Injectable()
 export class GenerateEasierLearningGoalsService {
   constructor(
-    private prisma: PrismaService,
+    private sessionsRepository: SessionsRepository,
     private generateEasierLearningGoalsChain: GenerateEasierLearningGoalsChain,
   ) {}
 
@@ -26,8 +24,7 @@ export class GenerateEasierLearningGoalsService {
   ): Promise<GenerateEasierLearningGoalsResponseDto> {
 
     // Fetch session
-    const session = await getSessionWithAllBlocks(
-      this.prisma,
+    const session = await this.sessionsRepository.getSessionWithAllBlocks(
       dto.sessionId,
     );
 

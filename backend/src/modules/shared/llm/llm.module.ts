@@ -6,7 +6,7 @@ import { GenerateBlockSequenceChain } from './chains/generate-block-sequence.cha
 import { GenerateChatResponseChain } from './chains/generate-chat-response.chain';
 import { GenerateSessionSummaryChain } from './chains/generate-session-summary.chain';
 
-// LLM Module: Infrastructure providing LLM services and chains (used by blocks, learning-goals)
+// LLM Module: Provides shared LLM services and chains for other modules
 @Module({
   providers: [
     LlmService,

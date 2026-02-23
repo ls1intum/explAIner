@@ -12,9 +12,7 @@ interface GenerateBlockSequencePromptParams {
   wrongAnswers?: WrongAnswer[];
 }
 
-/**
- * Prompt for generating a block sequence = 1 x inform block + 3 x practice block
- */
+/** Prompt for generating a block sequence = 1 x inform block + 3 x practice block */
 export const generateBlockSequencePrompt = ({
   mode,
   topic,

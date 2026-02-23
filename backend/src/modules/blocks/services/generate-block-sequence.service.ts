@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateBlockSequenceChain } from '../../ai/llm/chains/generate-block-sequence.chain';
+import { GenerateBlockSequenceChain } from '../../shared/llm/chains/generate-block-sequence.chain';
 import {
   BlockSequenceMode,
-  BlockType,
-  SoloLevel,
 } from '../../../domain/schemas/enums.schema';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import type { WrongAnswer } from '../../../domain/schemas/llm-parser/block-sequence.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy';
-import { getSessionWithAllBlocks } from '../../sessions/session.utils';
+import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { BlocksRepository } from '../../shared/database/blocks.repository';
 import {
   mapToBlockResponseDto,
   extractWrongAnswersFromPracticeBlocks,
@@ -27,6 +26,8 @@ type PrismaLike = Pick<PrismaService, 'session' | 'block'>;
 export class GenerateBlockSequenceService {
   constructor(
     private prisma: PrismaService,
+    private sessionsRepository: SessionsRepository,
+    private blocksRepository: BlocksRepository,
     private generateBlockSequenceChain: GenerateBlockSequenceChain,
   ) {}
 
@@ -46,7 +47,7 @@ export class GenerateBlockSequenceService {
     const db = tx;
 
     // Fetch session data
-    const session = await getSessionWithAllBlocks(db as PrismaService, sessionId);
+    const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId, db);
 
     // Detect block-sequence mode
     // > INITIAL      = first block sequence of the session             -> provides information
@@ -84,56 +85,26 @@ export class GenerateBlockSequenceService {
     const formattedMessage = formatInformBlockMessage(mode, blockSequence.informBlock);
 
     // Create inform block and persist in database
-    const informBlockCreated = await db.block.create({
-      data: {
-        sessionId,
-        orderIndex: nextOrderIndexStart,
-        type: BlockType.Inform,
-        alreadyViewed: mode === BlockSequenceMode.INITIAL, // Only initial block is pre-viewed (to allow page reload during creation)
-        informBlock: {
-          create: {
-            messages: {
-              create: [{ message: formattedMessage, sender: 'Owlbert' }],
-            },
-          },
-        },
-      },
-      include: {
-        informBlock: { include: { messages: true } },
-      },
-    });
+    const informBlockCreated = await this.blocksRepository.createInformBlock(
+      sessionId,
+      nextOrderIndexStart,
+      formattedMessage,
+      mode === BlockSequenceMode.INITIAL,
+      db,
+    );
 
     // Persist 3 practice blocks in database
-    const practiceBlocks = await Promise.all(
-      blockSequence.practiceBlocks.map(async (practiceBlock, index) => {
-        return db.block.create({
-          data: {
-            sessionId,
-            orderIndex: nextOrderIndexStart + index + 1,
-            type: BlockType.Practice,
-            practiceBlock: {
-              create: {
-                soloLevel: practiceBlock.soloLevel as SoloLevel,
-                question: practiceBlock.question,
-                answerOptions: practiceBlock.answerOptions,
-                correctAnswerOptionIndices: practiceBlock.correctAnswerOptionIndices,
-              },
-            },
-          },
-          include: {
-            practiceBlock: true,
-          },
-        });
-      }),
+    const practiceBlocks = await this.blocksRepository.createPracticeBlocks(
+      sessionId,
+      nextOrderIndexStart,
+      blockSequence.practiceBlocks,
+      db,
     );
 
     // Update session total blocks count
     const newTotal =
       mode === BlockSequenceMode.INITIAL ? 4 : session.totalBlocks + 4;
-    await db.session.update({
-      where: { id: sessionId },
-      data: { totalBlocks: newTotal },
-    });
+    await this.sessionsRepository.update(sessionId, { totalBlocks: newTotal }, db);
 
     // Return response
     return {

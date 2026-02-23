@@ -8,10 +8,11 @@ import { SubmitFeedbackService } from './services/submit-feedback.service';
 import { UpdateCurrentBlockIndexService } from './services/update-current-block-index.service';
 import { BlocksModule } from '../blocks/blocks.module';
 import { PrismaModule } from 'prisma/prisma.module';
+import { DatabaseModule } from '../shared/database/database.module';
 
 // Sessions Module: Handles session lifecycle (create, continue, get, delete, feedback)
 @Module({
-  imports: [PrismaModule, BlocksModule],
+  imports: [PrismaModule, DatabaseModule, BlocksModule],
   controllers: [SessionsController],
   providers: [
     CreateSessionService,

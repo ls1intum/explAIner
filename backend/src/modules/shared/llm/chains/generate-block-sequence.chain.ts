@@ -13,9 +13,7 @@ import {
 } from '../../../../domain/schemas/llm-parser/block-sequence.schema';
 import type { WrongAnswer } from '../../../../domain/schemas/llm-parser/block-sequence.schema';
 
-/**
- * Chain generating a block sequence = 1 x inform block + 3 x practice block
- */
+/** Chain generating a block sequence = 1 x inform block + 3 x practice block */
 @Injectable()
 export class GenerateBlockSequenceChain {
   private readonly logger = new Logger('AI-CHAIN');

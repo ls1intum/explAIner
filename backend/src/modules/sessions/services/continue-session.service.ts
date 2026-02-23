@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { ContinueSessionResponseDto } from '../dto/response/continue-session.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import {
-  getSessionWithAllBlocks,
   areAllPracticeBlocksAnswered,
   areAllPracticeBlocksCorrect,
   findNextUnansweredPracticeBlock,
   mapToContinueSessionResponseDto,
-  requireSessionExists
 } from '../session.utils';
 import {
   getBlockSequenceCounter,
   getCurrentBlockSequencePracticeBlocks,
 } from '../../blocks/block.utils';
+import { SessionsRepository } from '../../shared/database/sessions.repository';
 
 /** Service determining next action after user clicked "Continue" button on any block:
  *  - "navigate"      → to next unanswered practice block
@@ -24,17 +22,17 @@ import {
 @Injectable()
 export class ContinueSessionService {
   constructor(
-    private prisma: PrismaService,
+    private sessionsRepository: SessionsRepository,
   ) {}
 
   @LogService()
   async continue(sessionId: string): Promise<ContinueSessionResponseDto> {
 
     // Ensure session exists
-    await requireSessionExists(this.prisma, sessionId);
+    await this.sessionsRepository.requireSessionExists(sessionId);
 
     // Fetch session 
-    const session = await getSessionWithAllBlocks(this.prisma, sessionId);
+    const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId);
 
     // Fetch current block sequence counter & current block sequence practice blocks
     const blockSequenceCounter = getBlockSequenceCounter(session.blocks);

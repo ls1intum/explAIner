@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { SubmitFeedbackRequestDto } from '../dto/request/submit-feedback.request.dto';
 import { SubmitFeedbackResponseDto } from '../dto/response/submit-feedback.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { requireSessionExists } from '../session.utils';
+import { SessionsRepository } from '../../shared/database/sessions.repository';
 
 /** Service persisting user feedback (rating) for a completed session */
 @Injectable()
 export class SubmitFeedbackService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private sessionsRepository: SessionsRepository) {}
 
   @LogService()
   async submit(
@@ -17,13 +16,10 @@ export class SubmitFeedbackService {
   ): Promise<SubmitFeedbackResponseDto> {
 
     // Ensure session exists
-    await requireSessionExists(this.prisma, sessionId);
+    await this.sessionsRepository.requireSessionExists(sessionId);
 
     // Persist rating in database
-    await this.prisma.session.update({
-      where: { id: sessionId },
-      data: { userFeedback: dto.rating },
-    });
+    await this.sessionsRepository.update(sessionId, { userFeedback: dto.rating });
 
     // Return response
     return { success: true as const, rating: dto.rating };

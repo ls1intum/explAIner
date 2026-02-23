@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { GenerateSessionSummaryChain } from '../../ai/llm/chains/generate-session-summary.chain';
-import { BlockType } from '../../../domain/schemas/enums.schema';
+import { GenerateSessionSummaryChain } from '../../shared/llm/chains/generate-session-summary.chain';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
 import {
   buildContextForSessionSummary,
   mapToBlockResponseDto,
 } from '../block.utils';
-import {
-  calculateSessionDurationMinutes,
-  getSessionWithAllBlocks,
-} from '../../sessions/session.utils';
+import { calculateSessionDurationMinutes } from '../../sessions/session.utils';
+import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { BlocksRepository } from '../../shared/database/blocks.repository';
 
 /** Service generating a session summary block and marking the session as completed */
 @Injectable()
 export class GenerateSummaryBlockService {
   constructor(
     private prisma: PrismaService,
+    private sessionsRepository: SessionsRepository,
+    private blocksRepository: BlocksRepository,
     private generateSessionSummaryChain: GenerateSessionSummaryChain,
   ) {}
 
@@ -25,7 +25,7 @@ export class GenerateSummaryBlockService {
   async generate(sessionId: string): Promise<GenerateSummaryBlockResponseDto> {
 
     // Fetch session data
-    const session = await getSessionWithAllBlocks(this.prisma, sessionId);
+    const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId);
 
     // Build context for session summary text
     const { informContent, practiceResults } = buildContextForSessionSummary(session.blocks);
@@ -43,30 +43,22 @@ export class GenerateSummaryBlockService {
     const newTotalBlocks = session.totalBlocks + 1;
 
     // Atomic: summary block and session completion commit together or roll back
-    const [createdSummaryBlock] = await this.prisma.$transaction([
+    const createdSummaryBlock = await this.prisma.$transaction(async (tx) => {
+      const block = await this.blocksRepository.createSummaryBlock(
+        sessionId,
+        session.blocks.length,
+        summaryBlock.sessionSummary,
+        tx,
+      );
+      await this.sessionsRepository.update(sessionId, {
+        totalBlocks: newTotalBlocks,
+        completedAt: new Date(),
+      }, tx);
+      return block;
+    });
 
-      // Create summary block and persist in database
-      this.prisma.block.create({
-        data: {
-          sessionId,
-          orderIndex: session.blocks.length,
-          type: BlockType.Summary,
-          summaryBlock: {
-            create: { sessionSummary: summaryBlock.sessionSummary },
-          },
-        },
-        include: { summaryBlock: true },
-      }),
-
-      // Update session metadata (total blocks & completedAt)
-      this.prisma.session.update({
-        where: { id: sessionId },
-        data: { totalBlocks: newTotalBlocks, completedAt: new Date() },
-      }),
-    ]);
-
-    // Calculate session duration
-    const sessionDurationMinutes = calculateSessionDurationMinutes(session);
+    // Calculate session duration (startedAt comes from session above)
+    const sessionDurationMinutes = calculateSessionDurationMinutes(session.startedAt);
 
     // Return response
     return {

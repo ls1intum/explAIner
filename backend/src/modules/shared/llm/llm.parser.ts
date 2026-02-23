@@ -8,18 +8,14 @@ export const MAX_RETRIES = 1;
 const RETRY_FIX_MESSAGE = (error: string) =>
   `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
 
-/**
- * Generic parser for LLM output
- */
+/** Generic parser for LLM output */
 export class Parser<T> {
   constructor(
     private readonly schema: z.ZodSchema<T>, // Schema to validate against
     private readonly llmCall?: (prompt: string) => Promise<string>, // LLM call function to request a fix if parse fails
   ) {}
 
-  /**
-   * Parse LLM output against schema
-   */
+  /** Parse LLM output against schema */
   async parse(llmResponse: string, maxRetries = MAX_RETRIES): Promise<T> {
     let lastError = '';
     let textToParse = llmResponse;
