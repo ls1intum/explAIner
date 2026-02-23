@@ -9,7 +9,7 @@ import {
   formatWrongAnswersForPrompt,
   getCoveredContentFromInformBlocks,
 } from '../../blocks/block.utils';
-import { getSessionWithInformContent } from '../../sessions/session.utils';
+import { getSessionWithAllBlocks } from '../../sessions/session.utils';
 
 
 /** Service generating 3 easier learning goals for a new session based on previous session content & wrong answers to previous practice questions */
@@ -26,7 +26,7 @@ export class GenerateEasierLearningGoalsService {
   ): Promise<GenerateEasierLearningGoalsResponseDto> {
 
     // Fetch session
-    const session = await getSessionWithInformContent(
+    const session = await getSessionWithAllBlocks(
       this.prisma,
       dto.sessionId,
     );

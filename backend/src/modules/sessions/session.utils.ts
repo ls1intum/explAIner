@@ -16,7 +16,7 @@ export { getBlockSequenceCounter, getCurrentBlockSequenceBlocks, getPracticeBloc
 // Session helpers
 ////////////////////////////////////////////////////////////
 
-/** Ensures session exists; throws NotFoundException if not found */
+/** Ensures session exists, throws NotFoundException if not found */
 export async function requireSessionExists(
   prisma: PrismaService,
   sessionId: string,
@@ -31,8 +31,8 @@ export async function requireSessionExists(
   return session;
 }
 
-/** Session duration in whole minutes since startedAt. */
-export function getSessionDurationMinutes(session: {
+/** Calculates session duration in whole minutes */
+export function calculateSessionDurationMinutes(session: {
   startedAt: Date;
 }): number {
   return Math.floor(
@@ -40,21 +40,21 @@ export function getSessionDurationMinutes(session: {
   );
 }
 
-/** True if every practice block has studentAnswerIsCorrect !== null. */
+/** True if every practice block has studentAnswerIsCorrect !== null */
 export function areAllPracticeBlocksAnswered(
   blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
 ): boolean {
   return blocks.every((b) => b.practiceBlock?.studentAnswerIsCorrect !== null);
 }
 
-/** True if every practice block has studentAnswerIsCorrect === true. */
+/** True if every practice block has studentAnswerIsCorrect === true */
 export function areAllPracticeBlocksCorrect(
   blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
 ): boolean {
   return blocks.every((b) => b.practiceBlock?.studentAnswerIsCorrect === true);
 }
 
-/** First practice block in list that has no answer yet. */
+/** Finds first practice block in list that has no been answered yet by student */
 export function findNextUnansweredPracticeBlock(
   blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
 ): { type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null } | undefined {
@@ -65,7 +65,7 @@ export function findNextUnansweredPracticeBlock(
   );
 }
 
-/** Session with full blocks for get-session response (inform, practice, summary). Throws if not found. */
+/** Gets full session including all blocks, throws if not found */
 export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: string) {
   const session = await prisma.session.findUnique({
     where: { id: sessionId },
@@ -83,27 +83,6 @@ export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: 
     },
   });
   if (!session) throw new NotFoundException(`Session with ID ${sessionId} not found`);
-  return session;
-}
-
-/** Session with blocks + inform messages (e.g. for covered content / easier learning goals). Throws if not found. */
-export async function getSessionWithInformContent(
-  prisma: PrismaService,
-  sessionId: string,
-) {
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    include: {
-      blocks: {
-        include: {
-          practiceBlock: true,
-          informBlock: { include: { messages: true } },
-        },
-        orderBy: { orderIndex: 'asc' },
-      },
-    },
-  });
-  if (!session) throw new NotFoundException('Session not found');
   return session;
 }
 

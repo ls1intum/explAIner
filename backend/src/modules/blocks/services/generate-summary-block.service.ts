@@ -10,8 +10,8 @@ import {
   type BlockWithIncludes,
 } from '../block.utils';
 import {
-  getSessionDurationMinutes,
-  getSessionWithInformContent,
+  calculateSessionDurationMinutes,
+  getSessionWithAllBlocks,
 } from '../../sessions/session.utils';
 
 /** Service generating a session summary block and marking the session as completed */
@@ -26,7 +26,7 @@ export class GenerateSummaryBlockService {
   async generate(sessionId: string): Promise<GenerateSummaryBlockResponseDto> {
 
     // Fetch session data
-    const session = await getSessionWithInformContent(this.prisma, sessionId);
+    const session = await getSessionWithAllBlocks(this.prisma, sessionId);
 
     // Build context for session summary text
     const { informContent, practiceResults } =
@@ -68,7 +68,7 @@ export class GenerateSummaryBlockService {
     ]);
 
     // Calculate session duration
-    const sessionDurationMinutes = getSessionDurationMinutes(session);
+    const sessionDurationMinutes = calculateSessionDurationMinutes(session);
 
     // Return response
     return {
