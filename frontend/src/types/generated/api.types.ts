@@ -496,7 +496,6 @@ export interface components {
                 };
             })[];
         };
-        GetSessionRequestDto: Record<string, never>;
         GetSessionResponseDto_Output: {
             /**
              * Format: uuid
@@ -641,7 +640,6 @@ export interface components {
                 };
             })[];
         };
-        DeleteSessionRequestDto: Record<string, never>;
         DeleteSessionResponseDto_Output: {
             /** @description Whether the operation succeeded */
             success: boolean;
@@ -656,7 +654,6 @@ export interface components {
             /** @description The updated current block index (0-based) */
             currentBlockIndex: number;
         };
-        ContinueSessionRequestDto: Record<string, never>;
         ContinueSessionResponseDto_Output: {
             /**
              * @description Next action
@@ -680,7 +677,6 @@ export interface components {
             /** @description The submitted rating (1–5) */
             rating: number;
         };
-        GenerateBlockSequenceRequestDto: Record<string, never>;
         GenerateBlockSequenceResponseDto_Output: {
             /** @description Inform block introducing new content */
             informBlock: {
@@ -864,7 +860,6 @@ export interface components {
                 }
             ];
         };
-        GenerateSummaryBlockRequestDto: Record<string, never>;
         GenerateSummaryBlockResponseDto_Output: {
             /**
              * Format: uuid
@@ -900,7 +895,6 @@ export interface components {
             /** @description Total number of blocks in the session */
             totalBlocks: number;
         };
-        GetBlockRequestDto: Record<string, never>;
         GenerateChatResponseRequestDto: {
             /** @description User message / follow-up question */
             message: string;
@@ -1037,11 +1031,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GetSessionRequestDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Session found */
             200: {
@@ -1071,11 +1061,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DeleteSessionRequestDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Session deleted successfully */
             200: {
@@ -1139,11 +1125,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ContinueSessionRequestDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Next action determined */
             201: {
@@ -1207,11 +1189,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GenerateBlockSequenceRequestDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Block sequence generated successfully */
             201: {
@@ -1241,11 +1219,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GenerateSummaryBlockRequestDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Summary block generated successfully */
             201: {
@@ -1277,11 +1251,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GetBlockRequestDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description Block found (Inform | Practice | Summary) */
             200: {
