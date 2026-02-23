@@ -352,7 +352,7 @@ export interface components {
                 bloomsLevel: "Remember" | "Understand" | "Apply" | "Analyze" | "Evaluate" | "Create";
             };
         };
-        CreateSessionResponseDto: {
+        CreateSessionResponseDto_Output: {
             /**
              * Format: uuid
              * @description Session ID
@@ -497,7 +497,7 @@ export interface components {
             })[];
         };
         GetSessionRequestDto: Record<string, never>;
-        GetSessionResponseDto: {
+        GetSessionResponseDto_Output: {
             /**
              * Format: uuid
              * @description Session ID
@@ -681,7 +681,7 @@ export interface components {
             rating: number;
         };
         GenerateBlockSequenceRequestDto: Record<string, never>;
-        GenerateBlockSequenceResponseDto: {
+        GenerateBlockSequenceResponseDto_Output: {
             /** @description Inform block introducing new content */
             informBlock: {
                 /**
@@ -865,7 +865,7 @@ export interface components {
             ];
         };
         GenerateSummaryBlockRequestDto: Record<string, never>;
-        GenerateSummaryBlockResponseDto: {
+        GenerateSummaryBlockResponseDto_Output: {
             /**
              * Format: uuid
              * @description Block ID
@@ -1015,7 +1015,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CreateSessionResponseDto"];
+                    "application/json": components["schemas"]["CreateSessionResponseDto_Output"];
                 };
             };
             /** @description Invalid request data */
@@ -1049,7 +1049,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetSessionResponseDto"];
+                    "application/json": components["schemas"]["GetSessionResponseDto_Output"];
                 };
             };
             /** @description Session not found */
@@ -1219,7 +1219,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GenerateBlockSequenceResponseDto"];
+                    "application/json": components["schemas"]["GenerateBlockSequenceResponseDto_Output"];
                 };
             };
             /** @description Session not found */
@@ -1253,7 +1253,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GenerateSummaryBlockResponseDto"];
+                    "application/json": components["schemas"]["GenerateSummaryBlockResponseDto_Output"];
                 };
             };
             /** @description Session not found */
