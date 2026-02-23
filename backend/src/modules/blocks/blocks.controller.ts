@@ -8,9 +8,6 @@ import { GenerateChatResponseService } from './services/generate-chat-response.s
 import { SubmitAnswerService } from './services/submit-answer.service';
 import { GenerateChatResponseRequestDto } from './dto/request/generate-chat-response.request.dto';
 import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto';
-import { GenerateBlockSequenceRequestDto } from './dto/request/generate-block-sequence.request.dto';
-import { GenerateSummaryBlockRequestDto } from './dto/request/generate-summary-block.request.dto';
-import { GetBlockRequestDto } from './dto/request/get-block.request.dto';
 import { GenerateBlockSequenceResponseDto } from './dto/response/generate-block-sequence.response.dto';
 import { GenerateSummaryBlockResponseDto } from './dto/response/generate-summary-block.response.dto';
 import { GenerateChatResponseResponseDto } from './dto/response/generate-chat-response.response.dto';
@@ -30,13 +27,9 @@ export class BlocksController {
   @Post('sequence')
   @ApiOperation({ summary: 'Generate block sequence', description: 'Generates next block sequence (1 inform + 3 practice blocks). Mode ("INITIAL" for first block sequence, "SUBSEQUENT" for subsequent block sequences) is automatically detected based on session state.' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
-  @ApiBody({ type: GenerateBlockSequenceRequestDto })
   @ZodResponse({ status: 201, description: 'Block sequence generated successfully', type: GenerateBlockSequenceResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
-  generateSequence(
-    @Param('sessionId') sessionId: string,
-    @Body() dto: GenerateBlockSequenceRequestDto,
-  ): Promise<GenerateBlockSequenceResponseDto> {
+  generateSequence(@Param('sessionId') sessionId: string): Promise<GenerateBlockSequenceResponseDto> {
     // Mode is automatically detected inside the service based on session state
     return this.generateBlockSequenceService.generate(sessionId);
   }
@@ -44,13 +37,9 @@ export class BlocksController {
   @Post('summary')
   @ApiOperation({ summary: 'Generate summary block', description: 'Generates a summary block for the session with learning outcomes and performance summary' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
-  @ApiBody({ type: GenerateSummaryBlockRequestDto })
   @ZodResponse({ status: 201, description: 'Summary block generated successfully', type: GenerateSummaryBlockResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
-  generateSummary(
-    @Param('sessionId') sessionId: string,
-    @Body() dto: GenerateSummaryBlockRequestDto,
-  ): Promise<GenerateSummaryBlockResponseDto> {
+  generateSummary(@Param('sessionId') sessionId: string): Promise<GenerateSummaryBlockResponseDto> {
     return this.generateSummaryBlockService.generate(sessionId);
   }
 
@@ -58,13 +47,11 @@ export class BlocksController {
   @ApiOperation({ summary: 'Get block by order index', description: 'Retrieves a specific block by its order index within the session' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
-  @ApiBody({ type: GetBlockRequestDto })
   @ApiResponse({ status: 200, description: 'Block found (Inform | Practice | Summary)' })
   @ApiResponse({ status: 404, description: 'Block not found' })
   getBlock(
     @Param('sessionId') sessionId: string,
     @Param('orderIndex') orderIndex: string,
-    @Body() dto: GetBlockRequestDto,
   ) {
     return this.getBlockService.getBlock(sessionId, parseInt(orderIndex));
   }

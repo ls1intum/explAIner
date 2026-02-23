@@ -8,9 +8,6 @@ import { ContinueSessionService } from './services/continue-session.service';
 import { SubmitFeedbackService } from './services/submit-feedback.service';
 import { UpdateCurrentBlockIndexService } from './services/update-current-block-index.service';
 import { CreateSessionRequestDto } from './dto/request/create-session.request.dto';
-import { ContinueSessionRequestDto } from './dto/request/continue-session.request.dto';
-import { GetSessionRequestDto } from './dto/request/get-session.request.dto';
-import { DeleteSessionRequestDto } from './dto/request/delete-session.request.dto';
 import { GetSessionResponseDto } from './dto/response/get-session.response.dto';
 import { ContinueSessionResponseDto } from './dto/response/continue-session.response.dto';
 import { SubmitFeedbackRequestDto } from './dto/request/submit-feedback.request.dto';
@@ -44,20 +41,18 @@ export class SessionsController {
   @Get(':sessionId')
   @ApiOperation({ summary: 'Get session by ID', description: 'Retrieves session details with all blocks for rehydrating frontend state' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
-  @ApiBody({ type: GetSessionRequestDto })
   @ZodResponse({ status: 200, description: 'Session found', type: GetSessionResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
-  findOne(@Param('sessionId') sessionId: string, @Body() dto: GetSessionRequestDto): Promise<GetSessionResponseDto> {
+  findOne(@Param('sessionId') sessionId: string): Promise<GetSessionResponseDto> {
     return this.getSessionService.getById(sessionId);
   }
 
   @Delete(':sessionId')
   @ApiOperation({ summary: 'Delete session', description: 'Deletes a session and all related data if user ends the session before completing it' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
-  @ApiBody({ type: DeleteSessionRequestDto })
   @ZodResponse({ status: 200, description: 'Session deleted successfully', type: DeleteSessionResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
-  remove(@Param('sessionId') sessionId: string, @Body() dto: DeleteSessionRequestDto): Promise<DeleteSessionResponseDto> {
+  remove(@Param('sessionId') sessionId: string): Promise<DeleteSessionResponseDto> {
     return this.deleteSessionService.delete(sessionId);
   }
 
@@ -80,13 +75,9 @@ export class SessionsController {
   @Post(':sessionId/continue')
   @ApiOperation({ summary: 'Continue session', description: 'Determines next action based on session context (navigate, summary, next-sequence, or prompt-user)' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
-  @ApiBody({ type: ContinueSessionRequestDto })
   @ZodResponse({ status: 201, description: 'Next action determined', type: ContinueSessionResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })
-  continue(
-    @Param('sessionId') sessionId: string,
-    @Body() dto: ContinueSessionRequestDto,
-  ): Promise<ContinueSessionResponseDto> {
+  continue(@Param('sessionId') sessionId: string): Promise<ContinueSessionResponseDto> {
     return this.continueSessionService.continue(sessionId);
   }
 
