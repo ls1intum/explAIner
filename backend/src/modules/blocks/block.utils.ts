@@ -78,7 +78,7 @@ export function extractWrongAnswersFromPracticeBlocks(
     .filter((b) => b.practiceBlock?.studentAnswerIsCorrect === false)
     .map((b) => {
       const p = b.practiceBlock!;
-      // map to WrongAnswer response schema
+      // map to WrongAnswer schema
       return {
         question: p.question,
         correctAnswerOptions: p.correctAnswerOptionIndices.map((i) => p.answerOptions[i]),
@@ -86,6 +86,30 @@ export function extractWrongAnswersFromPracticeBlocks(
       };
     });
 }
+
+/** Format WrongAnswer schema to strings inserted into LLM prompt (generate-easier-learning-goals) */
+export function formatWrongAnswersForPrompt(wrongAnswers: WrongAnswer[]): string[] {
+  return wrongAnswers.map(
+    (wa) =>
+      `Question: ${wa.question}\nCorrect Answer(s): ${wa.correctAnswerOptions.join(', ')}\nStudent's Answer(s): ${wa.wrongStudentAnswerOptions.join(', ')}`,
+  );
+}
+
+/** Format inform block display text: explanation + label <-> key points + summary */
+export function formatInformBlockMessage(
+  explanation: string,
+  label: string,
+  keyPoints: string[],
+  summary: string,
+): string {
+  const keyPointsText = keyPoints.map((item) => `${item}`).join('\n');
+  return `${explanation}\n\n${label}\n${keyPointsText}\n\nSUMMARY\n${summary}`;
+}
+
+
+
+
+
 
 
 /** Compare student answer indices to correct indices (order-independent match). */
@@ -101,25 +125,9 @@ export function isStudentAnswerCorrect(
   );
 }
 
-/** Build inform block display text: explanation + label + key points + summary. */
-export function formatInformBlockMessage(
-  explanation: string,
-  label: string,
-  keyPoints: string[],
-  summary: string,
-): string {
-  const keyPointsText = keyPoints.map((item) => `${item}`).join('\n');
-  return `${explanation}\n\n${label}\n${keyPointsText}\n\nSUMMARY\n${summary}`;
-}
 
 
-/** Format wrong answers as strings for LLM prompts. */
-export function formatWrongAnswersForPrompt(wrongAnswers: WrongAnswer[]): string[] {
-  return wrongAnswers.map(
-    (wa) =>
-      `Question: ${wa.question}\nCorrect Answer(s): ${wa.correctAnswerOptions.join(', ')}\nStudent's Answer(s): ${wa.wrongStudentAnswerOptions.join(', ')}`,
-  );
-}
+
 
 /** Concatenate all inform block messages into one string (covered content). */
 export function getCoveredContentFromInformBlocks(
