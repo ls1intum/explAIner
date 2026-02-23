@@ -10,11 +10,8 @@ import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/so
 import { SessionsRepository } from '../../shared/database/sessions.repository';
 import { BlocksRepository } from '../../shared/database/blocks.repository';
 import { AtomicDatabaseTransactionRunner, type DatabaseTransactionClient } from '../../shared/database/database.transaction-runner';
-import {
-  mapToBlockResponseDto,
-  extractWrongAnswersFromPracticeBlocks,
-  formatInformBlockMessage,
-} from '../block.utils';
+import { mapToBlockResponseDto, extractWrongAnswersFromPracticeBlocks } from '../../shared/shared.utils';
+import { formatInformBlockMessage } from '../block.utils';
 
 /**
  * Service generating a block sequence = 1 x inform block + 3 x practice block

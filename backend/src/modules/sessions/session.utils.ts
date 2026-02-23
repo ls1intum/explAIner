@@ -1,17 +1,10 @@
 import { BlockType } from '../../domain/schemas/enums.schema';
 import type { LearningGoal } from '../../domain/schemas/base/learning-goal.schema';
-import { mapToBlockResponseDto } from '../blocks/block.utils';
+import { mapToBlockResponseDto } from '../shared/shared.utils';
 
 ////////////////////////////////////////////////////////////
-// Session helpers
+// Session helpers (sessions module only)
 ////////////////////////////////////////////////////////////
-
-/** Calculates session duration in whole minutes (from startedAt to now) */
-export function calculateSessionDurationMinutes(startedAt: Date): number {
-  return Math.floor(
-    (Date.now() - new Date(startedAt).getTime()) / 1000 / 60,
-  );
-}
 
 /** True if every practice block has studentAnswerIsCorrect !== null */
 export function areAllPracticeBlocksAnswered(
@@ -27,7 +20,7 @@ export function areAllPracticeBlocksCorrect(
   return blocks.every((b) => b.practiceBlock?.studentAnswerIsCorrect === true);
 }
 
-/** Finds first practice block in list that has no been answered yet by student */
+/** Finds first practice block in list that has not been answered yet by student */
 export function findNextUnansweredPracticeBlock(
   blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
 ): { type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null } | undefined {

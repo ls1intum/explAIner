@@ -10,7 +10,7 @@ import {
 import {
   getBlockSequenceCounter,
   getCurrentBlockSequencePracticeBlocks,
-} from '../../blocks/block.utils';
+} from '../../shared/shared.utils';
 import { SessionsRepository } from '../../shared/database/sessions.repository';
 
 /** Service determining next action after user clicked "Continue" button on any block:

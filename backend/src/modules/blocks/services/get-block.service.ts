@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { BlockSchema } from '../../../domain/schemas/base/blocks/block.schema';
 import { GetBlockResponseDto } from '../dto/response/get-block.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { mapToBlockResponseDto } from '../block.utils';
+import { mapToBlockResponseDto } from '../../shared/shared.utils';
 import { BlocksRepository } from '../../shared/database/blocks.repository';
 
 /** Service fetching a single block by order index */
