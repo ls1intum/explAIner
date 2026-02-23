@@ -3,14 +3,14 @@ import { PrismaService } from 'prisma/prisma.service';
 import { ContinueSessionResponseDto } from '../dto/response/continue-session.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import {
-  getSessionWithBlocks,
+  getSessionWithAllBlocks,
   getBlockSequenceCounter,
   getCurrentBlockSequenceBlocks,
   getPracticeBlocks,
   areAllPracticeBlocksAnswered,
   areAllPracticeBlocksCorrect,
   findNextUnansweredPracticeBlock,
-  mapContinueResponse,
+  mapToContinueSessionResponseDto,
   requireSessionExists
 } from '../session.utils';
 
@@ -33,7 +33,7 @@ export class ContinueSessionService {
     await requireSessionExists(this.prisma, sessionId);
 
     // Fetch session and current block sequence counter
-    const session = await getSessionWithBlocks(this.prisma, sessionId);
+    const session = await getSessionWithAllBlocks(this.prisma, sessionId);
     const blockSequenceCounter = getBlockSequenceCounter(session.blocks);
 
     // Fetch current block sequence practice blocks
@@ -47,18 +47,18 @@ export class ContinueSessionService {
     // next action = "navigate" (if there is an unanswered practice block)
     if (!allAnswered) {
       const next = findNextUnansweredPracticeBlock(currentSequenceBlocks);
-      if (next) return mapContinueResponse('navigate', next.orderIndex);
+      if (next) return mapToContinueSessionResponseDto('navigate', next.orderIndex);
     }
 
     // next action = "summary" (if all practice blocks are answered correctly)
     if (allCorrect) 
-      return mapContinueResponse('summary');
+      return mapToContinueSessionResponseDto('summary');
 
     // next action = "prompt user" (if block sequence counter >= 2)
     if (blockSequenceCounter >= 2) 
-      return mapContinueResponse('prompt-user');
+      return mapToContinueSessionResponseDto('prompt-user');
 
     // next action = "next sequence" (if block sequence counter < 2)
-    return mapContinueResponse('next-sequence');
+    return mapToContinueSessionResponseDto('next-sequence');
   }
 }

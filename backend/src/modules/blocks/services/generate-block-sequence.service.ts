@@ -10,7 +10,7 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import type { WrongAnswer } from '../../../domain/schemas/base/blocks/practice-block.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
-import { getSessionWithBlocks } from '../../sessions/session.utils';
+import { getSessionWithAllBlocks } from '../../sessions/session.utils';
 import {
   blockToResponse,
   extractWrongAnswersFromLastSequence,
@@ -47,7 +47,7 @@ export class GenerateBlockSequenceService {
     const db = tx;
 
     // Fetch session data
-    const session = await getSessionWithBlocks(db as PrismaService, sessionId);
+    const session = await getSessionWithAllBlocks(db as PrismaService, sessionId);
 
     // Detect block-sequence mode
     // > INITIAL      = first block sequence of the session             -> provides information

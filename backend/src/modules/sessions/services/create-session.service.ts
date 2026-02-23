@@ -4,7 +4,7 @@ import { CreateSessionRequestDto } from '../dto/request/create-session.request.d
 import { GenerateBlockSequenceService } from '../../blocks/services/generate-block-sequence.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { sortBlocksByOrderIndex } from '../../blocks/block.utils';
-import { mapSessionToCreateResponse } from '../session.utils';
+import { mapToCreateSessionResponseDto } from '../session.utils';
 
 /** Service creating a new session including the initial block sequence */
 @Injectable()
@@ -36,7 +36,7 @@ export class CreateSessionService {
       const sortedPracticeBlocks = sortBlocksByOrderIndex(practiceBlocks);
 
       // Return response
-      return mapSessionToCreateResponse(session, dto, [
+      return mapToCreateSessionResponseDto(session, dto, [
         informBlock,
         ...sortedPracticeBlocks,
       ]);

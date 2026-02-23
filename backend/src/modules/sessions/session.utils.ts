@@ -31,6 +31,27 @@ export async function requireSessionExists(
   return session;
 }
 
+/** Gets full session including all blocks, throws if not found */
+export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: string) {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    include: {
+      blocks: {
+        orderBy: { orderIndex: 'asc' },
+        include: {
+          informBlock: {
+            include: { messages: { orderBy: { timestamp: 'asc' } } },
+          },
+          practiceBlock: true,
+          summaryBlock: true,
+        },
+      },
+    },
+  });
+  if (!session) throw new NotFoundException(`Session with ID ${sessionId} not found`);
+  return session;
+}
+
 /** Calculates session duration in whole minutes */
 export function calculateSessionDurationMinutes(session: {
   startedAt: Date;
@@ -65,51 +86,12 @@ export function findNextUnansweredPracticeBlock(
   );
 }
 
-/** Gets full session including all blocks, throws if not found */
-export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: string) {
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    include: {
-      blocks: {
-        orderBy: { orderIndex: 'asc' },
-        include: {
-          informBlock: {
-            include: { messages: { orderBy: { timestamp: 'asc' } } },
-          },
-          practiceBlock: true,
-          summaryBlock: true,
-        },
-      },
-    },
-  });
-  if (!session) throw new NotFoundException(`Session with ID ${sessionId} not found`);
-  return session;
-}
-
-/** Session with blocks (practiceBlock only), ordered by orderIndex. Throws if not found. */
-export async function getSessionWithBlocks(
-  prisma: PrismaService,
-  sessionId: string,
-) {
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    include: {
-      blocks: {
-        include: { practiceBlock: true },
-        orderBy: { orderIndex: 'asc' },
-      },
-    },
-  });
-  if (!session) throw new NotFoundException('Session not found');
-  return session;
-}
-
 ////////////////////////////////////////////////////////////
 // Session response mappers
 ////////////////////////////////////////////////////////////
 
-/** Session with blocks (from get-session query) → get-session response shape */
-export function mapSessionToGetResponse(session: {
+/** Maps from DB-format to API-response format */
+export function mapToGetSessionResponseDto(session: {
   id: string;
   topic: string;
   priorKnowledge: string | null;
@@ -133,8 +115,8 @@ export function mapSessionToGetResponse(session: {
   };
 }
 
-/** Create-session response: session + dto + blocks (blocks already serialized). */
-export function mapSessionToCreateResponse(
+/** Maps from DB-format to API-response format */
+export function mapToCreateSessionResponseDto(
   session: { id: string },
   dto: { topic: string; priorKnowledge?: string; learningGoal: LearningGoal },
   blocks: Array<ReturnType<typeof blockToResponse>>,
@@ -150,8 +132,8 @@ export function mapSessionToCreateResponse(
   };
 }
 
-/** Continue-session response shape (action + optional targetBlockIndex). */
-export function mapContinueResponse(
+/** Maps from DB-format to API-response format */
+export function mapToContinueSessionResponseDto(
   action: 'navigate' | 'next-sequence' | 'summary' | 'prompt-user',
   targetBlockIndex?: number,
 ) {
@@ -159,4 +141,3 @@ export function mapContinueResponse(
     ? { action, targetBlockIndex }
     : { action };
 }
-
