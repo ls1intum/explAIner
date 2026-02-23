@@ -3,27 +3,29 @@ import { BlocksController } from './blocks.controller';
 import { SubmitAnswerService } from './services/submit-answer.service';
 import { GenerateBlockSequenceService } from './services/generate-block-sequence.service';
 import { GenerateSummaryBlockService } from './services/generate-summary-block.service';
-import { GetBlockByOrderIndexService } from './services/get-block-by-order-index.service';
-import { SendMessageService } from './services/send-message.service';
-import { AiModule } from '../ai/ai.module';
+import { GetBlockService } from './services/get-block.service';
+import { GenerateChatResponseService } from './services/generate-chat-response.service';
+import { LlmModule } from '../shared/llm/llm.module';
+import { PrismaModule } from 'prisma/prisma.module';
+import { DatabaseModule } from '../shared/database/database.module';
 
-// Blocks Module: Handles all block-related operations (CRUD, generation, interaction)
+// Blocks Module: Handles all block(sequence) related operations (CRUD, generation, interaction)
 @Module({
-  imports: [AiModule],
+  imports: [PrismaModule, DatabaseModule, LlmModule],
   controllers: [BlocksController],
   providers: [
     SubmitAnswerService,
     GenerateBlockSequenceService,
     GenerateSummaryBlockService,
-    GetBlockByOrderIndexService,
-    SendMessageService,
+    GetBlockService,
+    GenerateChatResponseService,
   ],
   exports: [
     SubmitAnswerService,
     GenerateBlockSequenceService,
     GenerateSummaryBlockService,
-    GetBlockByOrderIndexService,
-    SendMessageService,
+    GetBlockService,
+    GenerateChatResponseService,
   ],
 })
 export class BlocksModule {}

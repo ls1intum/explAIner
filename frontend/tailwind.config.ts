@@ -1,8 +1,6 @@
 import type { Config } from "tailwindcss";
 
-/* STEP 4: Map CSS variables to Tailwind classes */
-/* Now you can use classes like bg-primary, text-secondary, border-accent, etc. */
-
+/* Map CSS variables to Tailwind classes (enabling use of classes like bg-primary, text-secondary, border-accent, etc.) */
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",

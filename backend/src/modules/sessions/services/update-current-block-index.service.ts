@@ -1,44 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { UpdateCurrentBlockIndexResponseDto } from '../dto/update-current-block-index.response.dto';
+import { UpdateCurrentBlockIndexResponseDto } from '../dto/response/update-current-block-index.response.dto';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
+import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
+import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 
+/** Service updating the session's current block index and marking that block as viewed */
 @Injectable()
 export class UpdateCurrentBlockIndexService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private atomicDbTx: AtomicDatabaseTransactionRunner,
+    private sessionsRepository: SessionsRepository,
+    private blocksRepository: BlocksRepository,
+  ) {}
 
-  /**
-   * Update current block index for a session
-   * Also marks the block as viewed in the database
-   */
   @LogService()
-  async updateCurrentBlockIndex(sessionId: string, currentBlockIndex: number): Promise<UpdateCurrentBlockIndexResponseDto> {
-    // Validate session exists
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
+  async updateCurrentBlockIndex(
+    sessionId: string,
+    currentBlockIndex: number,
+  ): Promise<UpdateCurrentBlockIndexResponseDto> {
+
+    // Ensure session exists
+    await this.sessionsRepository.requireSessionExists(sessionId);
+
+    // Atomic: both updates commit together or roll back
+    await this.atomicDbTx.run(async (tx) => {
+      await this.sessionsRepository.update(sessionId, { currentBlockIndex }, tx);
+      await this.blocksRepository.updateBlockAsAlreadyViewed(sessionId, currentBlockIndex, tx);
     });
 
-    if (!session) {
-      throw new NotFoundException(`Session with ID ${sessionId} not found`);
-    }
-
-    // Update current block index
-    await this.prisma.session.update({
-      where: { id: sessionId },
-      data: { currentBlockIndex },
-    });
-
-    // Mark the block as viewed in the database
-    await this.prisma.block.updateMany({
-      where: {
-        sessionId,
-        orderIndex: currentBlockIndex,
-      },
-      data: {
-        alreadyViewed: true,
-      },
-    });
-
-    return { success: true, currentBlockIndex };
+    // Return response
+    return { success: true as const, currentBlockIndex };
   }
 }

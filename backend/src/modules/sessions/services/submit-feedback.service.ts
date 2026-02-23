@@ -1,32 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { SubmitFeedbackRequestDto } from '../dto/submit-feedback.request.dto';
-import { SubmitFeedbackResponseDto } from '../dto/submit-feedback.response.dto';
+import { Injectable } from '@nestjs/common';
+import { SubmitFeedbackRequestDto } from '../dto/request/submit-feedback.request.dto';
+import { SubmitFeedbackResponseDto } from '../dto/response/submit-feedback.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 
+/** Service persisting user feedback (rating) for a completed session */
 @Injectable()
 export class SubmitFeedbackService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private sessionsRepository: SessionsRepository) {}
 
   @LogService()
-  async submit(sessionId: string, dto: SubmitFeedbackRequestDto): Promise<SubmitFeedbackResponseDto> {
-    // Check if session exists
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
-    });
+  async submit(
+    sessionId: string,
+    dto: SubmitFeedbackRequestDto,
+  ): Promise<SubmitFeedbackResponseDto> {
 
-    if (!session) {
-      throw new NotFoundException('Session not found');
-    }
+    // Ensure session exists
+    await this.sessionsRepository.requireSessionExists(sessionId);
 
-    // Update session with user feedback
-    await this.prisma.session.update({
-      where: { id: sessionId },
-      data: {
-        userFeedback: dto.rating,
-      },
-    });
+    // Persist rating in database
+    await this.sessionsRepository.update(sessionId, { userFeedback: dto.rating });
 
-    return { success: true, rating: dto.rating };
+    // Return response
+    return { success: true as const, rating: dto.rating };
   }
 }

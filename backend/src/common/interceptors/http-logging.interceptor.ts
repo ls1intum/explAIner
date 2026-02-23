@@ -8,7 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
-import { isLogEnabled } from '../config/logging.config';
+import { isLogEnabled } from '../../config/logging.config';
 import { formatBody } from '../utils/logging.utils';
 
 /**

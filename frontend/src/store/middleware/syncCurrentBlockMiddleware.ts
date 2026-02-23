@@ -1,34 +1,25 @@
 import { Middleware } from '@reduxjs/toolkit';
 import { sessionsApi } from '../api/sessionsApi';
-import { RootState } from '../store';
 
-/**
- * Middleware to sync currentBlockIndex to backend
- * Intercepts setCurrentBlockIndex actions and persists to database
- */
-export const syncCurrentBlockMiddleware: Middleware<{}, RootState> = (storeApi) => (next) => (action) => {
-  // Let the action pass through first
+/** Sync currentBlockIndex to backend when setCurrentBlockIndex is dispatched. */
+type SessionAction = { type: string; payload?: number };
+export const syncCurrentBlockMiddleware: Middleware = (storeApi) => (next) => (action: unknown) => {
   const result = next(action);
-
-  // Skip sync if we're resetting the session (prevents API call during deletion)
-  if (action.type === 'session/resetSession') {
+  const a = action as SessionAction;
+  if (a.type === 'session/resetSession') {
     return result;
   }
-
-  // Check if this is a setCurrentBlockIndex action
-  if (action.type === 'session/setCurrentBlockIndex') {
+  if (a.type === 'session/setCurrentBlockIndex') {
     const state = storeApi.getState();
     const { currentSessionId } = state.session;
-    const newIndex = action.payload as number;
+    const newIndex = a.payload as number;
 
-    // Only sync if we have a valid session ID
     if (currentSessionId) {
-      // Call API to persist (fire and forget - don't block UI)
-      storeApi.dispatch(
+      void storeApi.dispatch(
         sessionsApi.endpoints.updateCurrentBlockIndex.initiate({
           sessionId: currentSessionId,
           currentBlockIndex: newIndex,
-        })
+        }) as never
       );
     }
   }

@@ -5,7 +5,7 @@ import { ChevronRightIcon } from '@radix-ui/react-icons';
 import { useAppDispatch } from '@/store/hooks';
 import { updatePracticeBlockAnswer } from '@/store/slices/sessionSlice';
 import { useSubmitAnswerMutation } from '@/store/api/blocksApi';
-import type { Block } from '@/types/session.types';
+import type { Block } from '@/types/domain';
 import AnswerOption from './AnswerOption';
 
 interface PracticeBlockProps {
@@ -20,7 +20,7 @@ export default function PracticeBlock({
   onContinue,
 }: PracticeBlockProps) {
   const dispatch = useAppDispatch();
-  const practiceBlock = block.practiceBlock;
+  const practiceBlock = block.type === 'Practice' ? block.practiceBlock : undefined;
   const [submitAnswer, { isLoading: isSubmittingAnswer }] =
     useSubmitAnswerMutation();
 
@@ -32,13 +32,13 @@ export default function PracticeBlock({
     practiceBlock?.studentAnswerIsCorrect !== null
   );
 
-  // Reset state when block ID changes (not when practiceBlock data updates)
+  // Sync local state when block or practiceBlock data changes
   useEffect(() => {
     if (practiceBlock) {
       setSelectedOptions(practiceBlock.studentAnswerOptionIndices || []);
       setIsChecked(practiceBlock.studentAnswerIsCorrect !== null);
     }
-  }, [block.id]); // Only depend on block.id, not practiceBlock
+  }, [block.id, practiceBlock]);
 
   if (!practiceBlock) return null;
 
@@ -70,7 +70,7 @@ export default function PracticeBlock({
       await submitAnswer({
         sessionId,
         orderIndex: block.orderIndex,
-        student_answer_option_indices: selectedOptions,
+        studentAnswerOptionIndices: selectedOptions,
       });
 
       setIsChecked(true);

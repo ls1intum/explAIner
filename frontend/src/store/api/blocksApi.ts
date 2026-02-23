@@ -1,20 +1,24 @@
 import { baseApi } from "./baseApi";
-import type { InformBlockMessage } from "@/types/session.types";
+import type { components } from "@/types/generated";
+
+// Type aliases for generated API types
+type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
+type SendMessageResponse = components["schemas"]["GenerateChatResponseResponseDto_Output"];
 
 // getBlock, submitAnswer, sendMessage
 
 export const blocksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getBlock: builder.query({
+    getBlock: builder.query<GetBlockResponse, string>({
       query: (blockId: string) => `/api/blocks/${blockId}`,
       providesTags: ["Block"],
     }),
     sendMessage: builder.mutation<
-      { response: string },
+      SendMessageResponse,
       { sessionId: string; orderIndex: number; message: string }
     >({
       query: ({ sessionId, orderIndex, message }) => ({
-        url: `/api/sessions/${sessionId}/blocks/${orderIndex}/send-message`,
+        url: `/api/sessions/${sessionId}/blocks/${orderIndex}/messages`,
         method: "POST",
         body: { message },
       }),
@@ -28,13 +32,13 @@ export const blocksApi = baseApi.injectEndpoints({
       {
         sessionId: string;
         orderIndex: number;
-        student_answer_option_indices: number[];
+        studentAnswerOptionIndices: number[];
       }
     >({
-      query: ({ sessionId, orderIndex, student_answer_option_indices }) => ({
-        url: `/api/sessions/${sessionId}/blocks/${orderIndex}/submit-answer`,
-        method: "PATCH",
-        body: { student_answer_option_indices },
+      query: ({ sessionId, orderIndex, studentAnswerOptionIndices }) => ({
+        url: `/api/sessions/${sessionId}/blocks/${orderIndex}/student-answer`,
+        method: "PUT",
+        body: { studentAnswerOptionIndices },
       }),
     }),
   }),

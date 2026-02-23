@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex, addBlockToQueue, setTotalBlocks, setCurrentSession, setBlockQueue } from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
 import { setLearningGoalsPageData } from '@/store/slices/learningGoalsSlice';
-import { useGetSessionQuery, useGetBlockByOrderIndexQuery, useContinueSessionMutation, useGenerateNextSequenceMutation, useGenerateSummaryMutation } from '@/store/api/sessionsApi';
+import { useGetSessionQuery, useGetBlockQuery, useContinueSessionMutation, useGenerateNextSequenceMutation, useGenerateSummaryMutation } from '@/store/api/sessionsApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import InformBlock from '@/components/blocks/InformBlock/InformBlock';
@@ -14,8 +14,8 @@ import PracticeBlock from '@/components/blocks/PracticeBlock/PracticeBlock';
 import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import BlockContainer from '@/components/blocks/BlockContainer';
 import GoalAdjustmentDialog from '@/components/session/GoalAdjustmentDialog';
-import { BlockType } from '@/types/enums';
-import type { Block } from '@/types/session.types';
+import { BlockType } from '@/types/domain';
+import type { Block } from '@/types/domain';
 
 export default function SessionPage() {
   const params = useParams();
@@ -34,7 +34,6 @@ export default function SessionPage() {
       bloomsLevel: string;
       totalBlocks: number;
       sessionDuration: number;
-      allPracticeCorrect: boolean;
     };
   } | null>(null);
 
@@ -46,8 +45,8 @@ export default function SessionPage() {
 
   // Fetch session data if Redux is empty (page reload/direct URL navigation)
   const needsSessionData = !currentSessionId || currentSessionId !== sessionId;
-  // Don't fetch if currentSessionId was explicitly cleared (null during reset/deletion)
-  const shouldSkip = !needsSessionData || currentSessionId === null;
+  // Only fetch if session data is needed
+  const shouldSkip = !needsSessionData;
   const { data: sessionData, isLoading: isLoadingSession } = useGetSessionQuery(
     sessionId,
     { skip: shouldSkip }
@@ -56,10 +55,9 @@ export default function SessionPage() {
   // Hydrate Redux store when session data is fetched
   useEffect(() => {
     if (sessionData && needsSessionData) {
-      dispatch(setCurrentSession(sessionData.session.id));
-      dispatch(setCurrentBlockIndex(sessionData.session.currentBlockIndex));
-      dispatch(setTotalBlocks(sessionData.session.totalBlocks));
-      // Use database alreadyViewed values directly
+      dispatch(setCurrentSession(sessionData.id));
+      dispatch(setCurrentBlockIndex(sessionData.currentBlockIndex));
+      dispatch(setTotalBlocks(sessionData.totalBlocks));
       dispatch(setBlockQueue(sessionData.blocks));
     }
   }, [sessionData, needsSessionData, dispatch]);
@@ -69,7 +67,7 @@ export default function SessionPage() {
   const blockExistsInQueue = blockQueue[currentBlockIndex] !== undefined;
 
   // Fetch block from API only if not in queue (e.g., direct URL navigation or page refresh)
-  const { data: fetchedBlock, isLoading: isBlockLoading } = useGetBlockByOrderIndexQuery(
+  const { data: fetchedBlock, isLoading: isBlockLoading } = useGetBlockQuery(
     { sessionId, orderIndex: currentBlockIndex },
     { skip: currentSessionId !== sessionId || blockExistsInQueue }
   );
@@ -122,22 +120,23 @@ export default function SessionPage() {
     }
   };
 
-  // Handle generating summary
+  // Handle generating summary (API returns block + sessionDuration, totalBlocks; sessionInfo from session + result)
   const handleGenerateSummary = async () => {
     try {
       const result = await generateSummary({ sessionId }).unwrap();
-      
-      // Store summary data
-      setSummaryData(result);
-      
-      // Add summary block to queue
-      dispatch(addBlockToQueue(result.block));
-      
-      // Update total blocks
+      const block = result as Block;
+      setSummaryData({
+        block,
+        sessionInfo: {
+          learningGoal: sessionData?.learningGoal?.learningGoal ?? '',
+          bloomsLevel: sessionData?.learningGoal?.bloomsLevel ?? '',
+          totalBlocks: result.totalBlocks,
+          sessionDuration: result.sessionDuration,
+        },
+      });
+      dispatch(addBlockToQueue(block));
       dispatch(setTotalBlocks(totalBlocks + 1));
-      
-      // Navigate to summary block
-      dispatch(setCurrentBlockIndex(result.block.orderIndex));
+      dispatch(setCurrentBlockIndex(result.orderIndex));
     } catch (error) {
       console.error('Failed to generate summary:', error);
       alert('Failed to generate summary. Please try again.');
@@ -151,9 +150,8 @@ export default function SessionPage() {
 
       switch (response.action) {
         case 'navigate':
-          // Navigate to next block in current sequence
-          if (response.nextOrderIndex !== undefined) {
-            dispatch(setCurrentBlockIndex(response.nextOrderIndex));
+          if (response.targetBlockIndex !== undefined) {
+            dispatch(setCurrentBlockIndex(response.targetBlockIndex));
           }
           break;
 
@@ -196,7 +194,7 @@ export default function SessionPage() {
       // Set learning goals page data with easier goals
       dispatch(setLearningGoalsPageData({
         topic: result.topic,
-        keywords: result.priorKnowledgeKeywords,
+        keywords: result.priorKnowledge || '',
         goals: result.learningGoals,
       }));
       

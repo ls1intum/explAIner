@@ -43,7 +43,7 @@ export default function EndSessionDialog({
 
           {/* Subtitle */}
           <p className="text-center text-muted-foreground mb-8">
-            Your progress won't be saved.
+            Your progress won&apos;t be saved.
           </p>
 
           {/* Buttons */}

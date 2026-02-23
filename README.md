@@ -10,14 +10,14 @@ ExplAIner conducts adaptive learning sessions for any learning goal or question 
 
 **Start/Stop Development (`local-dev`):**
 ```bash
-docker-compose -f docker-compose.dev.yml --env-file .env.dev up
-docker-compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml --env-file .env.dev up --build
+docker compose -f docker-compose.dev.yml down
 ```
 
 **Start/Stop Production (`local-prd`):**
 ```bash
-docker-compose -f docker-compose.prd.yml --env-file .env.prd up --build
-docker-compose -f docker-compose.prd.yml down
+docker compose -f docker-compose.prd.yml --env-file .env.prd up --build
+docker compose -f docker-compose.prd.yml down
 ```
 
 **Access:**
@@ -69,13 +69,6 @@ dc-prd logs -f     # View logs
 - **Render** - Deployment platform
 - **Playwright** - End-to-end testing
 - **Jest** - Unit and integration testing
-
-**Type Architecture**
-- **Prisma Schema**: Single source of truth for backend enums (BlockType, SoloLevel, BloomsLevel)
-- **Backend**: Imports all enums from `@prisma/client` for type safety and database alignment
-- **Frontend**: Maintains isolated type definitions in `/frontend/src/types/` for frontend independence
-
-
 
 
 

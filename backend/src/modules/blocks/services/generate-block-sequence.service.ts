@@ -1,179 +1,113 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { GenerateBlockSequenceChain } from '../../ai/chains/generate-block-sequence.chain';
-import { BlockSequenceMode } from '../../../common/enums/block-sequence-mode.enum';
-import { BlockType, SoloLevel } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { GenerateBlockSequenceChain } from '../../shared/llm/chains/generate-block-sequence.chain';
+import {
+  BlockSequenceMode,
+} from '../../../domain/schemas/enums.schema';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import type { WrongAnswer } from '../../../common/types/practice-blocks.types';
-import { GenerateBlockSequenceResponseDto } from '../dto/generate-block-sequence.response.dto';
+import type { WrongAnswer } from '../../../domain/schemas/llm-parser/block-sequence.schema';
+import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
+import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
+import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
+import { AtomicDatabaseTransactionRunner, type DatabaseTransactionClient } from '../../shared/database/database.transaction-runner';
+import { mapToBlockResponseDto, extractWrongAnswersFromPracticeBlocks } from '../../shared/shared.utils';
+import { formatInformBlockMessage } from '../blocks.utils';
 
 /**
- * Unified service for generating block sequences (initial or subsequent)
- * Automatically detects mode based on session state:
- * - 0 blocks → INITIAL mode (keyFacts)
- * - Has blocks → SUBSEQUENT mode (keyMisconceptions addressing wrong answers)
+ * Service generating a block sequence = 1 x inform block + 3 x practice block
  */
 @Injectable()
 export class GenerateBlockSequenceService {
   constructor(
-    private prisma: PrismaService,
+    private atomicDbTx: AtomicDatabaseTransactionRunner,
+    private sessionsRepository: SessionsRepository,
+    private blocksRepository: BlocksRepository,
     private generateBlockSequenceChain: GenerateBlockSequenceChain,
   ) {}
 
   @LogService()
-  async generate(sessionId: string): Promise<GenerateBlockSequenceResponseDto> {
-    // 1. Fetch session with all blocks
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
-      include: {
-        blocks: {
-          include: {
-            practiceBlock: true,
-          },
-          orderBy: {
-            orderIndex: 'asc',
-          },
-        },
-      },
-    });
-
-    if (!session) {
-      throw new NotFoundException('Session not found');
+  // Atomic: all DB ops commit together or roll back on any failure
+  async generate(
+    sessionId: string,
+    tx?: DatabaseTransactionClient, // When provided, all DB ops run inside caller's atomic transaction
+  ): Promise<GenerateBlockSequenceResponseDto> {
+    // When called without tx (e.g. from controller), run in internal atomic transaction
+    if (!tx) {
+      return this.atomicDbTx.run(
+        (t) => this.generate(sessionId, t),
+        { timeout: 30_000 },
+      );
     }
+    const db = tx;
 
-    // 2. Auto-detect mode based on existing blocks
-    const mode = session.blocks.length === 0 
-      ? BlockSequenceMode.INITIAL 
-      : BlockSequenceMode.SUBSEQUENT;
+    // Fetch session data
+    const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId, db);
 
-    // 3. Calculate starting order index
-    const nextOrderIndexStart = mode === BlockSequenceMode.INITIAL 
-      ? 0 
-      : session.blocks.length;
+    // Detect block-sequence mode
+    // > INITIAL      = first block sequence of the session             -> provides information
+    // > SUBSEQUENT   = any subsequent block sequences of the session   -> provide further information and clarify misconceptions of previous block sequence
+    const mode =
+      session.blocks.length === 0
+        ? BlockSequenceMode.INITIAL
+        : BlockSequenceMode.SUBSEQUENT;
 
-    // 4. Extract wrong answers (only for SUBSEQUENT mode)
-    let wrongAnswers: WrongAnswer[] = [];
-    if (mode === BlockSequenceMode.SUBSEQUENT) {
-      const informBlocks = session.blocks.filter(
-        (block) => block.type === BlockType.Inform,
-      );
-      const blockSequenceCounter = informBlocks.length;
+    // Calculate starting order index for new block sequence blocks
+    const nextOrderIndexStart =
+      mode === BlockSequenceMode.INITIAL ? 0 : session.blocks.length;
 
-      // Get practice blocks from the last sequence (last 3 practice blocks)
-      const lastSequenceStartIndex = (blockSequenceCounter - 1) * 4;
-      const lastSequenceBlocks = session.blocks.slice(
-        lastSequenceStartIndex,
-        lastSequenceStartIndex + 4,
-      );
-      const lastSequencePracticeBlocks = lastSequenceBlocks.filter(
-        (block) => block.type === BlockType.Practice && block.practiceBlock,
-      );
+    // Only if mode = SUBSEQUENT: extract wrong student answers from last block sequence practice questions
+    const wrongAnswers: WrongAnswer[] =
+      mode === BlockSequenceMode.SUBSEQUENT
+        ? extractWrongAnswersFromPracticeBlocks(session.blocks, 'lastSequence')
+        : [];
 
-      // Filter for incorrectly answered practice blocks
-      wrongAnswers = lastSequencePracticeBlocks
-        .filter(
-          (block) => block.practiceBlock?.studentAnswerIsCorrect === false,
-        )
-        .map((block) => {
-          const pb = block.practiceBlock!;
-          return {
-            question: pb.question,
-            correctAnswerOptions: pb.correctAnswerOptionIndices.map(
-              (idx) => pb.answerOptions[idx],
-            ),
-            wrongStudentAnswerOptions: pb.studentAnswerOptionIndices.map(
-              (idx) => pb.answerOptions[idx],
-            ),
-          };
-        });
-    }
-
-    // 5. Get prior knowledge context
-    const priorKnowledge = session.priorKnowledgeKeywords || '';
-
-    // 6. Call unified chain to generate block sequence
+    // Call chain
     const blockSequence = await this.generateBlockSequenceChain.execute({
       mode,
-      topic: session.learningTopicOrQuestion,
+      topic: session.topic,
       learningGoal: session.learningGoal,
       bloomsLevel: session.learningGoalBloomsLevel,
-      priorKnowledge,
-      wrongAnswers: mode === BlockSequenceMode.SUBSEQUENT ? wrongAnswers : undefined,
+      priorKnowledge: session.priorKnowledge ?? '',
+      wrongAnswers:
+        mode === BlockSequenceMode.SUBSEQUENT ? wrongAnswers : undefined,
+      soloLevels: getSOLOLevelsForBlooms(session.learningGoalBloomsLevel),
     });
 
-    // 7. Create inform block with formatted message
-    const content = mode === BlockSequenceMode.INITIAL 
-      ? blockSequence.informBlock.keyFacts || []
-      : blockSequence.informBlock.keyMisconceptions || [];
-    
-    const label = mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
-    
-    const formattedMessage = `${blockSequence.informBlock.explanation}
+    // Format inform block message depending on block-sequence mode
+    // > INITIAL      inform block message = explanation + key facts + summary
+    // > SUBSEQUENT   inform block message = explanation + key misconceptions + summary
+    const formattedMessage = formatInformBlockMessage(mode, blockSequence.informBlock);
 
-${label}
-${content.map(item => `${item}`).join('\n')}
-
-SUMMARY
-${blockSequence.informBlock.summary}`;
-
-    const informBlock = await this.prisma.block.create({
-      data: {
-        sessionId,
-        orderIndex: nextOrderIndexStart,
-        type: BlockType.Inform,
-        alreadyViewed: mode === BlockSequenceMode.INITIAL, // Only initial block is pre-viewed
-        informBlockMessages: {
-          create: [
-            {
-              message: formattedMessage,
-              sender: 'Owlbert',
-            },
-          ],
-        },
-      },
-      include: {
-        informBlockMessages: true,
-      },
-    });
-
-    // 8. Create 3 practice blocks
-    const practiceBlocks = await Promise.all(
-      blockSequence.practiceBlock.questions.map(async (question, index) => {
-        return this.prisma.block.create({
-          data: {
-            sessionId,
-            orderIndex: nextOrderIndexStart + index + 1,
-            type: BlockType.Practice,
-            practiceBlock: {
-              create: {
-                soloLevel: question.soloLevel as SoloLevel,
-                question: question.question,
-                answerOptions: question.answerOptions,
-                correctAnswerOptionIndices: question.correctAnswerOptionIndices,
-              },
-            },
-          },
-          include: {
-            practiceBlock: true,
-          },
-        });
-      }),
+    // Create inform block and persist in database
+    const informBlockCreated = await this.blocksRepository.createInformBlock(
+      sessionId,
+      nextOrderIndexStart,
+      formattedMessage,
+      mode === BlockSequenceMode.INITIAL,
+      db,
     );
 
-    // 9. Update session total blocks count
-    const newTotal = mode === BlockSequenceMode.INITIAL 
-      ? 4 
-      : session.totalBlocks + 4;
-    
-    await this.prisma.session.update({
-      where: { id: sessionId },
-      data: { totalBlocks: newTotal },
-    });
+    // Persist 3 practice blocks in database
+    const practiceBlocks = await this.blocksRepository.createPracticeBlocks(
+      sessionId,
+      nextOrderIndexStart,
+      blockSequence.practiceBlocks,
+      db,
+    );
 
-    // 10. Return all blocks (inform + practice) mapped to DTOs
+    // Update session total blocks count
+    const newTotal =
+      mode === BlockSequenceMode.INITIAL ? 4 : session.totalBlocks + 4;
+    await this.sessionsRepository.update(sessionId, { totalBlocks: newTotal }, db);
+
+    // Return response
     return {
-      informBlock: informBlock as any,
-      practiceBlocks: practiceBlocks as any,
-    };
+      informBlock: mapToBlockResponseDto(informBlockCreated),
+      practiceBlocks: [
+        mapToBlockResponseDto(practiceBlocks[0]),
+        mapToBlockResponseDto(practiceBlocks[1]),
+        mapToBlockResponseDto(practiceBlocks[2]),
+      ],
+    } as GenerateBlockSequenceResponseDto;
   }
 }

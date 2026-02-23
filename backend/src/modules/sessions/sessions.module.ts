@@ -5,13 +5,14 @@ import { GetSessionService } from './services/get-session.service';
 import { DeleteSessionService } from './services/delete-session.service';
 import { ContinueSessionService } from './services/continue-session.service';
 import { SubmitFeedbackService } from './services/submit-feedback.service';
-import { SpecifyLearningGoalsService } from './services/specify-learning-goals.service';
 import { UpdateCurrentBlockIndexService } from './services/update-current-block-index.service';
 import { BlocksModule } from '../blocks/blocks.module';
+import { PrismaModule } from 'prisma/prisma.module';
+import { DatabaseModule } from '../shared/database/database.module';
 
 // Sessions Module: Handles session lifecycle (create, continue, get, delete, feedback)
 @Module({
-  imports: [BlocksModule],
+  imports: [PrismaModule, DatabaseModule, BlocksModule],
   controllers: [SessionsController],
   providers: [
     CreateSessionService,
@@ -19,7 +20,6 @@ import { BlocksModule } from '../blocks/blocks.module';
     DeleteSessionService,
     ContinueSessionService,
     SubmitFeedbackService,
-    SpecifyLearningGoalsService,
     UpdateCurrentBlockIndexService,
   ],
   exports: [

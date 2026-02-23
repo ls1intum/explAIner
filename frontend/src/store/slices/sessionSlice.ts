@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { Block } from "@/types/session.types";
+import type { Block, InformBlockMessage } from "@/types/domain";
 
 // Session + block navigation state
 
@@ -51,9 +51,22 @@ export const sessionSlice = createSlice({
       }>
     ) => {
       const block = state.blockQueue.find((b) => b.id === action.payload.blockId);
-      if (block?.practiceBlock) {
+      if (block?.type === 'Practice' && block.practiceBlock) {
         block.practiceBlock.studentAnswerOptionIndices = action.payload.studentAnswerOptionIndices;
         block.practiceBlock.studentAnswerIsCorrect = action.payload.studentAnswerIsCorrect;
+      }
+    },
+    // Update inform block messages
+    updateInformBlockMessages: (
+      state,
+      action: PayloadAction<{
+        blockId: string;
+        messages: InformBlockMessage[];
+      }>
+    ) => {
+      const block = state.blockQueue.find((b) => b.id === action.payload.blockId);
+      if (block?.type === 'Inform' && block.informBlock) {
+        block.informBlock.messages = action.payload.messages;
       }
     },
     // Mark block as viewed
@@ -89,6 +102,7 @@ export const {
   setBlockQueue,
   addBlockToQueue,
   updatePracticeBlockAnswer,
+  updateInformBlockMessages,
   markBlockAsViewed,
   nextBlock,
   resetSession,

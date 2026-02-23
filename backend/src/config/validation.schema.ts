@@ -1,4 +1,8 @@
-// Joi validation schema for environment variables - validates and provides defaults
+/**
+ * Joi schema for environment variables. Used by Nest ConfigModule at app startup:
+ * validates required vars (e.g. DATABASE_URL), applies defaults for optional ones,
+ * and fails with error message if env is invalid or missing required keys.
+ */
 import * as Joi from 'joi';
 
 export default Joi.object({

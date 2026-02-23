@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { GenerateLearningGoalsRequestDto } from '../dto/generate-learning-goals.request.dto';
-import { GenerateLearningGoalsResponseDto } from '../dto/generate-learning-goals.response.dto';
-import { GenerateLearningGoalsChain } from '../../ai/chains/generate-learning-goals.chain';
-import { generateLearningGoalsPrompt } from '../../ai/prompts/generate-learning-goals.prompt';
+import { GenerateLearningGoalsRequestDto } from '../dto/request/generate-learning-goals.request.dto';
+import { GenerateLearningGoalsResponseDto } from '../dto/response/generate-learning-goals.response.dto';
+import { GenerateLearningGoalsChain } from '../../shared/llm/chains/generate-learning-goals.chain';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 
+
+/** Service generating 3 learning goals based on a topic and (optional) prior knowledge */
 @Injectable()
 export class GenerateLearningGoalsService {
   constructor(
@@ -15,24 +16,14 @@ export class GenerateLearningGoalsService {
   async generate(
     dto: GenerateLearningGoalsRequestDto,
   ): Promise<GenerateLearningGoalsResponseDto> {
-    // Generate prompt
-    const prompt = generateLearningGoalsPrompt({
+    
+    // Call chain
+    const goals = await this.generateLearningGoalsChain.execute({
       topic: dto.topic,
-      priorKnowledgeKeywords: dto.priorKnowledgeKeywords,
+      priorKnowledge: dto.priorKnowledge,
     });
 
-    // Call chain to generate learning goals
-    const goals = await this.generateLearningGoalsChain.execute(
-      prompt,
-      'generate-learning-goals.prompt.ts',
-    );
-
-    // Return wrapped response
-    return {
-      learningGoals: goals.map((goal) => ({
-        learningGoal: goal.learningGoal,
-        bloomsLevel: goal.bloomsLevel as any,
-      })),
-    };
+    // Return response
+    return { learningGoals: goals };
   }
 }

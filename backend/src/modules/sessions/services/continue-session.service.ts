@@ -1,99 +1,62 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { ContinueSessionResponseDto } from '../dto/continue-session.response.dto';
+import { Injectable } from '@nestjs/common';
+import { ContinueSessionResponseDto } from '../dto/response/continue-session.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { BlockType } from '@prisma/client';
+import {
+  areAllPracticeBlocksAnswered,
+  areAllPracticeBlocksCorrect,
+  findNextUnansweredPracticeBlock,
+  mapToContinueSessionResponseDto,
+} from '../sessions.utils';
+import {
+  getBlockSequenceCounter,
+  getCurrentBlockSequencePracticeBlocks,
+} from '../../shared/shared.utils';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 
+/** Service determining next action after user clicked "Continue" button on any block:
+ *  - "navigate"      → to next unanswered practice block
+ *  - "next sequence" → to generate next block sequence
+ *  - "summary"       → to generate summary block
+ *  - "prompt user"   → to prompt user to choose between (A) continue current session or (B) start new session with easier goal
+ */
 @Injectable()
 export class ContinueSessionService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private sessionsRepository: SessionsRepository,
+  ) {}
 
   @LogService()
-  async continue(
-    sessionId: string,
-  ): Promise<ContinueSessionResponseDto> {
-    // Get session with all blocks
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
-      include: {
-        blocks: {
-          include: {
-            practiceBlock: true,
-          },
-          orderBy: {
-            orderIndex: 'asc',
-          },
-        },
-      },
-    });
+  async continue(sessionId: string): Promise<ContinueSessionResponseDto> {
 
-    if (!session) {
-      throw new NotFoundException('Session not found');
+    // Ensure session exists
+    await this.sessionsRepository.requireSessionExists(sessionId);
+
+    // Fetch session 
+    const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId);
+
+    // Fetch current block sequence counter & current block sequence practice blocks
+    const blockSequenceCounter = getBlockSequenceCounter(session.blocks);
+    const currentBlockSequencePracticeBlocks = getCurrentBlockSequencePracticeBlocks(session.blocks);
+
+    // Check if all practice blocks are answered & answered correctly
+    const allAnswered = areAllPracticeBlocksAnswered(currentBlockSequencePracticeBlocks);
+    const allCorrect = areAllPracticeBlocksCorrect(currentBlockSequencePracticeBlocks);
+
+    // next action = "navigate" (if there is an unanswered practice block)
+    if (!allAnswered) {
+      const next = findNextUnansweredPracticeBlock(currentBlockSequencePracticeBlocks);
+      if (next) return mapToContinueSessionResponseDto('navigate', next.orderIndex);
     }
 
-    // Calculate block sequence counter (number of INFORM blocks)
-    const informBlocks = session.blocks.filter(
-      (block) => block.type === BlockType.Inform,
-    );
-    const blockSequenceCounter = informBlocks.length;
+    // next action = "summary" (if all practice blocks of current block sequence were answered correctly)
+    if (allCorrect) 
+      return mapToContinueSessionResponseDto('summary');
 
-    // Get current block sequence (last 4 blocks: 1 INFORM + 3 PRACTICE)
-    const currentSequenceStartIndex = (blockSequenceCounter - 1) * 4;
-    const currentSequenceBlocks = session.blocks.slice(
-      currentSequenceStartIndex,
-      currentSequenceStartIndex + 4,
-    );
+    // next action = "prompt user" (if at least one practice block of current block sequence was not answered correctly & block sequence counter >= 2)
+    if (blockSequenceCounter >= 2) 
+      return mapToContinueSessionResponseDto('prompt-user');
 
-    // Get the 3 practice blocks in current sequence
-    const practiceBlocksInSequence = currentSequenceBlocks.filter(
-      (block) => block.type === BlockType.Practice,
-    );
-
-    // Check if all 3 practice blocks are answered correctly
-    const allPracticeBlocksAnswered = practiceBlocksInSequence.every(
-      (block) => block.practiceBlock?.studentAnswerIsCorrect !== null,
-    );
-
-    const allPracticeBlocksCorrect = practiceBlocksInSequence.every(
-      (block) => block.practiceBlock?.studentAnswerIsCorrect === true,
-    );
-
-    // Determine next action based on session flow logic
-    if (!allPracticeBlocksAnswered) {
-      // Navigate to next unanswered block
-      const nextUnansweredBlock = currentSequenceBlocks.find(
-        (block) =>
-          block.type === BlockType.Practice &&
-          block.practiceBlock?.studentAnswerIsCorrect === null,
-      );
-
-      if (nextUnansweredBlock) {
-        return {
-          action: 'navigate',
-          nextOrderIndex: nextUnansweredBlock.orderIndex,
-        };
-      }
-    }
-
-    // All practice blocks answered - check results
-    if (allPracticeBlocksCorrect) {
-      // All correct → generate summary
-      return {
-        action: 'summary',
-      };
-    }
-
-    // Not all correct
-    if (blockSequenceCounter >= 2) {
-      // After 1st sequence or more (blockSequenceCounter >= 1), offer easier learning goal
-      return {
-        action: 'prompt-user',
-      };
-    }
-
-    // Otherwise, continue with next block sequence
-    return {
-      action: 'next-sequence',
-    };
+    // next action = "next sequence" (if at least one practice block of current block sequence was not answered correctly & block sequence counter < 2)
+    return mapToContinueSessionResponseDto('next-sequence');
   }
 }

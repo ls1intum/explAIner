@@ -17,7 +17,7 @@ body {
     text-wrap: balance;
   }
   
-  /* STEP 3: Create custom utilities using theme variables */
+  /* Create custom utilities using theme variables */
   /* Blue-to-purple gradient background */
   .bg-brand-gradient {
     background: linear-gradient(

@@ -1,32 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { DeleteSessionResponseDto } from '../dto/delete-session.response.dto';
+import { DeleteSessionResponseDto } from '../dto/response/delete-session.response.dto';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 
+/** Service deleting a session (removes all blocks and entire data) */
 @Injectable()
 export class DeleteSessionService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private sessionsRepository: SessionsRepository) {}
 
-  /**
-   * Delete session and all related data (cascade delete)
-   * Deletes: Session -> Blocks -> InformBlockMessages, PracticeBlocks, SummaryBlocks
-   */
   @LogService()
   async delete(sessionId: string): Promise<DeleteSessionResponseDto> {
-    // Check if session exists
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
-    });
 
-    if (!session) {
-      throw new NotFoundException(`Session with ID ${sessionId} not found`);
-    }
+    // Ensure session exists
+    await this.sessionsRepository.requireSessionExists(sessionId);
 
-    // Delete session (cascade will delete all related blocks and their data)
-    await this.prisma.session.delete({
-      where: { id: sessionId },
-    });
+    // Delete session
+    await this.sessionsRepository.delete(sessionId);
 
-    return { success: true };
+    // Return response
+    return { success: true as const };
   }
 }

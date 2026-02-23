@@ -1,110 +1,67 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { GenerateSummaryBlockChain } from '../../ai/chains/generate-summary-block.chain';
-import { BlockType } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { GenerateSessionSummaryChain } from '../../shared/llm/chains/generate-session-summary.chain';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { GenerateSummaryResponseDto } from '../dto/generate-summary.response.dto';
+import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
+import { buildContextForSessionSummary } from '../blocks.utils';
+import { mapToBlockResponseDto, calculateSessionDurationMinutes } from '../../shared/shared.utils';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
+import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
+import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 
+/** Service generating a session summary block and marking the session as completed */
 @Injectable()
 export class GenerateSummaryBlockService {
   constructor(
-    private prisma: PrismaService,
-    private generateSummaryBlockChain: GenerateSummaryBlockChain,
+    private atomicDbTx: AtomicDatabaseTransactionRunner,
+    private sessionsRepository: SessionsRepository,
+    private blocksRepository: BlocksRepository,
+    private generateSessionSummaryChain: GenerateSessionSummaryChain,
   ) {}
 
   @LogService()
-  async generate(sessionId: string): Promise<GenerateSummaryResponseDto> {
-    // 1. Fetch session data with all blocks
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
-      include: {
-        blocks: {
-          include: {
-            informBlockMessages: true,
-            practiceBlock: true,
-          },
-          orderBy: {
-            orderIndex: 'asc',
-          },
-        },
-      },
-    });
+  async generate(sessionId: string): Promise<GenerateSummaryBlockResponseDto> {
 
-    if (!session) {
-      throw new NotFoundException('Session not found');
-    }
+    // Fetch session data
+    const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId);
 
-    // 2. Extract inform content (first message from each inform block)
-    const informBlocks = session.blocks.filter(
-      (block) => block.type === BlockType.Inform,
-    );
-    const informContent = informBlocks.map((block) => {
-      const firstMessage = block.informBlockMessages?.[0]?.message || '';
-      return firstMessage;
-    });
+    // Build context for session summary text
+    const { informContent, practiceResults } = buildContextForSessionSummary(session.blocks);
 
-    // 3. Extract practice results
-    const practiceBlocks = session.blocks.filter(
-      (block) => block.type === BlockType.Practice && block.practiceBlock,
-    );
-    const practiceResults = practiceBlocks.map((block) => ({
-      question: block.practiceBlock!.question,
-      isCorrect: block.practiceBlock!.studentAnswerIsCorrect || false,
-    }));
-
-    // 4. Calculate session duration (difference between now and startedAt)
-    const sessionDuration = Math.floor(
-      (Date.now() - new Date(session.startedAt).getTime()) / 1000 / 60,
-    ); // in minutes
-
-    // 5. Call chain to generate summary
-    const summaryBlock = await this.generateSummaryBlockChain.execute({
-      topic: session.learningTopicOrQuestion,
+    // Call chain
+    const summaryBlock = await this.generateSessionSummaryChain.execute({
+      topic: session.topic,
       learningGoal: session.learningGoal,
       bloomsLevel: session.learningGoalBloomsLevel,
       informContent,
       practiceResults,
     });
 
-    // 6. Calculate next order index
-    const nextOrderIndex = session.blocks.length;
+    // Increment total blocks counter
+    const newTotalBlocks = session.totalBlocks + 1;
 
-    // 7. Create summary block
-    const createdSummaryBlock = await this.prisma.block.create({
-      data: {
+    // Atomic: summary block and session completion commit together or roll back
+    const createdSummaryBlock = await this.atomicDbTx.run(async (tx) => {
+      const block = await this.blocksRepository.createSummaryBlock(
         sessionId,
-        orderIndex: nextOrderIndex,
-        type: BlockType.Summary,
-        summaryBlock: {
-          create: {
-            sessionSummary: summaryBlock.sessionSummary,
-          },
-        },
-      },
-      include: {
-        summaryBlock: true,
-      },
-    });
-
-    // 8. Update session completion status
-    await this.prisma.session.update({
-      where: { id: sessionId },
-      data: {
-        totalBlocks: session.totalBlocks + 1,
+        session.blocks.length,
+        summaryBlock.sessionSummary,
+        tx,
+      );
+      await this.sessionsRepository.update(sessionId, {
+        totalBlocks: newTotalBlocks,
         completedAt: new Date(),
-      },
+      }, tx);
+      return block;
     });
 
-    // 9. Return summary block with additional session info mapped to DTO
+    // Calculate session duration (startedAt comes from session above)
+    const sessionDurationMinutes = calculateSessionDurationMinutes(session.startedAt);
+
+    // Return response
     return {
-      block: createdSummaryBlock as any,
-      sessionInfo: {
-        learningGoal: session.learningGoal,
-        bloomsLevel: session.learningGoalBloomsLevel,
-        totalBlocks: session.totalBlocks + 1,
-        sessionDuration,
-        allPracticeCorrect: practiceResults.every((p) => p.isCorrect),
-      },
-    };
+      ...mapToBlockResponseDto(createdSummaryBlock),
+      sessionDuration: sessionDurationMinutes,
+      totalBlocks: newTotalBlocks,
+    } as GenerateSummaryBlockResponseDto;
   }
 }
