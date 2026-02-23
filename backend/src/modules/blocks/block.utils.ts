@@ -31,6 +31,21 @@ export function buildConversationHistory(
   return lines.join('\n');
 }
 
+/** Build context Maps from DB-format to API-response format */
+export function mapSessionBlocksToSummaryContext(blocks: Array<{ type: string; informBlock?: { messages?: { message?: string }[] } | null; practiceBlock?: { question: string; studentAnswerIsCorrect: boolean | null } | null }>) {
+  const informContent = blocks
+    .filter((b) => b.type === 'Inform' && b.informBlock?.messages)
+    .map((b) => b.informBlock!.messages![0]?.message ?? '');
+  const practiceResults = blocks
+    .filter((b) => b.type === 'Practice' && b.practiceBlock)
+    .map((b) => ({
+      question: b.practiceBlock!.question,
+      isCorrect: b.practiceBlock!.studentAnswerIsCorrect ?? false,
+    }));
+  return { informContent, practiceResults };
+}
+
+
 /** Returns a copy of blocks sorted by orderIndex (for consistent API response order). */
 export function sortBlocksByOrderIndex<T extends { orderIndex: number }>(
   blocks: T[],
@@ -70,6 +85,19 @@ function extractWrongAnswersFromPracticeBlocks(
     .filter((block) => block.practiceBlock?.studentAnswerIsCorrect === false)
     .map(mapBlockToWrongAnswer);
 }
+function mapBlockToWrongAnswer(block: BlockWithPracticeAnswer): WrongAnswer {
+  const pb = block.practiceBlock!;
+  return {
+    question: pb.question,
+    correctAnswerOptions: pb.correctAnswerOptionIndices.map(
+      (idx) => pb.answerOptions[idx],
+    ),
+    wrongStudentAnswerOptions: pb.studentAnswerOptionIndices.map(
+      (idx) => pb.answerOptions[idx],
+    ),
+  };
+}
+
 
 /** Extracts wrong answers from the last sequence of practice blocks (for subsequent block sequences). */
 export function extractWrongAnswersFromLastSequence(
@@ -176,31 +204,3 @@ export function mapToBlockResponseDto(
   throw new Error('Invalid block type or missing block content');
 }
 export type BlockWithIncludes = Parameters<typeof mapToBlockResponseDto>[0];
-
-/** Maps from DB-format to API-response format */
-export function mapSessionBlocksToSummaryContext(blocks: Array<{ type: string; informBlock?: { messages?: { message?: string }[] } | null; practiceBlock?: { question: string; studentAnswerIsCorrect: boolean | null } | null }>) {
-  const informContent = blocks
-    .filter((b) => b.type === 'Inform' && b.informBlock?.messages)
-    .map((b) => b.informBlock!.messages![0]?.message ?? '');
-  const practiceResults = blocks
-    .filter((b) => b.type === 'Practice' && b.practiceBlock)
-    .map((b) => ({
-      question: b.practiceBlock!.question,
-      isCorrect: b.practiceBlock!.studentAnswerIsCorrect ?? false,
-    }));
-  return { informContent, practiceResults };
-}
-
-/** Maps from DB-format to API-response format */
-function mapBlockToWrongAnswer(block: BlockWithPracticeAnswer): WrongAnswer {
-  const pb = block.practiceBlock!;
-  return {
-    question: pb.question,
-    correctAnswerOptions: pb.correctAnswerOptionIndices.map(
-      (idx) => pb.answerOptions[idx],
-    ),
-    wrongStudentAnswerOptions: pb.studentAnswerOptionIndices.map(
-      (idx) => pb.answerOptions[idx],
-    ),
-  };
-}
