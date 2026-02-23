@@ -139,15 +139,12 @@ export function getCoveredContentFromInformBlocks(
 // Block response mappers
 ////////////////////////////////////////////////////////////
 
-/** Maps from DB-format to API-response format */
+/** Maps any block type (inform, practice, summary) from DB-format to API-response format */
 export function mapToBlockResponseDto(
-  block: Prisma.BlockGetPayload<{
-    include: {
-      informBlock: { include: { messages: true } };
-      practiceBlock: true;
-      summaryBlock: true;
-    };
-  }>,
+  block:
+    | Prisma.BlockGetPayload<{ include: { informBlock: { include: { messages: true } } };}>
+    | Prisma.BlockGetPayload<{ include: { practiceBlock: true } }>
+    | Prisma.BlockGetPayload<{ include: { summaryBlock: true } }>,
 ): Block {
   const base = {
     id: block.id,
@@ -155,7 +152,7 @@ export function mapToBlockResponseDto(
     orderIndex: block.orderIndex,
     alreadyViewed: block.alreadyViewed,
   };
-  if (block.type === 'Inform' && block.informBlock) {
+  if (block.type === 'Inform' && 'informBlock' in block && block.informBlock) {
     return {
       ...base,
       type: 'Inform',
@@ -170,10 +167,10 @@ export function mapToBlockResponseDto(
       },
     };
   }
-  if (block.type === 'Practice' && block.practiceBlock) {
+  if (block.type === 'Practice' && 'practiceBlock' in block && block.practiceBlock) {
     return { ...base, type: 'Practice', practiceBlock: block.practiceBlock };
   }
-  if (block.type === 'Summary' && block.summaryBlock) {
+  if (block.type === 'Summary' && 'summaryBlock' in block && block.summaryBlock) {
     return { ...base, type: 'Summary', summaryBlock: block.summaryBlock };
   }
   throw new Error('Invalid block type or missing block content');

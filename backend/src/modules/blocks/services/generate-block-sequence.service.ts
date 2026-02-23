@@ -15,7 +15,6 @@ import {
   mapToBlockResponseDto,
   extractWrongAnswersFromLastSequence,
   formatInformBlockMessage,
-  type BlockWithIncludes,
 } from '../block.utils';
 
 /** Prisma-like client for DB ops (supports transaction client from $transaction) */
@@ -149,11 +148,11 @@ export class GenerateBlockSequenceService {
 
     // Return response
     return {
-      informBlock: mapToBlockResponseDto(informBlockCreated as BlockWithIncludes),
+      informBlock: mapToBlockResponseDto(informBlockCreated),
       practiceBlocks: [
-        mapToBlockResponseDto(practiceBlocks[0] as BlockWithIncludes),
-        mapToBlockResponseDto(practiceBlocks[1] as BlockWithIncludes),
-        mapToBlockResponseDto(practiceBlocks[2] as BlockWithIncludes),
+        mapToBlockResponseDto(practiceBlocks[0]),
+        mapToBlockResponseDto(practiceBlocks[1]),
+        mapToBlockResponseDto(practiceBlocks[2]),
       ],
     } as GenerateBlockSequenceResponseDto;
   }

@@ -7,7 +7,6 @@ import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summar
 import {
   mapSessionBlocksToSummaryContext,
   mapToBlockResponseDto,
-  type BlockWithIncludes,
 } from '../block.utils';
 import {
   calculateSessionDurationMinutes,
@@ -72,9 +71,7 @@ export class GenerateSummaryBlockService {
 
     // Return response
     return {
-      ...mapToBlockResponseDto(
-        createdSummaryBlock as BlockWithIncludes,
-      ),
+      ...mapToBlockResponseDto(createdSummaryBlock),
       sessionDuration: sessionDurationMinutes,
       totalBlocks: newTotalBlocks,
     } as GenerateSummaryBlockResponseDto;
