@@ -5,9 +5,9 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import { PrismaService } from 'prisma/prisma.service';
 import { GenerateEasierLearningGoalsChain } from '../../ai/llm/chains/generate-easier-learning-goals.chain';
 import {
-  extractWrongAnswersFromPracticeBlocks,
   formatWrongAnswersForPrompt,
-  getCoveredContentFromInformBlocks,
+  extractWrongAnswersFromPracticeBlocks,
+  extractCoveredContentFromInformBlocks,
 } from '../../blocks/block.utils';
 import { getSessionWithAllBlocks } from '../../sessions/session.utils';
 
@@ -35,7 +35,7 @@ export class GenerateEasierLearningGoalsService {
     const wrongQuestions = formatWrongAnswersForPrompt(
       extractWrongAnswersFromPracticeBlocks(session.blocks, 'all'),
     );
-    const coveredContent = getCoveredContentFromInformBlocks(session.blocks);
+    const coveredContent = extractCoveredContentFromInformBlocks(session.blocks);
     
     // Call chain
     const learningGoals =

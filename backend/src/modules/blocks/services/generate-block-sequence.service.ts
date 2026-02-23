@@ -79,20 +79,9 @@ export class GenerateBlockSequenceService {
     });
 
     // Format inform block message depending on block-sequence mode
-    // > INITIAL      message = explanation + key facts + summary
-    // > SUBSEQUENT   message = explanation + key misconceptions + summary
-    const label =
-      mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
-    const keyPoints =
-      'keyFacts' in blockSequence.informBlock
-        ? blockSequence.informBlock.keyFacts
-        : blockSequence.informBlock.keyMisconceptions;
-    const formattedMessage = formatInformBlockMessage(
-      blockSequence.informBlock.explanation,
-      label,
-      keyPoints,
-      blockSequence.informBlock.summary,
-    );
+    // > INITIAL      inform block message = explanation + key facts + summary
+    // > SUBSEQUENT   inform block message = explanation + key misconceptions + summary
+    const formattedMessage = formatInformBlockMessage(mode, blockSequence.informBlock);
 
     // Create inform block and persist in database
     const informBlockCreated = await db.block.create({

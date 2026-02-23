@@ -1,4 +1,4 @@
-import { BlockType, type MessageSender } from '../../domain/schemas/enums.schema';
+import { BlockSequenceMode, BlockType, type MessageSender } from '../../domain/schemas/enums.schema';
 import type { Block } from '../../domain/schemas/base/blocks/block.schema';
 import type { Prisma } from '@prisma/client';
 import type { WrongAnswer } from '../../domain/schemas/llm-parser/block-sequence.schema';
@@ -51,6 +51,14 @@ export function getCurrentBlockSequencePracticeBlocks<T extends { type: BlockTyp
   return sequenceBlocks.filter((b) => b.type === BlockType.Practice) as T[];
 }
 
+/** Format WrongAnswer schema to strings inserted into LLM prompt (generate-easier-learning-goals) */
+export function formatWrongAnswersForPrompt(wrongAnswers: WrongAnswer[]): string[] {
+  return wrongAnswers.map(
+    (wa) =>
+      `Question: ${wa.question}\nCorrect Answer(s): ${wa.correctAnswerOptions.join(', ')}\nStudent's Answer(s): ${wa.wrongStudentAnswerOptions.join(', ')}`,
+  );
+}
+
 /**
  * Extracts wrong answers from practice blocks
  * @param scope 'all' = all practice blocks of a session; 'lastSequence' = only 3 practice blocks a block sequence
@@ -87,32 +95,34 @@ export function extractWrongAnswersFromPracticeBlocks(
     });
 }
 
-/** Format WrongAnswer schema to strings inserted into LLM prompt (generate-easier-learning-goals) */
-export function formatWrongAnswersForPrompt(wrongAnswers: WrongAnswer[]): string[] {
-  return wrongAnswers.map(
-    (wa) =>
-      `Question: ${wa.question}\nCorrect Answer(s): ${wa.correctAnswerOptions.join(', ')}\nStudent's Answer(s): ${wa.wrongStudentAnswerOptions.join(', ')}`,
-  );
-}
-
-/** Format inform block display text: explanation + label <-> key points + summary */
-export function formatInformBlockMessage(
-  explanation: string,
-  label: string,
-  keyPoints: string[],
-  summary: string,
+/** Extracts covered content from all inform block messages (concatenates into one string) */
+export function extractCoveredContentFromInformBlocks(
+  blocks: Array<{
+    type: BlockType;
+    informBlock?: { messages: { message: string }[] } | null;
+  }>,
 ): string {
-  const keyPointsText = keyPoints.map((item) => `${item}`).join('\n');
-  return `${explanation}\n\n${label}\n${keyPointsText}\n\nSUMMARY\n${summary}`;
+  return blocks
+    .filter((b) => b.type === BlockType.Inform && b.informBlock?.messages)
+    .map((b) => b.informBlock!.messages.map((m) => m.message).join('\n'))
+    .join('\n\n');
 }
 
+/** Format inform block message: explanation + label <-> key points + summary */
+export function formatInformBlockMessage(
+  mode: BlockSequenceMode,
+  informBlock: {
+    explanation: string;
+    summary: string;
+  } & ({ keyFacts: string[] } | { keyMisconceptions: string[] }),
+): string {
+  const label = mode === BlockSequenceMode.INITIAL ? 'KEY FACTS' : 'KEY MISCONCEPTIONS';
+  const keyPoints = 'keyFacts' in informBlock ? informBlock.keyFacts : informBlock.keyMisconceptions;
+  const keyPointsText = keyPoints.join('\n');
+  return `${informBlock.explanation}\n\n${label}\n${keyPointsText}\n\nSUMMARY\n${informBlock.summary}`;
+}
 
-
-
-
-
-
-/** Compare student answer indices to correct indices (order-independent match). */
+/** Check student answer indices against correct indices */
 export function isStudentAnswerCorrect(
   correctAnswerOptionIndices: number[],
   studentAnswerOptionIndices: number[],
@@ -123,23 +133,6 @@ export function isStudentAnswerCorrect(
       correctAnswerOptionIndices.includes(idx),
     )
   );
-}
-
-
-
-
-
-/** Concatenate all inform block messages into one string (covered content). */
-export function getCoveredContentFromInformBlocks(
-  blocks: Array<{
-    type: BlockType;
-    informBlock?: { messages: { message: string }[] } | null;
-  }>,
-): string {
-  return blocks
-    .filter((b) => b.type === BlockType.Inform && b.informBlock?.messages)
-    .map((b) => b.informBlock!.messages.map((m) => m.message).join('\n'))
-    .join('\n\n');
 }
 
 
