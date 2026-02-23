@@ -6,10 +6,11 @@ import { GenerateSummaryBlockService } from './services/generate-summary-block.s
 import { GetBlockService } from './services/get-block.service';
 import { GenerateChatResponseService } from './services/generate-chat-response.service';
 import { LlmModule } from '../ai/llm/llm.module';
+import { PrismaModule } from 'prisma/prisma.module';
 
 // Blocks Module: Handles all block-related operations (CRUD, generation, interaction)
 @Module({
-  imports: [LlmModule],
+  imports: [PrismaModule, LlmModule],
   controllers: [BlocksController],
   providers: [
     SubmitAnswerService,
