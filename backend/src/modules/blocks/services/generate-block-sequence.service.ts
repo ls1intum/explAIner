@@ -8,16 +8,13 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import type { WrongAnswer } from '../../../domain/schemas/llm-parser/block-sequence.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { SessionsRepository, type PrismaLike } from '../../shared/database/sessions.repository';
 import { BlocksRepository } from '../../shared/database/blocks.repository';
 import {
   mapToBlockResponseDto,
   extractWrongAnswersFromPracticeBlocks,
   formatInformBlockMessage,
 } from '../block.utils';
-
-/** Prisma-like client for DB ops (supports transaction client from $transaction) */
-type PrismaLike = Pick<PrismaService, 'session' | 'block'>;
 
 /**
  * Service generating a block sequence = 1 x inform block + 3 x practice block
