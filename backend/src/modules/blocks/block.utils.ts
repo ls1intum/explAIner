@@ -138,23 +138,6 @@ export function formatInformBlockMessage(
 // Block response mappers
 ////////////////////////////////////////////////////////////
 
-/** Summary block + metadata → generate-summary-block response */
-export function mapPrismaSummaryBlockToGenerateResponse(
-  block: BlockWithIncludes,
-  sessionDuration: number,
-  totalBlocks: number,
-) {
-  return { ...blockToResponse(block), sessionDuration, totalBlocks };
-}
-
-export function mapChatResponse(message: string) {
-  return { response: message };
-}
-
-export function mapSubmitAnswerResponse(studentAnswerOptionIndices: number[]) {
-  return { success: true as const, studentAnswerOptionIndices };
-}
-
 /** Serialize block for JSON response: dates to ISO, omit null relation keys. Uses schema literals so return type matches Block. */
 export function blockToResponse(block: BlockWithIncludes): Block {
   const base = {

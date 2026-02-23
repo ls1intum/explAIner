@@ -6,7 +6,8 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
 import {
   mapSessionBlocksToSummaryContext,
-  mapPrismaSummaryBlockToGenerateResponse,
+  blockToResponse,
+  type BlockWithIncludes,
 } from '../block.utils';
 import {
   getSessionDurationMinutes,
@@ -70,12 +71,12 @@ export class GenerateSummaryBlockService {
     const sessionDurationMinutes = getSessionDurationMinutes(session);
 
     // Return response
-    return mapPrismaSummaryBlockToGenerateResponse(
-      createdSummaryBlock as Parameters<
-        typeof mapPrismaSummaryBlockToGenerateResponse
-      >[0],
-      sessionDurationMinutes,
-      newTotalBlocks,
-    ) as GenerateSummaryBlockResponseDto;
+    return {
+      ...blockToResponse(
+        createdSummaryBlock as BlockWithIncludes,
+      ),
+      sessionDuration: sessionDurationMinutes,
+      totalBlocks: newTotalBlocks,
+    } as GenerateSummaryBlockResponseDto;
   }
 }

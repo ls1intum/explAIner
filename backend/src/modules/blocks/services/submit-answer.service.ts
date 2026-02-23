@@ -3,10 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { SubmitAnswerRequestDto } from '../dto/request/submit-answer.request.dto';
 import { SubmitAnswerResponseDto } from '../dto/response/submit-answer.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import {
-  isStudentAnswerCorrect,
-  mapSubmitAnswerResponse,
-} from '../block.utils';
+import { isStudentAnswerCorrect } from '../block.utils';
 
 /** Service evaluating correctness of a student answer on a practice block question */
 @Injectable()
@@ -50,6 +47,9 @@ export class SubmitAnswerService {
     });
 
     // Return response
-    return mapSubmitAnswerResponse(dto.studentAnswerOptionIndices);
+    return {
+      success: true as const,
+      studentAnswerOptionIndices: dto.studentAnswerOptionIndices,
+    };
   }
 }
