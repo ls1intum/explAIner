@@ -1,19 +1,7 @@
 import { BlockType, type MessageSender } from '../../domain/schemas/enums.schema';
 import type { Block } from '../../domain/schemas/base/blocks/block.schema';
 import type { Prisma } from '@prisma/client';
-import type { WrongAnswer } from '../../domain/schemas/base/blocks/practice-block.schema';
-
-/** Block shape for wrong-answer extraction (practice block with answer data). */
-type BlockWithPracticeAnswer = {
-  type: BlockType;
-  practiceBlock?: {
-    question: string;
-    answerOptions: string[];
-    correctAnswerOptionIndices: number[];
-    studentAnswerOptionIndices: number[];
-    studentAnswerIsCorrect: boolean | null;
-  } | null;
-};
+import type { WrongAnswer } from '../../domain/schemas/llm-parser/block-sequence.schema';
 
 ////////////////////////////////////////////////////////////
 // Block helpers
@@ -52,7 +40,7 @@ export function getBlockSequenceCounter(
   return blocks.filter((b) => b.type === BlockType.Inform).length;
 }
 
-/** Practice blocks of the current (latest) block sequence (3 practice blocks). */
+/** Gets all 3 practice blocks of the current (latest) block sequence */
 export function getCurrentBlockSequencePracticeBlocks<T extends { type: BlockType }>(
   blocks: T[],
 ): T[] {
@@ -63,48 +51,40 @@ export function getCurrentBlockSequencePracticeBlocks<T extends { type: BlockTyp
   return sequenceBlocks.filter((b) => b.type === BlockType.Practice) as T[];
 }
 
-/** Practice blocks from a slice (e.g. all blocks or a sequence). */
-export function getPracticeBlocks<T extends { type: BlockType }>(
-  blocks: T[],
-): T[] {
-  return blocks.filter((b) => b.type === BlockType.Practice) as T[];
-}
-
-/** Shared: filter practice blocks to wrong answers and map to WrongAnswer[]. */
-function extractWrongAnswersFromPracticeBlocks(
-  blocks: BlockWithPracticeAnswer[],
+/**
+ * Extracts wrong answers from practice blocks
+ * @param scope 'all' = all practice blocks of a session; 'lastSequence' = only 3 practice blocks a block sequence
+ */
+export function extractWrongAnswersFromPracticeBlocks(
+  blocks: Array<{
+    type: BlockType;
+    practiceBlock?: {
+      question: string;
+      answerOptions: string[];
+      correctAnswerOptionIndices: number[];
+      studentAnswerOptionIndices: number[];
+      studentAnswerIsCorrect: boolean | null;
+    } | null;
+  }>,
+  scope: 'all' | 'lastSequence',
 ): WrongAnswer[] {
-  return blocks
-    .filter((block) => block.practiceBlock?.studentAnswerIsCorrect === false)
-    .map(mapBlockToWrongAnswer);
-}
-function mapBlockToWrongAnswer(block: BlockWithPracticeAnswer): WrongAnswer {
-  const pb = block.practiceBlock!;
-  return {
-    question: pb.question,
-    correctAnswerOptions: pb.correctAnswerOptionIndices.map(
-      (idx) => pb.answerOptions[idx],
-    ),
-    wrongStudentAnswerOptions: pb.studentAnswerOptionIndices.map(
-      (idx) => pb.answerOptions[idx],
-    ),
-  };
-}
-
-
-/** Extracts wrong answers from the last sequence of practice blocks (for subsequent block sequences). */
-export function extractWrongAnswersFromLastSequence(
-  blocks: BlockWithPracticeAnswer[],
-): WrongAnswer[] {
-  const lastSequencePracticeBlocks = getCurrentBlockSequencePracticeBlocks(blocks);
-  return extractWrongAnswersFromPracticeBlocks(lastSequencePracticeBlocks);
-}
-
-/** Extracts all wrong answers from all practice blocks (e.g. for easier learning goals). */
-export function extractWrongAnswersFromBlocks(
-  blocks: BlockWithPracticeAnswer[],
-): WrongAnswer[] {
-  return extractWrongAnswersFromPracticeBlocks(getPracticeBlocks(blocks));
+  // filter practice blocks
+  const practiceBlocks =
+    scope === 'lastSequence'
+      ? getCurrentBlockSequencePracticeBlocks(blocks)
+      : blocks.filter((b) => b.type === BlockType.Practice);
+  // filter again to only keep practice blocks where the student answered incorrectly
+  return practiceBlocks
+    .filter((b) => b.practiceBlock?.studentAnswerIsCorrect === false)
+    .map((b) => {
+      const p = b.practiceBlock!;
+      // map to WrongAnswer response schema
+      return {
+        question: p.question,
+        correctAnswerOptions: p.correctAnswerOptionIndices.map((i) => p.answerOptions[i]),
+        wrongStudentAnswerOptions: p.studentAnswerOptionIndices.map((i) => p.answerOptions[i]),
+      };
+    });
 }
 
 

@@ -20,11 +20,3 @@ export const PracticeBlockSchema = BaseBlockSchema.extend({
   practiceBlock: PracticeBlockContentSchema.describe('Practice block content'),
 });
 export type PracticeBlock = z.infer<typeof PracticeBlockSchema>;
-
-// Wrong answer (LLM context for subsequent block sequence generation)
-export const WrongAnswerSchema = z.object({
-  question: z.string(),
-  correctAnswerOptions: z.array(z.string()),
-  wrongStudentAnswerOptions: z.array(z.string()),
-});
-export type WrongAnswer = z.infer<typeof WrongAnswerSchema>;

@@ -11,7 +11,7 @@ import {
   SubsequentBlockSequenceParserSchema,
   type BlockSequenceParser,
 } from '../../../../domain/schemas/llm-parser/block-sequence.schema';
-import type { WrongAnswer } from '../../../../domain/schemas/base/blocks/practice-block.schema';
+import type { WrongAnswer } from '../../../../domain/schemas/llm-parser/block-sequence.schema';
 
 /**
  * Chain generating a block sequence = 1 x inform block + 3 x practice block

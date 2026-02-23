@@ -33,11 +33,11 @@ export class ContinueSessionService {
     // Ensure session exists
     await requireSessionExists(this.prisma, sessionId);
 
-    // Fetch session and current block sequence counter
+    // Fetch session 
     const session = await getSessionWithAllBlocks(this.prisma, sessionId);
-    const blockSequenceCounter = getBlockSequenceCounter(session.blocks);
 
-    // Fetch current block sequence practice blocks
+    // Fetch current block sequence counter & current block sequence practice blocks
+    const blockSequenceCounter = getBlockSequenceCounter(session.blocks);
     const currentBlockSequencePracticeBlocks = getCurrentBlockSequencePracticeBlocks(session.blocks);
 
     // Check if all practice blocks are answered & answered correctly

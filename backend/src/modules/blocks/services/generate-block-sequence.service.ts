@@ -7,13 +7,13 @@ import {
   SoloLevel,
 } from '../../../domain/schemas/enums.schema';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import type { WrongAnswer } from '../../../domain/schemas/base/blocks/practice-block.schema';
+import type { WrongAnswer } from '../../../domain/schemas/llm-parser/block-sequence.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy.util';
 import { getSessionWithAllBlocks } from '../../sessions/session.utils';
 import {
   mapToBlockResponseDto,
-  extractWrongAnswersFromLastSequence,
+  extractWrongAnswersFromPracticeBlocks,
   formatInformBlockMessage,
 } from '../block.utils';
 
@@ -63,7 +63,7 @@ export class GenerateBlockSequenceService {
     // Only if mode = SUBSEQUENT: extract wrong student answers from last block sequence practice questions
     const wrongAnswers: WrongAnswer[] =
       mode === BlockSequenceMode.SUBSEQUENT
-        ? extractWrongAnswersFromLastSequence(session.blocks)
+        ? extractWrongAnswersFromPracticeBlocks(session.blocks, 'lastSequence')
         : [];
 
     // Call chain

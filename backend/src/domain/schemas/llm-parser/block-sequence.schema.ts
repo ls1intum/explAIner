@@ -28,7 +28,7 @@ export type PracticeBlockQuestionParser = z.infer<typeof PracticeBlockQuestionPa
 // block-sequence-mode: INITIAL
 ///////////////////////////////////
 
-// First inform block message
+// First inform block message (in initial block sequence)
 export const KeyFactsMessageParserSchema = z.object({
   explanation: z.string().min(1).describe('Detailed explanation of the topic'),
   keyFacts: z.array(z.string().min(1)).min(2).max(4, 'Must have 2-4 key facts').describe('Key facts'),
@@ -36,7 +36,7 @@ export const KeyFactsMessageParserSchema = z.object({
 });
 export type KeyFactsMessageParser = z.infer<typeof KeyFactsMessageParserSchema>;
 
-// Block sequence
+// Initial block sequence
 export const InitialBlockSequenceParserSchema = z.object({
   informBlock: KeyFactsMessageParserSchema.describe('Inform block content with key facts'),
   practiceBlocks: z.array(PracticeBlockQuestionParserSchema).length(3, 'Must have exactly 3 practice blocks'),
@@ -49,7 +49,7 @@ export type InitialBlockSequenceParser = z.infer<typeof InitialBlockSequencePars
 // block-sequence-mode: SUBSEQUENT
 ///////////////////////////////////
 
-// First inform block message
+// First inform block message (in subsequent block sequence)
 export const KeyMisconceptionsMessageParserSchema = z.object({
   explanation: z.string().min(1).describe('Explanation addressing misconceptions'),
   keyMisconceptions: z.array(z.string().min(1)).min(2).max(4, 'Must have 2-4 key misconceptions').describe('Key misconceptions'),
@@ -57,10 +57,18 @@ export const KeyMisconceptionsMessageParserSchema = z.object({
 });
 export type KeyMisconceptionsMessageParser = z.infer<typeof KeyMisconceptionsMessageParserSchema>;
 
-// Block sequence
+// Subsequent block sequence
 export const SubsequentBlockSequenceParserSchema = z.object({
   informBlock: KeyMisconceptionsMessageParserSchema.describe('Inform block content with key misconceptions'),
   practiceBlocks: z.array(PracticeBlockQuestionParserSchema).length(3, 'Must have exactly 3 practice blocks'),
 });
 export type SubsequentBlockSequenceParser = z.infer<typeof SubsequentBlockSequenceParserSchema>;
 
+
+// Wrong answer (LLM context for subsequent block sequence generation)
+export const WrongAnswerSchema = z.object({
+  question: z.string(),
+  correctAnswerOptions: z.array(z.string()),
+  wrongStudentAnswerOptions: z.array(z.string()),
+});
+export type WrongAnswer = z.infer<typeof WrongAnswerSchema>;
