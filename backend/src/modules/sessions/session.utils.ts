@@ -1,7 +1,3 @@
-/**
- * Session utils: flow helpers, getSessionWithBlocks, and response mappers.
- */
-
 import { NotFoundException } from '@nestjs/common';
 import { BlockType } from '../../domain/schemas/enums.schema';
 import type { LearningGoal } from '../../domain/schemas/base/learning-goal.schema';
@@ -14,6 +10,11 @@ import {
 } from '../blocks/block.utils';
 import type { BlockWithIncludes } from '../blocks/block.utils';
 
+export { getBlockSequenceCounter, getCurrentBlockSequenceBlocks, getPracticeBlocks };
+
+
+
+
 /** Block shape needed for session-flow helpers (session.blocks with practiceBlock included) */
 export type SessionBlockWithPractice = {
   type: BlockType;
@@ -21,8 +22,38 @@ export type SessionBlockWithPractice = {
   practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null;
 };
 
-export { getBlockSequenceCounter, getCurrentBlockSequenceBlocks, getPracticeBlocks };
 
+
+////////////////////////////////////////////////////////////
+// Session helpers
+////////////////////////////////////////////////////////////
+
+
+/** Ensures session exists; throws NotFoundException if not found. */
+export async function requireSessionExists(
+  prisma: PrismaService,
+  sessionId: string,
+): Promise<{ id: string }> {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    select: { id: true },
+  });
+  if (!session) {
+    throw new NotFoundException(`Session with ID ${sessionId} not found`);
+  }
+  return session;
+}
+
+/** Session duration in whole minutes since startedAt. */
+export function getSessionDurationMinutes(session: {
+  startedAt: Date;
+}): number {
+  return Math.floor(
+    (Date.now() - new Date(session.startedAt).getTime()) / 1000 / 60,
+  );
+}
+
+/** todo */
 export function areAllPracticeBlocksAnswered(
   blocks: SessionBlockWithPractice[],
 ): boolean {
@@ -31,6 +62,7 @@ export function areAllPracticeBlocksAnswered(
   );
 }
 
+/** todo */
 export function areAllPracticeBlocksCorrect(
   blocks: SessionBlockWithPractice[],
 ): boolean {
@@ -50,38 +82,6 @@ export function findNextUnansweredPracticeBlock(
   );
 }
 
-/** Ensures session exists; throws NotFoundException if not found. */
-export async function requireSessionExists(
-  prisma: PrismaService,
-  sessionId: string,
-): Promise<{ id: string }> {
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    select: { id: true },
-  });
-  if (!session) {
-    throw new NotFoundException(`Session with ID ${sessionId} not found`);
-  }
-  return session;
-}
-
-/** Session with blocks (practiceBlock only), ordered by orderIndex. Throws if not found. */
-export async function getSessionWithBlocks(
-  prisma: PrismaService,
-  sessionId: string,
-) {
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    include: {
-      blocks: {
-        include: { practiceBlock: true },
-        orderBy: { orderIndex: 'asc' },
-      },
-    },
-  });
-  if (!session) throw new NotFoundException('Session not found');
-  return session;
-}
 
 /** Session with full blocks for get-session response (inform, practice, summary). Throws if not found. */
 export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: string) {
@@ -104,6 +104,7 @@ export async function getSessionWithAllBlocks(prisma: PrismaService, sessionId: 
   return session;
 }
 
+
 /** Session with blocks + inform messages (e.g. for covered content / easier learning goals). Throws if not found. */
 export async function getSessionWithInformContent(
   prisma: PrismaService,
@@ -124,6 +125,31 @@ export async function getSessionWithInformContent(
   if (!session) throw new NotFoundException('Session not found');
   return session;
 }
+
+
+/** Session with blocks (practiceBlock only), ordered by orderIndex. Throws if not found. */
+export async function getSessionWithBlocks(
+  prisma: PrismaService,
+  sessionId: string,
+) {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    include: {
+      blocks: {
+        include: { practiceBlock: true },
+        orderBy: { orderIndex: 'asc' },
+      },
+    },
+  });
+  if (!session) throw new NotFoundException('Session not found');
+  return session;
+}
+
+
+
+////////////////////////////////////////////////////////////
+// Session response mappers
+////////////////////////////////////////////////////////////
 
 /** Session with blocks (from get-session query) → get-session response shape */
 export function mapSessionToGetResponse(session: {
@@ -174,14 +200,5 @@ export function mapContinueResponse(
   return targetBlockIndex !== undefined
     ? { action, targetBlockIndex }
     : { action };
-}
-
-/** Session duration in whole minutes since startedAt. */
-export function getSessionDurationMinutes(session: {
-  startedAt: Date;
-}): number {
-  return Math.floor(
-    (Date.now() - new Date(session.startedAt).getTime()) / 1000 / 60,
-  );
 }
 
