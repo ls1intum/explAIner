@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { BlockType, SoloLevel } from '../../../domain/schemas/enums.schema';
-import type { PrismaLike } from './sessions.repository';
+import type { DatabaseTransactionClient } from './database.transaction-runner';
 
 /** Blocks Repository: Handles all block(sequence) related database operations */
 @Injectable()
@@ -51,7 +51,7 @@ export class BlocksRepository {
     orderIndex: number,
     formattedMessage: string,
     alreadyViewed: boolean,
-    tx?: PrismaLike,
+    tx?: DatabaseTransactionClient,
   ) {
     const db = tx ?? this.prisma;
     return db.block.create({
@@ -104,7 +104,7 @@ export class BlocksRepository {
       answerOptions: string[];
       correctAnswerOptionIndices: number[];
     }>,
-    tx?: PrismaLike,
+    tx?: DatabaseTransactionClient,
   ) {
     const db = tx ?? this.prisma;
     return Promise.all(
@@ -135,7 +135,7 @@ export class BlocksRepository {
     sessionId: string,
     orderIndex: number,
     sessionSummary: string,
-    tx?: PrismaLike,
+    tx?: DatabaseTransactionClient,
   ) {
     const db = tx ?? this.prisma;
     return db.block.create({
@@ -161,7 +161,7 @@ export class BlocksRepository {
     });
   }
 
-  async updateBlockAsAlreadyViewed(sessionId: string, orderIndex: number, tx?: PrismaLike) {
+  async updateBlockAsAlreadyViewed(sessionId: string, orderIndex: number, tx?: DatabaseTransactionClient) {
     const db = tx ?? this.prisma;
     return db.block.updateMany({
       where: { sessionId, orderIndex },

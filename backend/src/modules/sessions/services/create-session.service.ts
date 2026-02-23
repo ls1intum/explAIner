@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreateSessionRequestDto } from '../dto/request/create-session.request.dto';
 import { GenerateBlockSequenceService } from '../../blocks/services/generate-block-sequence.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { mapToCreateSessionResponseDto } from '../session.utils';
 import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 
 /** Service creating a new session including the initial block sequence */
 @Injectable()
 export class CreateSessionService {
   constructor(
-    private prisma: PrismaService,
+    private atomicDbTx: AtomicDatabaseTransactionRunner,
     private sessionsRepository: SessionsRepository,
     private generateBlockSequenceService: GenerateBlockSequenceService,
   ) {}
@@ -19,7 +19,7 @@ export class CreateSessionService {
   async create(dto: CreateSessionRequestDto) {
 
     // Atomic: session + block sequence commit together or roll back on any failure
-    return this.prisma.$transaction(async (tx) => {
+    return this.atomicDbTx.run(async (tx) => {
 
       // Create session
       const session = await this.sessionsRepository.create({

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { GenerateSessionSummaryChain } from '../../shared/llm/chains/generate-session-summary.chain';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
@@ -10,12 +9,13 @@ import {
 import { calculateSessionDurationMinutes } from '../../sessions/session.utils';
 import { SessionsRepository } from '../../shared/database/sessions.repository';
 import { BlocksRepository } from '../../shared/database/blocks.repository';
+import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 
 /** Service generating a session summary block and marking the session as completed */
 @Injectable()
 export class GenerateSummaryBlockService {
   constructor(
-    private prisma: PrismaService,
+    private atomicDbTx: AtomicDatabaseTransactionRunner,
     private sessionsRepository: SessionsRepository,
     private blocksRepository: BlocksRepository,
     private generateSessionSummaryChain: GenerateSessionSummaryChain,
@@ -43,7 +43,7 @@ export class GenerateSummaryBlockService {
     const newTotalBlocks = session.totalBlocks + 1;
 
     // Atomic: summary block and session completion commit together or roll back
-    const createdSummaryBlock = await this.prisma.$transaction(async (tx) => {
+    const createdSummaryBlock = await this.atomicDbTx.run(async (tx) => {
       const block = await this.blocksRepository.createSummaryBlock(
         sessionId,
         session.blocks.length,

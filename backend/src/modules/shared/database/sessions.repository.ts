@@ -2,13 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import type { Prisma } from '@prisma/client';
-
-/**
- * Prisma-like client for DB ops. Lets the same repository method work in two ways and ensures both are atomic:
- * • Without tx (standalone): one DB op, use normal PrismaService — no transaction needed, atomic by itself.
- * • With tx (from prisma.$transaction()): multiple ops in one transaction, all commit or all roll back, atomic as a group.
- */
-export type PrismaLike = Pick<PrismaService, 'session' | 'block'>;
+import type { DatabaseTransactionClient } from './database.transaction-runner';
 
 /** Sessions Repository: Handles all session related database operations */
 @Injectable()
@@ -26,7 +20,7 @@ export class SessionsRepository {
     return session;
   }
 
-  async getSessionWithAllBlocks(sessionId: string, tx?: PrismaLike) {
+  async getSessionWithAllBlocks(sessionId: string, tx?: DatabaseTransactionClient) {
     const db = tx ?? this.prisma;
     const session = await db.session.findUnique({
       where: { id: sessionId },
@@ -47,7 +41,7 @@ export class SessionsRepository {
     return session;
   }
 
-  async create(data: Prisma.SessionCreateInput, tx?: PrismaLike) {
+  async create(data: Prisma.SessionCreateInput, tx?: DatabaseTransactionClient) {
     const db = tx ?? this.prisma;
     return db.session.create({
       data,
@@ -57,7 +51,7 @@ export class SessionsRepository {
   async update(
     sessionId: string,
     data: Prisma.SessionUpdateInput,
-    tx?: PrismaLike,
+    tx?: DatabaseTransactionClient,
   ) {
     const db = tx ?? this.prisma;
     return db.session.update({

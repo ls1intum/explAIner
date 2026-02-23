@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { UpdateCurrentBlockIndexResponseDto } from '../dto/response/update-current-block-index.response.dto';
 import { SessionsRepository } from '../../shared/database/sessions.repository';
 import { BlocksRepository } from '../../shared/database/blocks.repository';
+import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 
 /** Service updating the session's current block index and marking that block as viewed */
 @Injectable()
 export class UpdateCurrentBlockIndexService {
   constructor(
-    private prisma: PrismaService,
+    private atomicDbTx: AtomicDatabaseTransactionRunner,
     private sessionsRepository: SessionsRepository,
     private blocksRepository: BlocksRepository,
   ) {}
@@ -24,7 +24,7 @@ export class UpdateCurrentBlockIndexService {
     await this.sessionsRepository.requireSessionExists(sessionId);
 
     // Atomic: both updates commit together or roll back
-    await this.prisma.$transaction(async (tx) => {
+    await this.atomicDbTx.run(async (tx) => {
       await this.sessionsRepository.update(sessionId, { currentBlockIndex }, tx);
       await this.blocksRepository.updateBlockAsAlreadyViewed(sessionId, currentBlockIndex, tx);
     });

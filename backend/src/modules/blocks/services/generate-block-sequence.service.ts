@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { GenerateBlockSequenceChain } from '../../shared/llm/chains/generate-block-sequence.chain';
 import {
   BlockSequenceMode,
@@ -8,8 +7,9 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import type { WrongAnswer } from '../../../domain/schemas/llm-parser/block-sequence.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy';
-import { SessionsRepository, type PrismaLike } from '../../shared/database/sessions.repository';
+import { SessionsRepository } from '../../shared/database/sessions.repository';
 import { BlocksRepository } from '../../shared/database/blocks.repository';
+import { AtomicDatabaseTransactionRunner, type DatabaseTransactionClient } from '../../shared/database/database.transaction-runner';
 import {
   mapToBlockResponseDto,
   extractWrongAnswersFromPracticeBlocks,
@@ -22,7 +22,7 @@ import {
 @Injectable()
 export class GenerateBlockSequenceService {
   constructor(
-    private prisma: PrismaService,
+    private atomicDbTx: AtomicDatabaseTransactionRunner,
     private sessionsRepository: SessionsRepository,
     private blocksRepository: BlocksRepository,
     private generateBlockSequenceChain: GenerateBlockSequenceChain,
@@ -32,11 +32,11 @@ export class GenerateBlockSequenceService {
   // Atomic: all DB ops commit together or roll back on any failure
   async generate(
     sessionId: string,
-    tx?: PrismaLike, // When provided, all DB ops run inside caller's atomic transaction
+    tx?: DatabaseTransactionClient, // When provided, all DB ops run inside caller's atomic transaction
   ): Promise<GenerateBlockSequenceResponseDto> {
     // When called without tx (e.g. from controller), run in internal atomic transaction
     if (!tx) {
-      return this.prisma.$transaction(
+      return this.atomicDbTx.run(
         (t) => this.generate(sessionId, t),
         { timeout: 30_000 },
       );
