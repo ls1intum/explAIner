@@ -95,3 +95,20 @@ export function mapToBlockResponseDto(
   }
   throw new Error('Invalid block type or missing block content');
 }
+
+/** Extracts JSON from text; handles markdown code blocks (```json or ```) and strips noise (backticks, whitespace, etc.) */
+export function extractJsonFromMarkdown(text: string): string {
+  let jsonText = text.trim();
+  const codeBlockMatch = jsonText.match(/```(?:json|JSON)?\s*\n?([\s\S]*?)```/);
+  if (codeBlockMatch) {
+    jsonText = codeBlockMatch[1].trim();
+  }
+  jsonText = jsonText.replace(/^`+|`+$/g, '').trim();
+  if (!jsonText.startsWith('{') && !jsonText.startsWith('[')) {
+    const jsonObjectMatch = jsonText.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+    if (jsonObjectMatch) {
+      jsonText = jsonObjectMatch[1];
+    }
+  }
+  return jsonText.trim();
+}

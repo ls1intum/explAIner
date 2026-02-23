@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { extractJsonFromMarkdown } from '../../../common/utils/json-parser.util';
+import { extractJsonFromMarkdown } from '../shared.utils';
 
 // Maximum number of retries if LLM output does not match the schema
 export const MAX_RETRIES = 1;
