@@ -8,8 +8,6 @@ import { SummaryBlockSchema } from '../base/blocks/summary-block.schema';
 // Response
 export { BlockSequenceSchema } from '../base/block-sequence.schema';
 
-
-
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/blocks/summary
 ////////////////////////////////////////////////////////////
@@ -20,8 +18,6 @@ export const GenerateSummaryBlockResponseDtoSchema = SummaryBlockSchema.extend({
   totalBlocks: z.number().describe('Total number of blocks in the session'),
 });
 export type GenerateSummaryBlockResponse = z.infer<typeof GenerateSummaryBlockResponseDtoSchema>;
-
-
 
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/blocks/:orderIndex/messages
@@ -39,8 +35,6 @@ export const FollowUpAnswerMessageDtoSchema = z.object({
 });
 export type FollowUpAnswerMessage = z.infer<typeof FollowUpAnswerMessageDtoSchema>;
 
-
-
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/blocks/:orderIndex/student-answer
 ////////////////////////////////////////////////////////////
@@ -54,8 +48,6 @@ export const SubmitAnswerRequestDtoSchema = z.object({
   studentAnswerOptionIndices: studentAnswerOptionIndicesSchema,
 });
 export type SubmitAnswerRequest = z.infer<typeof SubmitAnswerRequestDtoSchema>;
-
-
 
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/blocks/:orderIndex/student-answer

@@ -15,8 +15,6 @@ export const GenerateLearningGoalsResponseDtoSchema = z.object({
 });
 export type GenerateLearningGoalsResponse = z.infer<typeof GenerateLearningGoalsResponseDtoSchema>;
 
-
-
 ////////////////////////////////////////////////////////////
 // API endpoint: learning-goals/easier
 ////////////////////////////////////////////////////////////

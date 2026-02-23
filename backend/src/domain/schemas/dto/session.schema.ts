@@ -14,8 +14,6 @@ export const CreateSessionRequestDtoSchema = TopicWithPriorKnowledgeSchema.exten
 });
 export type CreateSessionRequest = z.infer<typeof CreateSessionRequestDtoSchema>;
 
-
-
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId
 ////////////////////////////////////////////////////////////
@@ -27,8 +25,6 @@ export { SessionSchema };
 export const DeleteSessionResponseDtoSchema = z.object({ success: successField });
 export type DeleteSessionResponse = z.infer<typeof DeleteSessionResponseDtoSchema>;
 
-
-
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/continue
 ////////////////////////////////////////////////////////////
@@ -39,8 +35,6 @@ export const ContinueSessionResponseDtoSchema = z.object({
   targetBlockIndex: z.number().optional().describe('Order index to navigate to (only for "navigate")').meta({ example: 3 }),
 });
 export type ContinueSessionResponse = z.infer<typeof ContinueSessionResponseDtoSchema>;
-
-
 
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/current-block-index
@@ -58,8 +52,6 @@ export const UpdateCurrentBlockIndexResponseDtoSchema = z.object({
   currentBlockIndex: z.number().describe('The updated current block index (0-based)'),
 });
 export type UpdateCurrentBlockIndexResponse = z.infer<typeof UpdateCurrentBlockIndexResponseDtoSchema>;
-
-
 
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/feedback

@@ -22,8 +22,6 @@ export const PracticeBlockQuestionParserSchema = PracticeBlockContentSchema.pick
 });
 export type PracticeBlockQuestionParser = z.infer<typeof PracticeBlockQuestionParserSchema>;
 
-
-
 ///////////////////////////////////
 // block-sequence-mode: INITIAL
 ///////////////////////////////////
@@ -43,8 +41,6 @@ export const InitialBlockSequenceParserSchema = z.object({
 });
 export type InitialBlockSequenceParser = z.infer<typeof InitialBlockSequenceParserSchema>;
 
-
-
 ///////////////////////////////////
 // block-sequence-mode: SUBSEQUENT
 ///////////////////////////////////
@@ -63,7 +59,6 @@ export const SubsequentBlockSequenceParserSchema = z.object({
   practiceBlocks: z.array(PracticeBlockQuestionParserSchema).length(3, 'Must have exactly 3 practice blocks'),
 });
 export type SubsequentBlockSequenceParser = z.infer<typeof SubsequentBlockSequenceParserSchema>;
-
 
 // Wrong answer (LLM context for subsequent block sequence generation)
 export const WrongAnswerSchema = z.object({
