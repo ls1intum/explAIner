@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { UpdateCurrentBlockIndexResponseDto } from '../dto/response/update-current-block-index.response.dto';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
-import { BlocksRepository } from '../../shared/database/blocks.repository';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
+import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 
 /** Service updating the session's current block index and marking that block as viewed */

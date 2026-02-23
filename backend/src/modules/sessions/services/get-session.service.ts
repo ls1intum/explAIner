@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 import { GetSessionResponseDto } from '../dto/response/get-session.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { mapToGetSessionResponseDto } from '../session.utils';

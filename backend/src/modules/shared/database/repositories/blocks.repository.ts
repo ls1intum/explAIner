@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { BlockType, SoloLevel } from '../../../domain/schemas/enums.schema';
-import type { DatabaseTransactionClient } from './database.transaction-runner';
+import { BlockType, SoloLevel } from '../../../../domain/schemas/enums.schema';
+import type { DatabaseTransactionClient } from '../database.transaction-runner';
 
 /** Blocks Repository: Handles all block(sequence) related database operations */
 @Injectable()

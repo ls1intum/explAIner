@@ -3,7 +3,7 @@ import { CreateSessionRequestDto } from '../dto/request/create-session.request.d
 import { GenerateBlockSequenceService } from '../../blocks/services/generate-block-sequence.service';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { mapToCreateSessionResponseDto } from '../session.utils';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 
 /** Service creating a new session including the initial block sequence */

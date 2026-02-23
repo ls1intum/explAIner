@@ -4,8 +4,8 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
 import { buildContextForSessionSummary } from '../block.utils';
 import { mapToBlockResponseDto, calculateSessionDurationMinutes } from '../../shared/shared.utils';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
-import { BlocksRepository } from '../../shared/database/blocks.repository';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
+import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 
 /** Service generating a session summary block and marking the session as completed */

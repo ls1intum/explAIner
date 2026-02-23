@@ -11,7 +11,7 @@ import {
   getBlockSequenceCounter,
   getCurrentBlockSequencePracticeBlocks,
 } from '../../shared/shared.utils';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 
 /** Service determining next action after user clicked "Continue" button on any block:
  *  - "navigate"      → to next unanswered practice block

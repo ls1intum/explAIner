@@ -3,7 +3,7 @@ import { SubmitAnswerRequestDto } from '../dto/request/submit-answer.request.dto
 import { SubmitAnswerResponseDto } from '../dto/response/submit-answer.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { isStudentAnswerCorrect } from '../block.utils';
-import { BlocksRepository } from '../../shared/database/blocks.repository';
+import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 
 /** Service evaluating correctness of a student answer on a practice block question */
 @Injectable()

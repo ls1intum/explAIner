@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { DeleteSessionResponseDto } from '../dto/response/delete-session.response.dto';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 
 /** Service deleting a session (removes all blocks and entire data) */
 @Injectable()

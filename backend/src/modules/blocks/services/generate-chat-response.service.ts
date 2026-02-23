@@ -4,7 +4,7 @@ import { GenerateChatResponseRequestDto } from '../dto/request/generate-chat-res
 import { GenerateChatResponseResponseDto } from '../dto/response/generate-chat-response.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { buildChatHistory } from '../block.utils';
-import { BlocksRepository } from '../../shared/database/blocks.repository';
+import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 
 /** Service generating a chat response to user follow-up question on inform block */
 @Injectable()

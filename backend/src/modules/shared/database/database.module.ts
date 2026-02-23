@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from 'prisma/prisma.module';
-import { SessionsRepository } from './sessions.repository';
-import { BlocksRepository } from './blocks.repository';
+import { SessionsRepository } from './repositories/sessions.repository';
+import { BlocksRepository } from './repositories/blocks.repository';
 import { AtomicDatabaseTransactionRunner } from './database.transaction-runner';
 
 // Database Module: Provides shared database repositories and transaction boundary for other modules

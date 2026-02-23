@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import type { Prisma } from '@prisma/client';
-import type { DatabaseTransactionClient } from './database.transaction-runner';
+import type { DatabaseTransactionClient } from '../database.transaction-runner';
 
 /** Sessions Repository: Handles all session related database operations */
 @Injectable()

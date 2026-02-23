@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SubmitFeedbackRequestDto } from '../dto/request/submit-feedback.request.dto';
 import { SubmitFeedbackResponseDto } from '../dto/response/submit-feedback.response.dto';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 
 /** Service persisting user feedback (rating) for a completed session */
 @Injectable()

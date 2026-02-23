@@ -7,8 +7,8 @@ import { LogService } from '../../../common/decorators/service-logging.decorator
 import type { WrongAnswer } from '../../../domain/schemas/llm-parser/block-sequence.schema';
 import { GenerateBlockSequenceResponseDto } from '../dto/response/generate-block-sequence.response.dto';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy';
-import { SessionsRepository } from '../../shared/database/sessions.repository';
-import { BlocksRepository } from '../../shared/database/blocks.repository';
+import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
+import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 import { AtomicDatabaseTransactionRunner, type DatabaseTransactionClient } from '../../shared/database/database.transaction-runner';
 import { mapToBlockResponseDto, extractWrongAnswersFromPracticeBlocks } from '../../shared/shared.utils';
 import { formatInformBlockMessage } from '../block.utils';
