@@ -230,7 +230,7 @@ export default function InformBlock({
       // Send to API using RTK Query
       const data = await generateChatResponse({
         sessionId,
-        orderIndex: block.orderIndex,
+        orderIndex: String(block.orderIndex),
         message,
       }).unwrap();
       

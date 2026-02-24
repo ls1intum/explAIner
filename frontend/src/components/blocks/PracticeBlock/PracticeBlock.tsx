@@ -69,7 +69,7 @@ export default function PracticeBlock({
       // Submit answer to backend (stores for analytics, returns 204)
       await submitAnswer({
         sessionId,
-        orderIndex: block.orderIndex,
+        orderIndex: String(block.orderIndex),
         studentAnswerOptionIndices: selectedOptions,
       });
 
