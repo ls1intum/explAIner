@@ -2,16 +2,22 @@ import { baseApi } from "./baseApi";
 import type { components } from "@/types/generated";
 
 // Type aliases for generated API types
-type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
+type GetBlockResponse = components["schemas"]["GetBlockResponseDto_Output"];
 type SendMessageResponse = components["schemas"]["GenerateChatResponseResponseDto_Output"];
 
-// getBlock, submitAnswer, sendMessage
+// getBlock (aligned with backend GET /sessions/:sessionId/blocks/:orderIndex), submitAnswer, sendMessage
 
 export const blocksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getBlock: builder.query<GetBlockResponse, string>({
-      query: (blockId: string) => `/api/blocks/${blockId}`,
-      providesTags: ["Block"],
+    getBlock: builder.query<
+      GetBlockResponse,
+      { sessionId: string; orderIndex: number }
+    >({
+      query: ({ sessionId, orderIndex }) =>
+        `/api/sessions/${sessionId}/blocks/${orderIndex}`,
+      providesTags: (result, error, { sessionId, orderIndex }) => [
+        { type: "Block", id: `${sessionId}-${orderIndex}` },
+      ],
     }),
     sendMessage: builder.mutation<
       SendMessageResponse,

@@ -10,6 +10,7 @@ import { GenerateChatResponseRequestDto } from './dto/request/generate-chat-resp
 import { SubmitAnswerRequestDto } from './dto/request/submit-answer.request.dto';
 import { GenerateBlockSequenceResponseDto } from './dto/response/generate-block-sequence.response.dto';
 import { GenerateSummaryBlockResponseDto } from './dto/response/generate-summary-block.response.dto';
+import { GetBlockResponseDto } from './dto/response/get-block.response.dto';
 import { GenerateChatResponseResponseDto } from './dto/response/generate-chat-response.response.dto';
 import { SubmitAnswerResponseDto } from './dto/response/submit-answer.response.dto';
 
@@ -47,12 +48,12 @@ export class BlocksController {
   @ApiOperation({ summary: 'Get block by order index', description: 'Retrieves a specific block by its order index within the session' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ApiParam({ name: 'orderIndex', description: 'Block order index (0-based)' })
-  @ApiResponse({ status: 200, description: 'Block found (Inform | Practice | Summary)' })
+  @ZodResponse({ status: 200, description: 'Block found (Inform | Practice | Summary)', type: GetBlockResponseDto })
   @ApiResponse({ status: 404, description: 'Block not found' })
   getBlock(
     @Param('sessionId') sessionId: string,
     @Param('orderIndex') orderIndex: string,
-  ) {
+  ): Promise<GetBlockResponseDto> {
     return this.getBlockService.getBlock(sessionId, parseInt(orderIndex));
   }
 

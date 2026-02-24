@@ -895,6 +895,127 @@ export interface components {
             /** @description Total number of blocks in the session */
             totalBlocks: number;
         };
+        GetBlockResponseDto_Output: {
+            /** @description Single block (Inform | Practice | Summary) */
+            data: {
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Inform";
+                informBlock: {
+                    /** @description Inform block messages */
+                    messages: {
+                        /**
+                         * Format: uuid
+                         * @description Message ID
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description Inform block this message belongs to
+                         */
+                        informBlockId: string;
+                        /** @description Message content */
+                        message: string;
+                        /**
+                         * @description Message sender
+                         * @enum {string}
+                         */
+                        sender: "User" | "Owlbert";
+                        /** @description Message timestamp (ISO 8601) */
+                        timestamp: string;
+                    }[];
+                };
+            } | {
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Practice";
+                /** @description Practice block content */
+                practiceBlock: {
+                    /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
+                    blockId: string;
+                    /**
+                     * @description SOLO taxonomy level
+                     * @enum {string}
+                     */
+                    soloLevel: "Unistructural" | "Multistructural" | "Relational" | "ExtendedAbstract";
+                    /** @description Practice question */
+                    question: string;
+                    /** @description Available answer options */
+                    answerOptions: string[];
+                    /** @description Indices of correct answer options */
+                    correctAnswerOptionIndices: number[];
+                    /** @description Student's selected answer option indices */
+                    studentAnswerOptionIndices: number[];
+                    /** @description Whether the student answer is correct (null if not yet answered) */
+                    studentAnswerIsCorrect: boolean | null;
+                };
+            } | {
+                /**
+                 * Format: uuid
+                 * @description Block ID
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Session ID this block belongs to
+                 */
+                sessionId: string;
+                /** @description Order index of the block (0-based) */
+                orderIndex: number;
+                /** @description Whether the block has been viewed by the user */
+                alreadyViewed: boolean;
+                /**
+                 * @description Block type
+                 * @enum {string}
+                 */
+                type: "Summary";
+                /** @description Summary block content */
+                summaryBlock: {
+                    /**
+                     * Format: uuid
+                     * @description Block ID
+                     */
+                    blockId: string;
+                    /** @description Session summary content */
+                    sessionSummary: string;
+                };
+            };
+        };
         GenerateChatResponseRequestDto: {
             /** @description User message / follow-up question */
             message: string;
@@ -1258,7 +1379,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetBlockResponseDto_Output"];
+                };
             };
             /** @description Block not found */
             404: {

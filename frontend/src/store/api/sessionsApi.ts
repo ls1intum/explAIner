@@ -3,12 +3,12 @@ import type { components } from "@/types/generated";
 
 // Type aliases for generated API types
 type CreateSessionRequest = components["schemas"]["CreateSessionRequestDto"];
-type CreateSessionResponse = components["schemas"]["CreateSessionResponseDto"];
-type GetSessionResponse = components["schemas"]["GetSessionResponseDto"];
-type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
+type CreateSessionResponse = components["schemas"]["CreateSessionResponseDto_Output"];
+type GetSessionResponse = components["schemas"]["GetSessionResponseDto_Output"];
+type GetBlockResponse = components["schemas"]["GetBlockResponseDto_Output"];
 type ContinueSessionResponse = components["schemas"]["ContinueSessionResponseDto_Output"];
-type GenerateBlockSequenceResponse = components["schemas"]["GenerateBlockSequenceResponseDto"];
-type GenerateSummaryResponse = components["schemas"]["GenerateSummaryBlockResponseDto"];
+type GenerateBlockSequenceResponse = components["schemas"]["GenerateBlockSequenceResponseDto_Output"];
+type GenerateSummaryResponse = components["schemas"]["GenerateSummaryBlockResponseDto_Output"];
 type SubmitFeedbackResponse = components["schemas"]["SubmitFeedbackResponseDto_Output"];
 type UpdateCurrentBlockIndexResponse = components["schemas"]["UpdateCurrentBlockIndexResponseDto_Output"];
 type DeleteSessionResponse = components["schemas"]["DeleteSessionResponseDto_Output"];

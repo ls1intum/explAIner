@@ -73,7 +73,7 @@ export default function SessionPage() {
   );
 
   // Use fetched block or fallback to block queue
-  const displayBlock = fetchedBlock || blockQueue[currentBlockIndex];
+  const displayBlock = fetchedBlock?.data ?? blockQueue[currentBlockIndex];
 
   // Redirect if no session data (only after trying to fetch)
   useEffect(() => {

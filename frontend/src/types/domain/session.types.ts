@@ -10,11 +10,11 @@
 
 import type { components } from '../generated';
 
-// Session-related types
-export type Session = components['schemas']['GetSessionResponseDto'];
+// Session-related types (response DTOs use _Output in generated schema)
+export type Session = components['schemas']['GetSessionResponseDto_Output'];
 export type CreateSessionRequest = components['schemas']['CreateSessionRequestDto'];
-export type CreateSessionResponse = components['schemas']['CreateSessionResponseDto'];
-export type GetSessionResponse = components['schemas']['GetSessionResponseDto'];
+export type CreateSessionResponse = components['schemas']['CreateSessionResponseDto_Output'];
+export type GetSessionResponse = components['schemas']['GetSessionResponseDto_Output'];
 export type ContinueSessionResponse = components['schemas']['ContinueSessionResponseDto_Output'];
 export type DeleteSessionResponse = components['schemas']['DeleteSessionResponseDto_Output'];
 export type SubmitFeedbackResponse = components['schemas']['SubmitFeedbackResponseDto_Output'];

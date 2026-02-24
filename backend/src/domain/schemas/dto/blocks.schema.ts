@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BlockSchema } from '../base/blocks/block.schema';
 import { SummaryBlockSchema } from '../base/blocks/summary-block.schema';
 
 ////////////////////////////////////////////////////////////
@@ -7,6 +8,16 @@ import { SummaryBlockSchema } from '../base/blocks/summary-block.schema';
 
 // Response
 export { BlockSequenceSchema } from '../base/block-sequence.schema';
+
+////////////////////////////////////////////////////////////
+// API endpoint: GET sessions/:sessionId/blocks/:orderIndex
+////////////////////////////////////////////////////////////
+
+// Response
+export const GetBlockResponseDtoSchema = z.object({
+  data: BlockSchema.describe('Single block (Inform | Practice | Summary)'),
+});
+export type GetBlockResponse = z.infer<typeof GetBlockResponseDtoSchema>;
 
 ////////////////////////////////////////////////////////////
 // API endpoint: sessions/:sessionId/blocks/summary

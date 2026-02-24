@@ -52,8 +52,8 @@ import { BlockType } from '@/types/domain';
 ```
 
 **Examples:**
-- `Block` → `components['schemas']['GetBlockResponseDto']`
-- `Session` → `components['schemas']['SessionInfoDto']`
+- `Block` → `components['schemas']['GetBlockResponseDto_Output']['data']` (get-block returns `{ data: Block }`)
+- `Session` → `components['schemas']['GetSessionResponseDto_Output']`
 - `LearningGoal` → `components['schemas']['LearningGoalDto']`
 
 ### 3. UI Types (`ui/`)
@@ -113,8 +113,8 @@ import { LearningGoalPageData } from '@/types/ui';
    ```typescript
    // Bad
    import type { components } from '@/types/generated';
-   type Block = components['schemas']['GetBlockResponseDto'];
-   
+   type Block = components['schemas']['GetBlockResponseDto_Output']['data'];
+
    // Good
    import type { Block } from '@/types/domain';
    ```
