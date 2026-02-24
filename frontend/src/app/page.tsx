@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
 import TopicOrQuestionInput from '@/components/learning-topic/TopicOrQuestionInput';
 import PriorKnowledgeKeywordsInput from '@/components/learning-topic/PriorKnowledgeKeywordsInput';
-import LoadingScreen from '@/components/layout/LoadingScreen';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 import { useGenerateLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import { useAppDispatch } from '@/store/hooks';
 import { setLoading } from '@/store/slices/uiSlice';

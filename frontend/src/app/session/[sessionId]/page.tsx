@@ -8,7 +8,7 @@ import { setLoading } from '@/store/slices/uiSlice';
 import { setLearningGoalsPageData } from '@/store/slices/learningGoalsSlice';
 import { useGetSessionQuery, useGetBlockQuery, useContinueSessionMutation, useGenerateNextSequenceMutation, useGenerateSummaryMutation } from '@/store/api/sessionsApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
-import LoadingScreen from '@/components/layout/LoadingScreen';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 import InformBlock from '@/components/blocks/InformBlock/InformBlock';
 import PracticeBlock from '@/components/blocks/PracticeBlock/PracticeBlock';
 import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';

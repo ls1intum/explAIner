@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import { selectedFont } from "../styles/fonts";
-import Navbar from "@/components/layout/Navbar";
-import ReduxProvider from "@/components/providers/ReduxProvider";
-import ToastProvider from "@/components/providers/ToastProvider";
+import Navbar from "@/components/ui/Navbar";
+import ReduxProvider from "@/lib/providers/ReduxProvider";
+import ToastProvider from "@/lib/providers/ToastProvider";
 
 export const metadata: Metadata = {
   title: "ExplAIner - Learn at Your Own Pace",

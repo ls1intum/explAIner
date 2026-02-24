@@ -8,7 +8,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useDeleteSessionMutation } from '@/store/api/sessionsApi';
 import { resetSession } from '@/store/slices/sessionSlice';
 import EndSessionDialog from '@/components/session/EndSessionDialog';
-import BlockNavigation from '@/components/layout/BlockNavigation';
+import BlockNavigation from '@/components/session/BlockNavigation';
 
 export default function Navbar() {
   const pathname = usePathname();
