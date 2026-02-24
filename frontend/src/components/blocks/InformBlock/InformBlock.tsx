@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import type { Block } from '@/types/domain';
-import { useSendMessageMutation } from '@/store/api/blocksApi';
+import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
 import { useAppDispatch } from '@/store/hooks';
 import { updateInformBlockMessages } from '@/store/slices/sessionSlice';
 import { getRandomMessage } from '@/lib/utils';
@@ -33,7 +33,7 @@ export default function InformBlock({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousMessageCountRef = useRef(0);
 
-  const [sendMessage, { isLoading }] = useSendMessageMutation();
+  const [generateChatResponse, { isLoading }] = useGenerateChatResponseMutation();
   const loadingMessage = useMemo(
     () => getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES),
     []
@@ -228,7 +228,7 @@ export default function InformBlock({
     
     try {
       // Send to API using RTK Query
-      const data = await sendMessage({
+      const data = await generateChatResponse({
         sessionId,
         orderIndex: block.orderIndex,
         message,
