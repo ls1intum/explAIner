@@ -1,4 +1,4 @@
-// Funny Owlbert (loading) messages
+// Owlbert loading messages (funny & cute - as user feedback repeatedly verified! :)
 
 export const LOADING_SCREEN_MESSAGES = [
   "Uuu whooo, Uuu whoooooo... Oh wait, Owlbert is talking to Owlberta...",
