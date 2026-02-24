@@ -7,8 +7,7 @@ type GenerateLearningGoalsResponse = components["schemas"]["GenerateLearningGoal
 type GenerateEasierLearningGoalsRequest = components["schemas"]["GenerateEasierLearningGoalsRequestDto"];
 type GenerateEasierLearningGoalsResponse = components["schemas"]["GenerateEasierLearningGoalsResponseDto_Output"];
 
-// Learning Goals API endpoints
-
+/** Learning Goals API endpoints */
 export const learningGoalsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     generateLearningGoals: builder.mutation<

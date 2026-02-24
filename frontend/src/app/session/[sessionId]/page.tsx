@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex, addBlockToQueue, setTotalBlocks, setCurrentSession, setBlockQueue } from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
 import { setLearningGoalsPageData } from '@/store/slices/learningGoalsSlice';
-import { useGetSessionQuery, useGetBlockQuery, useContinueSessionMutation, useGenerateNextSequenceMutation, useGenerateSummaryMutation } from '@/store/api/sessionsApi';
+import { useGetSessionQuery, useGetBlockQuery, useContinueSessionMutation, useGenerateBlockSequenceMutation, useGenerateSummaryBlockMutation } from '@/store/api/sessionsApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import InformBlock from '@/components/blocks/InformBlock/InformBlock';
@@ -39,8 +39,8 @@ export default function SessionPage() {
 
   // API hooks
   const [continueSession] = useContinueSessionMutation();
-  const [generateNextSequence, { isLoading: isGeneratingSequence }] = useGenerateNextSequenceMutation();
-  const [generateSummary, { isLoading: isGeneratingSummary }] = useGenerateSummaryMutation();
+  const [generateBlockSequence, { isLoading: isGeneratingSequence }] = useGenerateBlockSequenceMutation();
+  const [generateSummaryBlock, { isLoading: isGeneratingSummary }] = useGenerateSummaryBlockMutation();
   const [generateEasierLearningGoals, { isLoading: isGeneratingEasierGoals }] = useGenerateEasierLearningGoalsMutation();
 
   // Fetch session data if Redux is empty (page reload/direct URL navigation)
@@ -101,7 +101,7 @@ export default function SessionPage() {
   // Handle generating next sequence
   const handleGenerateNextSequence = async () => {
     try {
-      const result = await generateNextSequence({ sessionId }).unwrap();
+      const result = await generateBlockSequence({ sessionId }).unwrap();
       
       // Add new blocks to queue
       dispatch(addBlockToQueue(result.informBlock));
@@ -123,7 +123,7 @@ export default function SessionPage() {
   // Handle generating summary (API returns block + sessionDuration, totalBlocks; sessionInfo from session + result)
   const handleGenerateSummary = async () => {
     try {
-      const result = await generateSummary({ sessionId }).unwrap();
+      const result = await generateSummaryBlock({ sessionId }).unwrap();
       const block = result as Block;
       setSummaryData({
         block,

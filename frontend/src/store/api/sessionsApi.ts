@@ -8,13 +8,12 @@ type GetSessionResponse = components["schemas"]["GetSessionResponseDto_Output"];
 type GetBlockResponse = components["schemas"]["GetBlockResponseDto_Output"];
 type ContinueSessionResponse = components["schemas"]["ContinueSessionResponseDto_Output"];
 type GenerateBlockSequenceResponse = components["schemas"]["GenerateBlockSequenceResponseDto_Output"];
-type GenerateSummaryResponse = components["schemas"]["GenerateSummaryBlockResponseDto_Output"];
+type GenerateSummaryBlockResponse = components["schemas"]["GenerateSummaryBlockResponseDto_Output"];
 type SubmitFeedbackResponse = components["schemas"]["SubmitFeedbackResponseDto_Output"];
 type UpdateCurrentBlockIndexResponse = components["schemas"]["UpdateCurrentBlockIndexResponseDto_Output"];
 type DeleteSessionResponse = components["schemas"]["DeleteSessionResponseDto_Output"];
 
-// Session CRUD + submitFeedback + block navigation
-
+/** Sessions API endpoints */
 export const sessionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createSession: builder.mutation<
@@ -56,7 +55,7 @@ export const sessionsApi = baseApi.injectEndpoints({
       invalidatesTags: ["Session"],
     }),
     // Generate next block sequence (mode auto-detected by backend)
-    generateNextSequence: builder.mutation<
+    generateBlockSequence: builder.mutation<
       GenerateBlockSequenceResponse,
       { sessionId: string }
     >({
@@ -68,8 +67,8 @@ export const sessionsApi = baseApi.injectEndpoints({
       invalidatesTags: ["Session", "Block"],
     }),
     // Generate summary block
-    generateSummary: builder.mutation<
-      GenerateSummaryResponse,
+    generateSummaryBlock: builder.mutation<
+      GenerateSummaryBlockResponse,
       { sessionId: string }
     >({
       query: ({ sessionId }) => ({
@@ -121,8 +120,8 @@ export const {
   useGetSessionQuery,
   useGetBlockQuery,
   useContinueSessionMutation,
-  useGenerateNextSequenceMutation,
-  useGenerateSummaryMutation,
+  useGenerateBlockSequenceMutation,
+  useGenerateSummaryBlockMutation,
   useSubmitFeedbackMutation,
   useUpdateCurrentBlockIndexMutation,
   useDeleteSessionMutation,
