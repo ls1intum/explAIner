@@ -83,8 +83,8 @@ export default function Navbar() {
                 {/* Separator arrow */}
                 <ChevronRightIcon className="w-5 h-5 text-white/60 flex-shrink-0" />
                 
-                {/* Block Navigation (min-w-0 so flex child can shrink and scroll) */}
-                <div className="flex-1 min-w-0 overflow-x-auto">
+                {/* Block Navigation (min-w-0 so flex child can shrink and scroll horizontally when many blocks) */}
+                <div className="flex-1 min-w-0">
                   <BlockNavigation />
                 </div>
               </>

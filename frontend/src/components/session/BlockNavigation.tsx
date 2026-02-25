@@ -43,8 +43,8 @@ export default function BlockNavigation() {
   return (
     <div
       ref={scrollContainerRef}
-      className="flex items-center gap-0 overflow-x-auto overflow-y-hidden scrollbar-hide min-w-0"
-      style={{ scrollBehavior: 'smooth' }}
+      className="flex items-center gap-0 overflow-x-auto overflow-y-hidden min-w-0 scrollbar-thin"
+      style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
     >
       {viewedBlocks.map((block: Block, viewedIndex: number) => {
         const index = block.orderIndex;
