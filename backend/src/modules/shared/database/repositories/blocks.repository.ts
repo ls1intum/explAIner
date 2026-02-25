@@ -143,6 +143,7 @@ export class BlocksRepository {
         sessionId,
         orderIndex,
         type: BlockType.Summary,
+        alreadyViewed: true,
         summaryBlock: {
           create: { sessionSummary },
         },
