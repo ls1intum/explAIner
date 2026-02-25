@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { setCurrentBlockIndex, setCurrentSession } from '@/store/slices/sessionSlice';
+import { setCurrentBlockIndex, setCurrentSession, setHighestAlreadyViewedBlockIndex } from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
 import { setLearningGoalPageData } from '@/store/slices/learningGoalsSlice';
 import { useGetSessionQuery, useContinueSessionMutation, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
@@ -48,8 +48,11 @@ export default function SessionPage() {
   useEffect(() => {
     if (!sessionData || sessionData.id !== sessionId) return;
     dispatch(setCurrentSession(sessionData.id));
-    // Only hydrate currentBlockIndex on initial load/reload so refetch after generate doesn't overwrite
+    // Only hydrate on initial load/reload so refetch after generate doesn't overwrite
     if (currentSessionId !== sessionId) {
+      const blocks = sessionData.blocks ?? [];
+      const maxFromServer = blocks.filter((b: Block) => b.alreadyViewed).reduce((max: number, b: Block) => Math.max(max, b.orderIndex), 0);
+      dispatch(setHighestAlreadyViewedBlockIndex(maxFromServer));
       dispatch(setCurrentBlockIndex(sessionData.currentBlockIndex));
     }
   }, [sessionData, sessionId, currentSessionId, dispatch]);

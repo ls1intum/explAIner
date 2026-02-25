@@ -103,7 +103,7 @@ export const sessionsApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: { currentBlockIndex },
       }),
-      // No invalidatesTags – navbar "viewed" chips use slice (orderIndex <= currentBlockIndex)
+      // No invalidatesTags – navbar uses highestAlreadyViewedBlockIndex in slice so chips stay visible when navigating back
     }),
 
     ////////////////////////////////////////////////////////////////////////////

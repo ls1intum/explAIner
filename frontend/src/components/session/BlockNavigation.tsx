@@ -12,7 +12,7 @@ export default function BlockNavigation() {
   const dispatch = useAppDispatch();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeChipRef = useRef<HTMLButtonElement>(null);
-  const { currentSessionId, currentBlockIndex } = useAppSelector((state) => state.session);
+  const { currentSessionId, currentBlockIndex, highestAlreadyViewedBlockIndex } = useAppSelector((state) => state.session);
   const { data: sessionData } = useGetSessionQuery(
     { sessionId: currentSessionId! },
     { skip: !currentSessionId }
@@ -21,9 +21,9 @@ export default function BlockNavigation() {
   const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
 
   const blocks = sessionData?.blocks ?? [];
-  // Viewed = server alreadyViewed OR we've navigated to this index (slice); no refetch on navigate
+  const effectiveMax = Math.max(currentBlockIndex, highestAlreadyViewedBlockIndex);
   const viewedBlocks = blocks
-    .filter((block: Block) => block.alreadyViewed || block.orderIndex <= currentBlockIndex)
+    .filter((block: Block) => block.alreadyViewed || block.orderIndex <= effectiveMax)
     .sort((a: Block, b: Block) => a.orderIndex - b.orderIndex);
 
   // Scroll so the active chip is visible (navbar is horizontally scrollable)
