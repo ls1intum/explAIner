@@ -48,8 +48,8 @@ export const blocksApi = baseApi.injectEndpoints({
     // API endpoint: POST sessions/:sessionId/blocks/:orderIndex/messages
     ////////////////////////////////////////////////////////////////////////////
     generateChatResponse: builder.mutation<
-      GenerateChatResponseResponse,                                                  // API Response type
-      GenerateChatResponseRequest                                                    // API Request type
+      GenerateChatResponseResponse,                                         // API Response type
+      GenerateChatResponseRequest                                           // API Request type
     >({
       query: ({ sessionId, orderIndex, message }) => ({                     // API call to server
         url: `/api/sessions/${sessionId}/blocks/${orderIndex}/messages`,
@@ -74,7 +74,7 @@ export const blocksApi = baseApi.injectEndpoints({
         method: "PUT",
         body: { studentAnswerOptionIndices },
       }),
-      // no cache tags need to be invalidated
+      invalidatesTags: (result, error, { sessionId, orderIndex }) => [{ type: "Block", id: `${sessionId}-${orderIndex}` }],
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ export const blocksApi = baseApi.injectEndpoints({
         method: "POST",
         body: {},
       }),
-      invalidatesTags: ["Session", "Block"],                                 // Invalidate cache so session and blocks are refetched
+      invalidatesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }],
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ export const blocksApi = baseApi.injectEndpoints({
         method: "POST",
         body: {},
       }),
-      invalidatesTags: ["Session", "Block"],                                // Invalidate cache so session and blocks are refetched
+      invalidatesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }],
     }),
   }),
 });

@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
-import { useAppDispatch } from '@/store/hooks';
-import { updatePracticeBlockAnswer } from '@/store/slices/sessionSlice';
 import { useSubmitAnswerMutation } from '@/store/api/blocksApi';
 import type { Block } from '@/types/domain';
 import AnswerOption from './AnswerOption';
@@ -19,7 +17,6 @@ export default function PracticeBlock({
   sessionId,
   onContinue,
 }: PracticeBlockProps) {
-  const dispatch = useAppDispatch();
   const practiceBlock = block.type === 'Practice' ? block.practiceBlock : undefined;
   const [submitAnswer, { isLoading: isSubmittingAnswer }] =
     useSubmitAnswerMutation();
@@ -60,13 +57,7 @@ export default function PracticeBlock({
     if (!practiceBlock) return;
 
     try {
-      // Calculate correctness client-side
-      const { correctAnswerOptionIndices } = practiceBlock;
-      const isCorrect =
-        selectedOptions.length === correctAnswerOptionIndices.length &&
-        selectedOptions.every((opt) => correctAnswerOptionIndices.includes(opt));
-
-      // Submit answer to backend (stores for analytics, returns 204)
+      // Submit answer to backend (stores for analytics); Block tag invalidated, getBlock refetches
       await submitAnswer({
         sessionId,
         orderIndex: String(block.orderIndex),
@@ -74,15 +65,7 @@ export default function PracticeBlock({
       });
 
       setIsChecked(true);
-
-      // Update Redux store with calculated correctness
-      dispatch(
-        updatePracticeBlockAnswer({
-          blockId: block.id,
-          studentAnswerOptionIndices: selectedOptions,
-          studentAnswerIsCorrect: isCorrect,
-        })
-      );
+      // Block tag invalidated by submitAnswer; getBlock refetches and parent passes updated block
     } catch (error) {
       console.error('Failed to submit answer:', error);
       // Handle error (could show toast notification)

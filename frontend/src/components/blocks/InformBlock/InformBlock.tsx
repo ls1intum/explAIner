@@ -5,8 +5,6 @@ import Image from 'next/image';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import type { Block } from '@/types/domain';
 import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
-import { useAppDispatch } from '@/store/hooks';
-import { updateInformBlockMessages } from '@/store/slices/sessionSlice';
 import { getRandomMessage } from '@/lib/utils';
 import { INFORM_BLOCK_CHAT_LOADING_MESSAGES } from '@/lib/loadingMessages';
 import QuickActionChips from './QuickActionChips';
@@ -22,7 +20,6 @@ export default function InformBlock({
   sessionId,
   onContinue,
 }: InformBlockProps) {
-  const dispatch = useAppDispatch();
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const informMessages = useMemo(
     () => (block.type === 'Inform' ? block.informBlock.messages : []),
@@ -46,15 +43,14 @@ export default function InformBlock({
   // Get inform block messages
   const messages = localMessages;
 
-  // Scroll to top and sync ref when block or message count changes
+  // Scroll to top only when switching to a different block
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = 0;
     }
-    previousMessageCountRef.current = messages.length;
-  }, [block.id, messages.length]);
+  }, [block.id]);
 
-  // Auto-scroll to bottom when new messages are added (user sends message or AI responds)
+  // Scroll to bottom when new messages are added (local send or after refetch from server)
   useEffect(() => {
     if (messages.length > previousMessageCountRef.current || isLoading) {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -242,17 +238,7 @@ export default function InformBlock({
         timestamp: new Date().toISOString(),
       };
       
-      setLocalMessages((prev) => {
-        const updatedMessages = [...prev, aiMessage];
-        
-        // Update Redux store with new messages
-        dispatch(updateInformBlockMessages({
-          blockId: block.id,
-          messages: updatedMessages,
-        }));
-        
-        return updatedMessages;
-      });
+      setLocalMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
       // Remove the user message on error

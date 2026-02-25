@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { setCurrentBlockIndex, addBlockToQueue, setTotalBlocks, setCurrentSession, setBlockQueue } from '@/store/slices/sessionSlice';
+import { setCurrentBlockIndex, setCurrentSession } from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
 import { setLearningGoalPageData } from '@/store/slices/learningGoalsSlice';
-import { useGetSessionQuery, useContinueSessionMutation } from '@/store/api/sessionsApi';
+import { useGetSessionQuery, useContinueSessionMutation, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
 import { useGetBlockQuery, useGenerateBlockSequenceMutation, useGenerateSummaryBlockMutation } from '@/store/api/blocksApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import LoadingScreen from '@/components/ui/LoadingScreen';
@@ -22,11 +22,9 @@ export default function SessionPage() {
   const params = useParams();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  
+
   const sessionId = params.sessionId as string;
-  const { currentSessionId, currentBlockIndex, blockQueue, totalBlocks } = useAppSelector(
-    (state) => state.session
-  );
+  const { currentSessionId, currentBlockIndex } = useAppSelector((state) => state.session);
   const [showPromptDialog, setShowPromptDialog] = useState(false);
   const [summaryData, setSummaryData] = useState<{
     block: Block;
@@ -38,59 +36,39 @@ export default function SessionPage() {
     };
   } | null>(null);
 
-  // API hooks
   const [continueSession] = useContinueSessionMutation();
+  const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
   const [generateBlockSequence, { isLoading: isGeneratingSequence }] = useGenerateBlockSequenceMutation();
   const [generateSummaryBlock, { isLoading: isGeneratingSummary }] = useGenerateSummaryBlockMutation();
   const [generateEasierLearningGoals, { isLoading: isGeneratingEasierGoals }] = useGenerateEasierLearningGoalsMutation();
 
-  // Fetch session data if Redux is empty (page reload/direct URL navigation)
-  const needsSessionData = !currentSessionId || currentSessionId !== sessionId;
-  // Only fetch if session data is needed
-  const shouldSkip = !needsSessionData;
-  const { data: sessionData, isLoading: isLoadingSession } = useGetSessionQuery(
-    { sessionId },
-    { skip: shouldSkip }
-  );
+  // Session: block list + metadata; hydrate currentBlockIndex only on initial load (so refetch after generate doesn't overwrite)
+  const { data: sessionData, isLoading: isLoadingSession } = useGetSessionQuery({ sessionId });
 
-  // Hydrate Redux store when session data is fetched
   useEffect(() => {
-    if (sessionData && needsSessionData) {
-      dispatch(setCurrentSession(sessionData.id));
+    if (!sessionData || sessionData.id !== sessionId) return;
+    dispatch(setCurrentSession(sessionData.id));
+    // Only hydrate currentBlockIndex on initial load/reload so refetch after generateBlockSequence doesn't overwrite
+    if (currentSessionId !== sessionId) {
       dispatch(setCurrentBlockIndex(sessionData.currentBlockIndex));
-      dispatch(setTotalBlocks(sessionData.totalBlocks));
-      dispatch(setBlockQueue(sessionData.blocks));
     }
-  }, [sessionData, needsSessionData, dispatch]);
+  }, [sessionData, sessionId, currentSessionId, dispatch]);
 
-  // Check if block already exists in queue to avoid race condition
-  // Skip fetch if block is already available (just created via mutation)
-  const blockExistsInQueue = blockQueue[currentBlockIndex] !== undefined;
-
-  // Fetch block from API only if not in queue (e.g., direct URL navigation or page refresh)
-  const { data: fetchedBlock, isLoading: isBlockLoading } = useGetBlockQuery(
+  // Current block content from getBlock only (no full session refetch on navigate)
+  const { data: blockResponse, isLoading: isBlockLoading } = useGetBlockQuery(
     { sessionId, orderIndex: String(currentBlockIndex) },
-    { skip: currentSessionId !== sessionId || blockExistsInQueue }
+    { skip: !sessionData }
   );
+  const displayBlock = blockResponse?.data;
 
-  // Use fetched block or fallback to block queue
-  const displayBlock = fetchedBlock?.data ?? blockQueue[currentBlockIndex];
-
-  // Redirect if no session data (only after trying to fetch)
+  // Redirect when session not found or invalid
   useEffect(() => {
-    // Don't redirect while loading session data
     if (isLoadingSession) return;
-    
-    // Don't redirect if we have session data being hydrated
-    if (sessionData && needsSessionData) return;
-    
-    // Redirect if still no session after fetch attempt
-    if (!currentSessionId || currentSessionId !== sessionId) {
+    if (!sessionData && sessionId) {
       router.push('/');
     }
-  }, [currentSessionId, sessionId, router, isLoadingSession, sessionData, needsSessionData]);
-  
-  // Manage loading state
+  }, [sessionData, sessionId, router, isLoadingSession]);
+
   useEffect(() => {
     if (!displayBlock || isBlockLoading) {
       dispatch(setLoading(true));
@@ -99,33 +77,23 @@ export default function SessionPage() {
     }
   }, [displayBlock, isBlockLoading, dispatch]);
 
-  // Handle generating next sequence
   const handleGenerateNextSequence = async () => {
     try {
       const result = await generateBlockSequence({ sessionId }).unwrap();
-      
-      // Add new blocks to queue
-      dispatch(addBlockToQueue(result.informBlock));
-      result.practiceBlocks.forEach((block) => {
-        dispatch(addBlockToQueue(block));
-      });
-      
-      // Update total blocks
-      dispatch(setTotalBlocks(totalBlocks + 4));
-      
-      // Navigate to the new inform block
-      dispatch(setCurrentBlockIndex(result.informBlock.orderIndex));
+      const newIndex = result.informBlock.orderIndex;
+      dispatch(setCurrentBlockIndex(newIndex));
+      await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
     } catch (error) {
       console.error('Failed to generate next sequence:', error);
       alert('Failed to generate next sequence. Please try again.');
     }
   };
 
-  // Handle generating summary (API returns block + sessionDuration, totalBlocks; sessionInfo from session + result)
   const handleGenerateSummary = async () => {
     try {
       const result = await generateSummaryBlock({ sessionId }).unwrap();
       const block = result as Block;
+      const newIndex = result.orderIndex;
       setSummaryData({
         block,
         sessionInfo: {
@@ -135,16 +103,14 @@ export default function SessionPage() {
           sessionDuration: result.sessionDuration,
         },
       });
-      dispatch(addBlockToQueue(block));
-      dispatch(setTotalBlocks(totalBlocks + 1));
-      dispatch(setCurrentBlockIndex(result.orderIndex));
+      dispatch(setCurrentBlockIndex(newIndex));
+      await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
     } catch (error) {
       console.error('Failed to generate summary:', error);
       alert('Failed to generate summary. Please try again.');
     }
   };
 
-  // Handle block navigation via continue endpoint
   const handleContinue = async () => {
     try {
       const response = await continueSession({ sessionId }).unwrap();
@@ -153,53 +119,37 @@ export default function SessionPage() {
         case 'navigate':
           if (response.targetBlockIndex !== undefined) {
             dispatch(setCurrentBlockIndex(response.targetBlockIndex));
+            await updateCurrentBlockIndex({ sessionId, currentBlockIndex: response.targetBlockIndex }).unwrap();
           }
           break;
-
         case 'next-sequence':
-          // Generate next block sequence
           await handleGenerateNextSequence();
           break;
-
         case 'summary':
-          // Generate summary block
           await handleGenerateSummary();
           break;
-
         case 'prompt-user':
-          // Show dialog asking user to choose between easier goal or continue
           setShowPromptDialog(true);
           break;
-
         default:
           console.error('Unknown action:', response.action);
       }
     } catch (error) {
       console.error('Failed to continue session:', error);
-      // Show error to user
       alert('Failed to continue. Please try again.');
     }
   };
 
-  // Handle user choice for prompt dialog
   const handleEasierGoal = async () => {
     setShowPromptDialog(false);
-    
     try {
-      // Show loading state
       dispatch(setLoading(true));
-      
-      // Generate easier learning goals based on session
       const result = await generateEasierLearningGoals({ sessionId }).unwrap();
-      
-      // Set learning goals page data with easier goals
       dispatch(setLearningGoalPageData({
         topic: result.topic,
         keywords: result.priorKnowledge || '',
         goals: result.learningGoals,
       }));
-      
-      // Navigate to learning goal page
       router.push('/learning-goal');
     } catch (error) {
       console.error('Failed to generate easier learning goals:', error);
@@ -210,7 +160,6 @@ export default function SessionPage() {
 
   const handleContinueWithCurrentGoal = async () => {
     setShowPromptDialog(false);
-    // Generate next sequence
     await handleGenerateNextSequence();
   };
 
@@ -221,7 +170,6 @@ export default function SessionPage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-background">
       <main className="container mx-auto px-4 flex items-center justify-center min-h-[calc(100vh-4rem)]">
-        {/* Block Display */}
         <BlockContainer>
           {displayBlock.type === BlockType.INFORM && (
             <InformBlock
@@ -246,7 +194,6 @@ export default function SessionPage() {
         </BlockContainer>
       </main>
 
-      {/* Prompt User Dialog */}
       <GoalAdjustmentDialog
         isOpen={showPromptDialog}
         onContinueWithCurrentGoal={handleContinueWithCurrentGoal}

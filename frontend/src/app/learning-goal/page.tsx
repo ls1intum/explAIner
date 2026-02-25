@@ -9,12 +9,6 @@ import CustomLearningGoalCard from '@/components/learning-goals/CustomLearningGo
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useCreateSessionMutation } from '@/store/api/sessionsApi';
-import {
-  setCurrentSession,
-  setTotalBlocks,
-  setBlockQueue,
-  setCurrentBlockIndex,
-} from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
 import type { LearningGoal } from '@/types/domain';
 
@@ -102,18 +96,7 @@ export default function LearningGoalPage() {
         priorKnowledge: pageData.keywords?.trim() || undefined,
       }).unwrap();
 
-      dispatch(setCurrentSession(response.id));
-      dispatch(setCurrentBlockIndex(0));
-      dispatch(setTotalBlocks(response.totalBlocks));
-      
-      // Mark first block as viewed and set block queue
-      const blocksWithFirstViewed = response.blocks.map((block, index) => ({
-        ...block,
-        alreadyViewed: index === 0 ? true : block.alreadyViewed,
-      }));
-      dispatch(setBlockQueue(blocksWithFirstViewed));
-
-      // Navigate to session page
+      // Session page will fetch getSession and hydrate currentBlockIndex
       router.push(`/session/${response.id}`);
     } catch (error) {
       console.error('Failed to create session:', error);

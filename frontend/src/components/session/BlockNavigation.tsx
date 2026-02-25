@@ -1,21 +1,39 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { ReaderIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex } from '@/store/slices/sessionSlice';
+import { useGetSessionQuery, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
 import { BlockType } from '@/types/domain';
 import type { Block } from '@/types/domain';
 
 export default function BlockNavigation() {
   const dispatch = useAppDispatch();
-  const { currentBlockIndex, blockQueue } = useAppSelector((state) => state.session);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const activeChipRef = useRef<HTMLButtonElement>(null);
+  const { currentSessionId, currentBlockIndex } = useAppSelector((state) => state.session);
+  const { data: sessionData } = useGetSessionQuery(
+    { sessionId: currentSessionId! },
+    { skip: !currentSessionId }
+  );
+  const sessionId = currentSessionId ?? '';
+  const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
 
-  // Filter to only show blocks that have been viewed
-  const viewedBlocks = blockQueue.filter((block: Block) => block.alreadyViewed);
+  const blocks = sessionData?.blocks ?? [];
+  // Viewed = server alreadyViewed OR we've navigated to this index (slice); no refetch on navigate
+  const viewedBlocks = blocks
+    .filter((block: Block) => block.alreadyViewed || block.orderIndex <= currentBlockIndex)
+    .sort((a: Block, b: Block) => a.orderIndex - b.orderIndex);
 
-  // Navigate to specific block
+  // Scroll so the active chip is visible (navbar is horizontally scrollable)
+  useEffect(() => {
+    activeChipRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, [currentBlockIndex, viewedBlocks.length]);
+
   const handleBlockClick = (index: number) => {
     dispatch(setCurrentBlockIndex(index));
+    void updateCurrentBlockIndex({ sessionId, currentBlockIndex: index });
   };
 
   if (viewedBlocks.length === 0) {
@@ -23,21 +41,24 @@ export default function BlockNavigation() {
   }
 
   return (
-    <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
+    <div
+      ref={scrollContainerRef}
+      className="flex items-center gap-0 overflow-x-auto overflow-y-hidden scrollbar-hide min-w-0"
+      style={{ scrollBehavior: 'smooth' }}
+    >
       {viewedBlocks.map((block: Block, viewedIndex: number) => {
         const index = block.orderIndex;
         const isActive = index === currentBlockIndex;
         const isPast = index < currentBlockIndex;
 
         return (
-          <div key={block.id} className="flex items-center">
-            {/* Horizontal line before each chip except the first */}
+          <div key={block.id} className="flex items-center flex-shrink-0">
             {viewedIndex > 0 && (
               <div className="h-[2px] w-4 bg-white/40 flex-shrink-0" />
             )}
-            
-            {/* Block chip */}
+
             <button
+              ref={isActive ? activeChipRef : undefined}
               onClick={() => handleBlockClick(index)}
               className={`
                 flex items-center justify-center gap-1.5 rounded-full
@@ -52,6 +73,7 @@ export default function BlockNavigation() {
               `}
               aria-label={`${block.type} block ${index + 1}`}
               title={`${block.type} block ${index + 1}`}
+              type="button"
             >
               {block.type === BlockType.INFORM ? (
                 <ReaderIcon className={isActive ? 'w-5 h-5' : 'w-4 h-4'} />

@@ -15,11 +15,11 @@ export default function Navbar() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector((state) => state.ui.isLoading);
-  const currentSessionId = useAppSelector((state) => state.session.currentSessionId);
   const isLandingPage = pathname === '/';
   const isImpressumPage = pathname === '/impressum';
   const isLearningGoalPage = pathname === '/learning-goal';
   const isSessionPage = pathname.startsWith('/session/');
+  const sessionIdFromPath = isSessionPage ? pathname.split('/')[2] : null;
   
   // Dialog state
   const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
@@ -30,20 +30,16 @@ export default function Navbar() {
   // Handle end session confirmation
   const handleEndSession = async () => {
     setShowEndSessionDialog(false);
-    
-    // Delete session from database if we have a sessionId
-    if (currentSessionId) {
+
+    if (sessionIdFromPath) {
       try {
-        await deleteSession({ sessionId: currentSessionId }).unwrap();
+        await deleteSession({ sessionId: sessionIdFromPath }).unwrap();
       } catch (error) {
         console.error('Failed to delete session:', error);
       }
     }
-    
-    // Clear frontend state
+
     dispatch(resetSession());
-    
-    // Navigate to home
     router.push('/');
   };
 
@@ -87,8 +83,8 @@ export default function Navbar() {
                 {/* Separator arrow */}
                 <ChevronRightIcon className="w-5 h-5 text-white/60 flex-shrink-0" />
                 
-                {/* Block Navigation */}
-                <div className="flex-1 overflow-x-auto">
+                {/* Block Navigation (min-w-0 so flex child can shrink and scroll) */}
+                <div className="flex-1 min-w-0 overflow-x-auto">
                   <BlockNavigation />
                 </div>
               </>

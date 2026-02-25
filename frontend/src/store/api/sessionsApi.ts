@@ -58,7 +58,7 @@ export const sessionsApi = baseApi.injectEndpoints({
     >({
       query: ({ sessionId }) =>                                             // API call to server
         `/api/sessions/${sessionId}`,
-      providesTags: ["Session"],                                            // Provide cache tags (for mutations below)
+      providesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }],
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ export const sessionsApi = baseApi.injectEndpoints({
         method: "POST",
         body: {},
       }),
-      invalidatesTags: ["Session"],                                         // Invalidate cache so session is refetched
+      // No invalidatesTags – on "navigate" we only set currentBlockIndex and fetch that block via getBlock
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ export const sessionsApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: { currentBlockIndex },
       }),
-      invalidatesTags: ["Session"],                                         // Invalidate cache so session is refetched
+      // No invalidatesTags – navbar "viewed" chips use slice (orderIndex <= currentBlockIndex)
     }),
 
     ////////////////////////////////////////////////////////////////////////////

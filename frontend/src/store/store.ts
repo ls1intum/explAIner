@@ -5,7 +5,6 @@ import uiReducer from "./slices/uiSlice";
 import learningGoalsReducer from "./slices/learningGoalsSlice";
 import toastReducer from "./slices/toastSlice";
 import { loggingMiddleware } from "./middleware/loggingMiddleware";
-import { syncCurrentBlockMiddleware } from "./middleware/syncCurrentBlockMiddleware";
 
 // Redux store configuration
 
@@ -20,8 +19,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(baseApi.middleware)
-      .concat(loggingMiddleware)
-      .concat(syncCurrentBlockMiddleware),
+      .concat(loggingMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
