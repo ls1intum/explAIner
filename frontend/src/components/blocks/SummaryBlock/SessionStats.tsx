@@ -1,11 +1,12 @@
 interface SessionStatsProps {
   totalBlocks: number;
+  /** Minutes; when 0 (e.g. after reload) the duration block is hidden. */
   sessionDuration: number;
 }
 
 export default function SessionStats({ totalBlocks, sessionDuration }: SessionStatsProps) {
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className={`grid gap-6 ${sessionDuration > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
       {/* Blocks Completed */}
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -29,30 +30,32 @@ export default function SessionStats({ totalBlocks, sessionDuration }: SessionSt
         </div>
       </div>
 
-      {/* Session Duration */}
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-          <svg
-            className="w-6 h-6 text-primary"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </div>
-        <div>
-          <div className="text-3xl font-bold text-foreground">
-            {sessionDuration} {sessionDuration === 1 ? 'minute' : 'minutes'}
+      {/* Session Duration (hidden when 0, e.g. summary shown after page reload) */}
+      {sessionDuration > 0 && (
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+            <svg
+              className="w-6 h-6 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
           </div>
-          <div className="text-sm text-muted-foreground">Session Duration</div>
+          <div>
+            <div className="text-3xl font-bold text-foreground">
+              {sessionDuration} {sessionDuration === 1 ? 'minute' : 'minutes'}
+            </div>
+            <div className="text-sm text-muted-foreground">Session Duration</div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

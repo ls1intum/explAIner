@@ -48,7 +48,7 @@ export default function SessionPage() {
   useEffect(() => {
     if (!sessionData || sessionData.id !== sessionId) return;
     dispatch(setCurrentSession(sessionData.id));
-    // Only hydrate currentBlockIndex on initial load/reload so refetch after generateBlockSequence doesn't overwrite
+    // Only hydrate currentBlockIndex on initial load/reload so refetch after generate doesn't overwrite
     if (currentSessionId !== sessionId) {
       dispatch(setCurrentBlockIndex(sessionData.currentBlockIndex));
     }
@@ -60,6 +60,17 @@ export default function SessionPage() {
     { skip: !sessionData }
   );
   const displayBlock = blockResponse?.data;
+
+  // SessionInfo for summary block: from sessionData; duration from just-generated response (0 on reload, getSession doesn't return it)
+  const summarySessionInfo =
+    displayBlock?.type === BlockType.SUMMARY && sessionData
+      ? {
+          learningGoal: sessionData.learningGoal?.learningGoal ?? '',
+          bloomsLevel: sessionData.learningGoal?.bloomsLevel ?? '',
+          totalBlocks: sessionData.totalBlocks ?? 0,
+          sessionDuration: summaryData?.sessionInfo.sessionDuration ?? 0,
+        }
+      : null;
 
   // Redirect when session not found or invalid
   useEffect(() => {
@@ -185,10 +196,10 @@ export default function SessionPage() {
               onContinue={handleContinue}
             />
           )}
-          {displayBlock.type === BlockType.SUMMARY && summaryData && (
+          {displayBlock.type === BlockType.SUMMARY && summarySessionInfo && (
             <SummaryBlock
               block={displayBlock}
-              sessionInfo={summaryData.sessionInfo}
+              sessionInfo={summarySessionInfo}
             />
           )}
         </BlockContainer>
