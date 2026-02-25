@@ -182,29 +182,33 @@ export default function PracticeBlock({
           )}
         </div>
 
-        {/* Check Answer Button (outside card, blue-purple gradient) */}
+        {/* Check Answer Button (outside card). Shadow on wrapper to avoid Safari box-shadow + gradient glitch. */}
         {!isChecked && (
           <div className="flex justify-end">
-            <button
-              onClick={handleCheckAnswer}
-              disabled={selectedOptions.length === 0 || isSubmittingAnswer}
-              className="bg-brand-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-            >
-              {isSubmittingAnswer ? 'Checking...' : 'Check Answer'}
-            </button>
+            <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+              <button
+                onClick={handleCheckAnswer}
+                disabled={selectedOptions.length === 0 || isSubmittingAnswer}
+                className="bg-brand-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed border-0 appearance-none"
+              >
+                {isSubmittingAnswer ? 'Checking...' : 'Check Answer'}
+              </button>
+            </span>
           </div>
         )}
 
-        {/* Continue Button (outside card, green gradient - same as inform block) */}
+        {/* Continue Button (outside card). Shadow on wrapper to avoid Safari box-shadow + gradient glitch. */}
         {isChecked && (
           <div className="flex justify-end">
-            <button
-              onClick={handleContinue}
-              className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity shadow-lg flex items-center gap-2"
-            >
-              <span>Continue</span>
-              <ChevronRightIcon className="w-5 h-5" />
-            </button>
+            <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+              <button
+                onClick={handleContinue}
+                className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
+              >
+                <span>Continue</span>
+                <ChevronRightIcon className="w-5 h-5" />
+              </button>
+            </span>
           </div>
         )}
       </div>

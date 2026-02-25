@@ -365,15 +365,17 @@ export default function InformBlock({
         </div>
       </div>
 
-        {/* Continue Button (Outside Card) */}
+        {/* Continue Button (Outside Card). Shadow on wrapper to avoid Safari box-shadow + gradient glitch. */}
         <div className="flex justify-end">
-          <button
-            onClick={onContinue}
-            className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity shadow-lg flex items-center gap-2"
-          >
-            <span>Continue</span>
-            <ChevronRightIcon className="w-5 h-5" />
-          </button>
+          <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+            <button
+              onClick={onContinue}
+              className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
+            >
+              <span>Continue</span>
+              <ChevronRightIcon className="w-5 h-5" />
+            </button>
+          </span>
         </div>
       </div>
     </div>
