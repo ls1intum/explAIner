@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex, addBlockToQueue, setTotalBlocks, setCurrentSession, setBlockQueue } from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
-import { setLearningGoalsPageData } from '@/store/slices/learningGoalsSlice';
+import { setLearningGoalPageData } from '@/store/slices/learningGoalsSlice';
 import { useGetSessionQuery, useContinueSessionMutation } from '@/store/api/sessionsApi';
 import { useGetBlockQuery, useGenerateBlockSequenceMutation, useGenerateSummaryBlockMutation } from '@/store/api/blocksApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
@@ -193,7 +193,7 @@ export default function SessionPage() {
       const result = await generateEasierLearningGoals({ sessionId }).unwrap();
       
       // Set learning goals page data with easier goals
-      dispatch(setLearningGoalsPageData({
+      dispatch(setLearningGoalPageData({
         topic: result.topic,
         keywords: result.priorKnowledge || '',
         goals: result.learningGoals,

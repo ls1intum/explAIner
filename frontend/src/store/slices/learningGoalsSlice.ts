@@ -3,33 +3,52 @@ import type { LearningGoalPageData } from "@/types/ui";
 
 // Learning goals state for session setup
 
+interface LandingPageData {
+  topic: string;
+  priorKnowledge: string;
+}
+
 interface LearningGoalsState {
-  pageData: LearningGoalPageData | null;
+  landingPageData: LandingPageData;
+  learningGoalPageData: LearningGoalPageData | null;
 }
 
 const initialState: LearningGoalsState = {
-  pageData: null,
+  landingPageData: { topic: "", priorKnowledge: "" },
+  learningGoalPageData: null,
 };
 
 export const learningGoalsSlice = createSlice({
   name: "learningGoals",
   initialState,
   reducers: {
-    // Set the learning goals page data (topic, keywords, and generated goals)
-    setLearningGoalsPageData: (
+    setLearningGoalPageData: (
       state,
       action: PayloadAction<LearningGoalPageData>
     ) => {
-      state.pageData = action.payload;
+      state.learningGoalPageData = action.payload;
     },
-    // Clear the learning goals page data
-    clearLearningGoalsPageData: (state) => {
-      state.pageData = null;
+    clearLearningGoalPageData: (state) => {
+      state.learningGoalPageData = null;
+    },
+    setLandingPageTopic: (state, action: PayloadAction<string>) => {
+      state.landingPageData.topic = action.payload;
+    },
+    setLandingPagePriorKnowledge: (state, action: PayloadAction<string>) => {
+      state.landingPageData.priorKnowledge = action.payload;
+    },
+    clearLandingPageData: (state) => {
+      state.landingPageData = { topic: "", priorKnowledge: "" };
     },
   },
 });
 
-export const { setLearningGoalsPageData, clearLearningGoalsPageData } =
-  learningGoalsSlice.actions;
+export const {
+  setLearningGoalPageData,
+  clearLearningGoalPageData,
+  setLandingPageTopic,
+  setLandingPagePriorKnowledge,
+  clearLandingPageData,
+} = learningGoalsSlice.actions;
 
 export default learningGoalsSlice.reducer;

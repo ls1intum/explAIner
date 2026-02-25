@@ -21,7 +21,7 @@ import type { LearningGoal } from '@/types/domain';
 export default function LearningGoalPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const pageData = useAppSelector((state) => state.learningGoals.pageData);
+  const pageData = useAppSelector((state) => state.learningGoals.learningGoalPageData);
   
   // State for predefined goals
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);

@@ -1,23 +1,27 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
 import TopicOrQuestionInput from '@/components/learning-topic/TopicOrQuestionInput';
 import PriorKnowledgeKeywordsInput from '@/components/learning-topic/PriorKnowledgeKeywordsInput';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import { useGenerateLearningGoalsMutation } from '@/store/api/learningGoalsApi';
-import { useAppDispatch } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setLoading } from '@/store/slices/uiSlice';
-import { setLearningGoalsPageData } from '@/store/slices/learningGoalsSlice';
+import {
+  setLearningGoalPageData,
+  setLandingPageTopic,
+  setLandingPagePriorKnowledge,
+  clearLandingPageData,
+} from '@/store/slices/learningGoalsSlice';
 import { addToast } from '@/store/slices/toastSlice';
 
 export default function Home() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [topic, setTopic] = useState('');
-  const [keywords, setKeywords] = useState('');
+  const { topic, priorKnowledge } = useAppSelector((state) => state.learningGoals.landingPageData);
   const hasStartedTyping = topic.length > 0;
 
   const [generateLearningGoals, { isLoading }] =
@@ -33,19 +37,19 @@ export default function Home() {
       // Call API to generate learning goals
       const result = await generateLearningGoals({
         topic,
-        priorKnowledge: keywords.trim() || undefined,
+        priorKnowledge: priorKnowledge.trim() || undefined,
       }).unwrap();
 
       // Store learning goals data in Redux
       dispatch(
-        setLearningGoalsPageData({
+        setLearningGoalPageData({
           topic,
-          keywords,
+          keywords: priorKnowledge,
           goals: result.learningGoals,
         })
       );
 
-      // Navigate to learning goal page with clean URL
+      dispatch(clearLandingPageData());
       router.push('/learning-goal');
     } catch (err) {
       console.error('Failed to generate learning goals:', err);
@@ -106,12 +110,12 @@ export default function Home() {
         {/* Form Container */}
         <div className="w-full max-w-2xl flex flex-col items-center space-y-6 mt-5">
           {/* Topic Input with Badge Label */}
-          <TopicOrQuestionInput value={topic} onChange={setTopic} />
+          <TopicOrQuestionInput value={topic} onChange={(v) => dispatch(setLandingPageTopic(v))} />
 
           {/* Optional Keywords Input - Shown when typing */}
           {hasStartedTyping && (
             <>
-              <PriorKnowledgeKeywordsInput value={keywords} onChange={setKeywords} />
+              <PriorKnowledgeKeywordsInput value={priorKnowledge} onChange={(v) => dispatch(setLandingPagePriorKnowledge(v))} />
 
               {/* Start Button */}
               <button
