@@ -1,34 +1,18 @@
 import { baseApi } from "./baseApi";
-import type { components, operations } from "@/types/generated";
-
-/** Request types - imported from generated API types and renamed for clarity (request type = request path params AND/OR request body) */
-type CreateSessionRequestBody = components["schemas"]["CreateSessionRequestDto"];
-type CreateSessionRequest = CreateSessionRequestBody;
-
-type GetSessionRequestPathParams = operations["SessionsController_findOne"]["parameters"]["path"];
-type GetSessionRequest = GetSessionRequestPathParams;
-
-type ContinueSessionRequestPathParams = operations["SessionsController_continue"]["parameters"]["path"];
-type ContinueSessionRequest = ContinueSessionRequestPathParams;
-
-type SubmitFeedbackRequestPathParams = operations["SessionsController_submitFeedback"]["parameters"]["path"];
-type SubmitFeedbackRequestBody = components["schemas"]["SubmitFeedbackRequestDto"];
-type SubmitFeedbackRequest = SubmitFeedbackRequestPathParams & SubmitFeedbackRequestBody;
-
-type UpdateCurrentBlockIndexRequestPathParams = operations["SessionsController_updateCurrentBlockIndex"]["parameters"]["path"];
-type UpdateCurrentBlockIndexRequestBody = components["schemas"]["UpdateCurrentBlockIndexRequestDto"];
-type UpdateCurrentBlockIndexRequest = UpdateCurrentBlockIndexRequestPathParams & UpdateCurrentBlockIndexRequestBody;
-
-type DeleteSessionRequestPathParams = operations["SessionsController_remove"]["parameters"]["path"];
-type DeleteSessionRequest = DeleteSessionRequestPathParams;
-
-/** Response types - imported from generated API types and renamed for clarity */
-type CreateSessionResponse = components["schemas"]["CreateSessionResponseDto_Output"];
-type GetSessionResponse = components["schemas"]["GetSessionResponseDto_Output"];
-type ContinueSessionResponse = components["schemas"]["ContinueSessionResponseDto_Output"];
-type SubmitFeedbackResponse = components["schemas"]["SubmitFeedbackResponseDto_Output"];
-type UpdateCurrentBlockIndexResponse = components["schemas"]["UpdateCurrentBlockIndexResponseDto_Output"];
-type DeleteSessionResponse = components["schemas"]["DeleteSessionResponseDto_Output"];
+import type {
+  CreateSessionRequest,
+  CreateSessionResponse,
+  GetSessionRequest,
+  GetSessionResponse,
+  ContinueSessionRequest,
+  ContinueSessionResponse,
+  SubmitFeedbackRequest,
+  SubmitFeedbackResponse,
+  UpdateCurrentBlockIndexRequest,
+  UpdateCurrentBlockIndexResponse,
+  DeleteSessionRequest,
+  DeleteSessionResponse,
+} from "@/types/domain";
 
 /** Sessions API endpoints */
 export const sessionsApi = baseApi.injectEndpoints({

@@ -1,7 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { LearningGoalPageData } from "@/types/ui";
+import type { LearningGoal } from "@/types/domain";
 
 // Learning goals state for session setup
+
+/** Data passed from learning-goal page to session creation. */
+export interface LearningGoalPageData {
+  topic: string;
+  keywords?: string;
+  goals: LearningGoal[];
+}
 
 interface LandingPageData {
   topic: string;

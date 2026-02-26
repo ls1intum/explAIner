@@ -1,30 +1,16 @@
 import { baseApi } from "./baseApi";
-import type { components, operations } from "@/types/generated";
-
-/** Request types - imported from generated API types and renamed for clarity (request type = request path params AND/OR request body) */
-type GetBlockRequestPathParams = operations["BlocksController_getBlock"]["parameters"]["path"];
-export type GetBlockRequest = GetBlockRequestPathParams;
-
-type GenerateChatResponseRequestPathParams = operations["BlocksController_sendMessage"]["parameters"]["path"];
-type GenerateChatResponseRequestBody = components["schemas"]["GenerateChatResponseRequestDto"];
-type GenerateChatResponseRequest = GenerateChatResponseRequestPathParams & GenerateChatResponseRequestBody;
-
-type SubmitAnswerRequestPathParams = operations["BlocksController_submitAnswer"]["parameters"]["path"];
-type SubmitAnswerRequestBody = components["schemas"]["SubmitAnswerRequestDto"];
-type SubmitAnswerRequest = SubmitAnswerRequestPathParams & SubmitAnswerRequestBody;
-
-type GenerateBlockSequenceRequestPathParams = operations["BlocksController_generateSequence"]["parameters"]["path"];
-type GenerateBlockSequenceRequest = GenerateBlockSequenceRequestPathParams;
-
-type GenerateSummaryBlockRequestPathParams = operations["BlocksController_generateSummary"]["parameters"]["path"];
-type GenerateSummaryBlockRequest = GenerateSummaryBlockRequestPathParams;
-
-/** Response types - imported from generated API types and renamed for clarity */
-export type GetBlockResponse = components["schemas"]["GetBlockResponseDto_Output"];
-type GenerateChatResponseResponse = components["schemas"]["GenerateChatResponseResponseDto_Output"];
-type SubmitAnswerResponse = components["schemas"]["SubmitAnswerResponseDto_Output"];
-type GenerateBlockSequenceResponse = components["schemas"]["GenerateBlockSequenceResponseDto_Output"];
-type GenerateSummaryBlockResponse = components["schemas"]["GenerateSummaryBlockResponseDto_Output"];
+import type {
+  GetBlockRequest,
+  GetBlockResponse,
+  GenerateChatResponseRequest,
+  GenerateChatResponseResponse,
+  SubmitAnswerRequest,
+  SubmitAnswerResponse,
+  GenerateBlockSequenceRequest,
+  GenerateBlockSequenceResponse,
+  GenerateSummaryBlockRequest,
+  GenerateSummaryBlockResponse,
+} from "@/types/domain";
 
 /** Blocks API endpoints */
 export const blocksApi = baseApi.injectEndpoints({

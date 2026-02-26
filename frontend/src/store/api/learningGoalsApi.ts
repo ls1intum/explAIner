@@ -1,16 +1,10 @@
 import { baseApi } from "./baseApi";
-import type { components } from "@/types/generated";
-
-/** Request types - imported from generated API types and renamed for clarity (request type = request path params AND/OR request body) */
-type GenerateLearningGoalsRequestBody = components["schemas"]["GenerateLearningGoalsRequestDto"];
-type GenerateLearningGoalsRequest = GenerateLearningGoalsRequestBody; // this request has no path params
-
-type GenerateEasierLearningGoalsRequestBody = components["schemas"]["GenerateEasierLearningGoalsRequestDto"];
-type GenerateEasierLearningGoalsRequest = GenerateEasierLearningGoalsRequestBody; // this request has no path params
-
-/** Response types - imported from generated API types and renamed for clarity */
-type GenerateLearningGoalsResponse = components["schemas"]["GenerateLearningGoalsResponseDto_Output"];
-type GenerateEasierLearningGoalsResponse = components["schemas"]["GenerateEasierLearningGoalsResponseDto_Output"];
+import type {
+  GenerateLearningGoalsRequest,
+  GenerateLearningGoalsResponse,
+  GenerateEasierLearningGoalsRequest,
+  GenerateEasierLearningGoalsResponse,
+} from "@/types/domain";
 
 /** Learning Goals API endpoints */
 export const learningGoalsApi = baseApi.injectEndpoints({

@@ -11,14 +11,11 @@ frontend/src/types/
 ├── generated/           # Auto-generated from OpenAPI spec
 │   ├── api.types.ts    # Generated types (DO NOT EDIT MANUALLY)
 │   └── index.ts        # Re-exports
-├── domain/             # API contract types (re-exports from generated)
-│   ├── session.types.ts
-│   ├── block.types.ts
-│   ├── learning-goals.types.ts
-│   ├── enums.ts
-│   └── index.ts
-└── ui/                 # Frontend-only types
-    ├── page-data.types.ts
+└── domain/             # API contract types (re-exports from generated)
+    ├── session.types.ts
+    ├── block.types.ts
+    ├── learning-goals.types.ts
+    ├── enums.ts
     └── index.ts
 ```
 
@@ -56,21 +53,9 @@ import { BlockType } from '@/types/domain';
 - `Session` → `components['schemas']['GetSessionResponseDto_Output']`
 - `LearningGoal` → `components['schemas']['LearningGoalDto']`
 
-### 3. UI Types (`ui/`)
+### 3. Frontend-only types
 
-**Source:** Manually defined for frontend-specific needs
-
-**Purpose:** Types that are NOT part of the API contract
-
-**Usage:**
-```typescript
-import { LearningGoalPageData } from '@/types/ui';
-```
-
-**Examples:**
-- `LearningGoalPageData` - Data passed between pages in the frontend
-- Component prop types (if needed)
-- Frontend state types (if not covered by Redux)
+Types that are not part of the API contract (e.g. page data passed between routes) live in the slice or component that owns them. Example: `LearningGoalPageData` is defined and exported from `learningGoalsSlice.ts`.
 
 ## Best Practices
 
@@ -86,15 +71,7 @@ import { LearningGoalPageData } from '@/types/ui';
    npm run generate:api-types
    ```
 
-3. **Add UI-specific types to `ui/` folder:**
-   ```typescript
-   // ui/page-data.types.ts
-   export interface MyCustomPageData {
-     // Frontend-only fields
-   }
-   ```
-
-4. **Use BlockType constants:**
+3. **Use BlockType constants:**
    ```typescript
    if (block.type === BlockType.INFORM) { ... }
    ```
