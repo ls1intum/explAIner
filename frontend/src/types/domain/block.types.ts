@@ -1,8 +1,8 @@
 /**
  * Block Domain Types
  *
- * Re-exports from generated API types. Block shape matches get-block and get-session blocks.
- * To regenerate: npm run generate:api-types
+ * Generated from OpenAPI specification, re-exported here for client-side usage with cleaner imports
+ * For further details, see ../README.md (client/src/types/README.md)
  */
 
 import type { components, operations } from '../generated/api.types';

@@ -1,11 +1,8 @@
 /**
- * Learning Goals Domain Types
+ * Learning-Goals Domain Types
  * 
- * Re-exports from generated API types for cleaner imports.
- * These types represent the API contract between frontend and backend.
- * 
- * Source: Generated from OpenAPI specification
- * To regenerate: npm run generate:api-types
+ * Generated from OpenAPI specification, re-exported here for client-side usage with cleaner imports
+ * For further details, see ../README.md (client/src/types/README.md)
  */
 
 import type { components } from '../generated/api.types';

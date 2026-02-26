@@ -1,8 +1,8 @@
 /**
  * Domain Enums
  * 
- * Type aliases and constants for enum-like values from the API.
- * These are derived from the generated OpenAPI types.
+ * Generated from OpenAPI specification, re-exported here for client-side usage with cleaner imports
+ * For further details, see ../README.md (client/src/types/README.md)
  */
 
 import type { components } from '../generated/api.types';
