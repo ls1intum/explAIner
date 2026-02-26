@@ -2,14 +2,14 @@
 
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { removeToast, type Toast } from "@/store/slices/toastSlice";
+import { removeToast, type Toast } from "@/store/slices/uiSlice";
 import { CrossCircledIcon, CheckCircledIcon, InfoCircledIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 // Toast notification component
 
 export default function Toast() {
   const dispatch = useAppDispatch();
-  const toasts = useAppSelector((state) => state.toast.toasts);
+  const toasts = useAppSelector((state) => state.ui.toasts);
 
   return (
     <div className="fixed top-20 right-4 z-50 flex flex-col gap-3 max-w-sm">

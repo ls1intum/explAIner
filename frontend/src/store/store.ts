@@ -1,10 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./api/baseApi";
-import sessionReducer from "./slices/sessionSlice";
-import uiReducer from "./slices/uiSlice";
-import learningGoalsReducer from "./slices/learningGoalsSlice";
-import toastReducer from "./slices/toastSlice";
 import { loggingMiddleware } from "./middleware/loggingMiddleware";
+import sessionReducer from "./slices/sessionSlice";
+import learningGoalsReducer from "./slices/learningGoalsSlice";
+import uiReducer from "./slices/uiSlice";
 
 /** 
  * Redux store configuration 
@@ -13,9 +12,8 @@ export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
     session: sessionReducer,
-    ui: uiReducer,
     learningGoals: learningGoalsReducer,
-    toast: toastReducer,
+    ui: uiReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()

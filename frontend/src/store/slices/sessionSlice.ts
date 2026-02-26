@@ -1,12 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// UI state: which block is selected (hydrated from getSession; synced to server via updateCurrentBlockIndex)
-// highestAlreadyViewedBlockIndex = highest block index ever opened (for navbar chips when navigating back; hydrated from blocks.alreadyViewed)
-
 interface SessionState {
   currentSessionId: string | null;
-  currentBlockIndex: number;
-  highestAlreadyViewedBlockIndex: number;
+  currentBlockIndex: number; // block index of block currently being viewed by the client (synced to server via updateCurrentBlockIndex, hydrated from getSession)
+  highestAlreadyViewedBlockIndex: number; // highest block index ever viewed by the client (necessary to show/hide the already viewed / not yet viewed block chips in the navbar which allow to navigate between blocks; hydrated from blocks.alreadyViewed)
 }
 
 const initialState: SessionState = {
@@ -15,11 +12,14 @@ const initialState: SessionState = {
   highestAlreadyViewedBlockIndex: 0,
 };
 
+/** 
+ * Redux session slice 
+ */
 export const sessionSlice = createSlice({
   name: "session",
   initialState,
   reducers: {
-    setCurrentSession: (state, action: PayloadAction<string>) => {
+    setCurrentSessionId: (state, action: PayloadAction<string>) => {
       state.currentSessionId = action.payload;
     },
     setCurrentBlockIndex: (state, action: PayloadAction<number>) => {
@@ -37,5 +37,5 @@ export const sessionSlice = createSlice({
   },
 });
 
-export const { setCurrentSession, setCurrentBlockIndex, setHighestAlreadyViewedBlockIndex, resetSession } = sessionSlice.actions;
+export const { setCurrentSessionId, setCurrentBlockIndex, setHighestAlreadyViewedBlockIndex, resetSession } = sessionSlice.actions;
 export default sessionSlice.reducer;

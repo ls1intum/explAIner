@@ -25,6 +25,9 @@ const initialState: LearningGoalsState = {
   learningGoalPageData: null,
 };
 
+/** 
+ * Redux learning-goal slice 
+ */
 export const learningGoalsSlice = createSlice({
   name: "learningGoals",
   initialState,

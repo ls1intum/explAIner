@@ -9,14 +9,8 @@ import PriorKnowledgeKeywordsInput from '@/components/learning-topic/PriorKnowle
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import { useGenerateLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setLoading } from '@/store/slices/uiSlice';
-import {
-  setLearningGoalPageData,
-  setLandingPageTopic,
-  setLandingPagePriorKnowledge,
-  clearLandingPageData,
-} from '@/store/slices/learningGoalsSlice';
-import { addToast } from '@/store/slices/toastSlice';
+import { setLoading, addToast } from '@/store/slices/uiSlice';
+import { setLearningGoalPageData, setLandingPageTopic, setLandingPagePriorKnowledge, clearLandingPageData } from '@/store/slices/learningGoalsSlice';
 
 export default function HomePageClient() {
   const router = useRouter();
