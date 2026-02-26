@@ -7,11 +7,11 @@ type ActionWithMeta = { type?: string; meta?: { arg?: { endpointName?: string; o
 
 /**
  * Redux logging middleware
- * Format: [REDUX] <API endpoint> <body>
+ * Format: [REDUX-RTK-QUERY] <API endpoint> <body>
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- middleware API requires first param
 export const loggingMiddleware: Middleware = (storeApi) => (next) => (action: unknown) => {
-  if (!isLogEnabled('redux')) {
+  if (!isLogEnabled('redux-rtk-query')) {
     return next(action);
   }
 
@@ -23,13 +23,13 @@ export const loggingMiddleware: Middleware = (storeApi) => (next) => (action: un
     if (actionType.endsWith('/pending')) {
       const endpointName = meta.arg?.endpointName || extractEndpointFromType(actionType);
       const body = formatBodyForLogging(meta.arg?.originalArgs);
-      console.log(`[REDUX] ${endpointName} ${body}`);
+      console.log(`[REDUX-RTK-QUERY] ${endpointName} ${body}`);
     }
   }
 
   if (isRejectedWithValue(action as Parameters<typeof isRejectedWithValue>[0])) {
     const endpointName = extractEndpointFromType(actionType);
-    console.error(`[REDUX] ${endpointName} Error:`, (action as { payload?: unknown }).payload);
+    console.error(`[REDUX-RTK-QUERY] ${endpointName} Error:`, (action as { payload?: unknown }).payload);
   }
 
   return next(action);

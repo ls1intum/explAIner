@@ -1,4 +1,6 @@
 /**
+ * Server Logging Config
+ * 
  * Control which log categories are enabled/disabled by setting respective keys to true/false
  * 
  * Example LOG if all categories are enabled (called function: updateCurrentBlockIndex):
