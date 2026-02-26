@@ -15,7 +15,6 @@ import PracticeBlock from '@/components/blocks/PracticeBlock/PracticeBlock';
 import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import BlockContainer from '@/components/blocks/BlockContainer';
 import GoalAdjustmentDialog from '@/components/session/GoalAdjustmentDialog';
-import { BlockType } from '@/types/domain/enums';
 import type { Block } from '@/types/domain/block.types';
 
 interface SessionPageClientProps {
@@ -67,7 +66,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
   const displayBlock = blockResponse?.data;
 
   const summarySessionInfo =
-    displayBlock?.type === BlockType.SUMMARY && sessionData
+    displayBlock?.type === 'Summary' && sessionData
       ? {
           learningGoal: sessionData.learningGoal?.learningGoal ?? '',
           bloomsLevel: sessionData.learningGoal?.bloomsLevel ?? '',
@@ -193,21 +192,21 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     <div className="min-h-[calc(100vh-4rem)] bg-background">
       <main className="container mx-auto px-4 flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <BlockContainer>
-          {displayBlock.type === BlockType.INFORM && (
+          {displayBlock.type === 'Inform' && (
             <InformBlock
               block={displayBlock}
               sessionId={sessionId}
               onContinue={handleContinue}
             />
           )}
-          {displayBlock.type === BlockType.PRACTICE && (
+          {displayBlock.type === 'Practice' && (
             <PracticeBlock
               block={displayBlock}
               sessionId={sessionId}
               onContinue={handleContinue}
             />
           )}
-          {displayBlock.type === BlockType.SUMMARY && summarySessionInfo && (
+          {displayBlock.type === 'Summary' && summarySessionInfo && (
             <SummaryBlock
               block={displayBlock}
               sessionInfo={summarySessionInfo}

@@ -5,7 +5,6 @@ import { ReaderIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex } from '@/store/slices/sessionSlice';
 import { useGetSessionQuery, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
-import { BlockType } from '@/types/domain/enums';
 import type { Block } from '@/types/domain/block.types';
 
 export default function BlockNavigation() {
@@ -75,9 +74,9 @@ export default function BlockNavigation() {
               title={`${block.type} block ${index + 1}`}
               type="button"
             >
-              {block.type === BlockType.INFORM ? (
+              {block.type === 'Inform' ? (
                 <ReaderIcon className={isActive ? 'w-5 h-5' : 'w-4 h-4'} />
-              ) : block.type === BlockType.PRACTICE ? (
+              ) : block.type === 'Practice' ? (
                 <QuestionMarkCircledIcon className={isActive ? 'w-5 h-5' : 'w-4 h-4'} />
               ) : null}
               <span>{block.type}</span>
