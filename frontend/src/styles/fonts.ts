@@ -1,3 +1,7 @@
+/* =============================================================================================================
+   Define the global font for ExplAIner here :)
+   ============================================================================================================= */
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Montserrat } from "next/font/google";
 import { Outfit } from "next/font/google";
@@ -17,10 +21,9 @@ const urbanist = Urbanist({ subsets: ["latin"], weight: ["300", "400", "500", "6
 const archivo = Archivo({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800"] });
 const lexend = Lexend({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800"] });
 
-////////////////////////////////////////////////////////////////////////////
-// Choose your font here: simply uncomment the line you want to use :)
-////////////////////////////////////////////////////////////////////////////
-
+/**
+ * Simply uncomment the font you want to use :)
+*/
 // export const selectedFont = montserrat.className;
 // export const selectedFont = outfit.className;
 // export const selectedFont = dmSans.className;

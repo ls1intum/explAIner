@@ -1,8 +1,17 @@
+/* =============================================================================================================
+   Define the global CSS stylesheet for ExplAIner here :)
+
+   Contents: gradients, animations, scrollbar, ...
+
+   This stylesheet is then imported once in ... 
+    ... layout.tsx (src/app/layout.tsx) which wraps all other pages & components
+   ============================================================================================================= */
+
+ /* This is how Tailwind injects its CSS into the app */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Import theme variables defined in themes.css */
 @import './themes.css';
 
 /* Allow natural scrolling behavior */
@@ -12,12 +21,12 @@ body {
   width: 100%;
 }
 
+/* Create custom utilities using theme variables */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
   
-  /* Create custom utilities using theme variables */
   /* Blue-to-purple gradient background */
   .bg-brand-gradient {
     background: linear-gradient(
@@ -48,36 +57,18 @@ body {
     );
   }
   
-  /* Border utilities using secondary color */
+  /* Border utilities */
   .border-secondary {
     border-color: hsl(var(--secondary));
   }
-  
   .border-t-secondary {
     border-top-color: hsl(var(--secondary));
   }
 
-  /* Toast slide-in animation */
-  .animate-slideInRight {
-    animation: slideInRight 0.3s ease-out;
-  }
-
-  @keyframes slideInRight {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  /* Fade in animation */
+  /* Fade in animation (e.g. used in block container, inform block chat messages, end-session dialog) */
   .animate-fadeIn {
     animation: fadeIn 0.4s ease-in-out;
   }
-
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -89,7 +80,22 @@ body {
     }
   }
 
-  /* Thin horizontal scrollbar for block navigation (discoverable, low visual weight) */
+  /* Toast slide-in animation */
+  .animate-slideInRight {
+    animation: slideInRight 0.3s ease-out;
+  }
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Thin horizontal scrollbar for block navigation in navbar */
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.5) transparent;

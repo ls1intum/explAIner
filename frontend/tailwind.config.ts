@@ -1,6 +1,12 @@
+/* =============================================================================================================
+   Define the Tailwind config for ExplAIner here :)
+   
+   This file maps the CSS variables defined in themes.css (src/styles/themes.css) 
+   to Tailwind classes (e.g. bg-primary, text-foreground, rounded-lg) used by UI elements.
+   ============================================================================================================= */
+
 import type { Config } from "tailwindcss";
 
-/* Map CSS variables to Tailwind classes (enabling use of classes like bg-primary, text-secondary, border-accent, etc.) */
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
