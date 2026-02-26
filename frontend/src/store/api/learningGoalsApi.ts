@@ -4,7 +4,7 @@ import type {
   GenerateLearningGoalsResponse,
   GenerateEasierLearningGoalsRequest,
   GenerateEasierLearningGoalsResponse,
-} from "@/types/domain";
+} from "@/types/domain/learning-goals.types";
 
 /** Learning Goals API endpoints */
 export const learningGoalsApi = baseApi.injectEndpoints({

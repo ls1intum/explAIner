@@ -5,8 +5,8 @@ import { ReaderIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex } from '@/store/slices/sessionSlice';
 import { useGetSessionQuery, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
-import { BlockType } from '@/types/domain';
-import type { Block } from '@/types/domain';
+import { BlockType } from '@/types/domain/enums';
+import type { Block } from '@/types/domain/block.types';
 
 export default function BlockNavigation() {
   const dispatch = useAppDispatch();

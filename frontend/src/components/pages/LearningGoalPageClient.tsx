@@ -10,7 +10,7 @@ import LoadingScreen from '@/components/ui/LoadingScreen';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useCreateSessionMutation } from '@/store/api/sessionsApi';
 import { setLoading } from '@/store/slices/uiSlice';
-import type { LearningGoal } from '@/types/domain';
+import type { LearningGoal } from '@/types/domain/learning-goals.types';
 
 export default function LearningGoalPageClient() {
   const router = useRouter();

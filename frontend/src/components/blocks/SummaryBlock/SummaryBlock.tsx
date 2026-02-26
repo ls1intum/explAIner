@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import type { Block } from '@/types/domain';
+import type { Block } from '@/types/domain/block.types';
 import LearningGoalAchievement from './LearningGoalAchievement';
 import SessionStats from './SessionStats';
 import FeedbackRating from './FeedbackRating';

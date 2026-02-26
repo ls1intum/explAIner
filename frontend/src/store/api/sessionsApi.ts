@@ -12,7 +12,7 @@ import type {
   UpdateCurrentBlockIndexResponse,
   DeleteSessionRequest,
   DeleteSessionResponse,
-} from "@/types/domain";
+} from "@/types/domain/session.types";
 
 /** Sessions API endpoints */
 export const sessionsApi = baseApi.injectEndpoints({

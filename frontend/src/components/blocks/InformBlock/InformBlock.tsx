@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
-import type { Block } from '@/types/domain';
+import type { Block } from '@/types/domain/block.types';
 import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
 import { getRandomMessage } from '@/lib/utils';
 import { INFORM_BLOCK_CHAT_LOADING_MESSAGES } from '@/lib/loadingMessages';

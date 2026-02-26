@@ -9,14 +9,12 @@ This project follows industry best practices for managing TypeScript types in a 
 ```
 frontend/src/types/
 ├── generated/           # Auto-generated from OpenAPI spec
-│   ├── api.types.ts    # Generated types (DO NOT EDIT MANUALLY)
-│   └── index.ts        # Re-exports
+│   └── api.types.ts    # Generated types (DO NOT EDIT MANUALLY)
 └── domain/             # API contract types (re-exports from generated)
     ├── session.types.ts
     ├── block.types.ts
     ├── learning-goals.types.ts
-    ├── enums.ts
-    └── index.ts
+    └── enums.ts
 ```
 
 ## Type Categories
@@ -44,8 +42,10 @@ frontend/src/types/
 
 **Usage:**
 ```typescript
-import { Block, Session, LearningGoal } from '@/types/domain';
-import { BlockType } from '@/types/domain';
+import type { Block } from '@/types/domain/block.types';
+import type { Session } from '@/types/domain/session.types';
+import type { LearningGoal } from '@/types/domain/learning-goals.types';
+import { BlockType } from '@/types/domain/enums';
 ```
 
 **Examples:**
@@ -63,7 +63,7 @@ Types that are not part of the API contract (e.g. page data passed between route
 
 1. **Use domain types in components:**
    ```typescript
-   import type { Block } from '@/types/domain';
+   import type { Block } from '@/types/domain/block.types';
    ```
 
 2. **Regenerate types after backend changes:**
@@ -89,11 +89,11 @@ Types that are not part of the API contract (e.g. page data passed between route
 3. **Don't import from generated directly in components:**
    ```typescript
    // Bad
-   import type { components } from '@/types/generated';
+   import type { components } from '@/types/generated/api.types';
    type Block = components['schemas']['GetBlockResponseDto_Output']['data'];
 
    // Good
-   import type { Block } from '@/types/domain';
+   import type { Block } from '@/types/domain/block.types';
    ```
 
 ## Migration Guide
@@ -107,7 +107,9 @@ import { LearningGoal } from '@/types/learning-goals.types';
 import { BlockType } from '@/types/enums';
 
 // New (current)
-import { Block, LearningGoal, BlockType } from '@/types/domain';
+import type { Block } from '@/types/domain/block.types';
+import type { LearningGoal } from '@/types/domain/learning-goals.types';
+import { BlockType } from '@/types/domain/enums';
 ```
 
 ## Type Safety Benefits

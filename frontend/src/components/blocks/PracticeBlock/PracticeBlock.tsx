@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import { useSubmitAnswerMutation } from '@/store/api/blocksApi';
-import type { Block } from '@/types/domain';
+import type { Block } from '@/types/domain/block.types';
 import AnswerOption from './AnswerOption';
 
 interface PracticeBlockProps {

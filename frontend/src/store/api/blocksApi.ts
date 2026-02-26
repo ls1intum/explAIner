@@ -10,7 +10,7 @@ import type {
   GenerateBlockSequenceResponse,
   GenerateSummaryBlockRequest,
   GenerateSummaryBlockResponse,
-} from "@/types/domain";
+} from "@/types/domain/block.types";
 
 /** Blocks API endpoints */
 export const blocksApi = baseApi.injectEndpoints({

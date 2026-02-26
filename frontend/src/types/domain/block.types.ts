@@ -5,7 +5,7 @@
  * To regenerate: npm run generate:api-types
  */
 
-import type { components, operations } from '../generated';
+import type { components, operations } from '../generated/api.types';
 
 type GetBlockResponseDtoOutput = components['schemas']['GetBlockResponseDto_Output'];
 /** Single block (same shape as get-block response and get-session blocks). */

@@ -5,7 +5,7 @@
  * These are derived from the generated OpenAPI types.
  */
 
-import type { components } from '../generated';
+import type { components } from '../generated/api.types';
 
 // Extract the block type from the get-block response (same as Block['type'])
 export type BlockType = components['schemas']['GetBlockResponseDto_Output']['data']['type'];

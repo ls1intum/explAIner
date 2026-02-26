@@ -8,7 +8,7 @@
  * To regenerate: npm run generate:api-types
  */
 
-import type { components } from '../generated';
+import type { components } from '../generated/api.types';
 
 type GenerateLearningGoalsOutput = components['schemas']['GenerateLearningGoalsResponseDto_Output'];
 export type LearningGoal = GenerateLearningGoalsOutput['learningGoals'][number];

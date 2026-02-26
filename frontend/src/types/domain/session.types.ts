@@ -8,7 +8,7 @@
  * To regenerate: npm run generate:api-types
  */
 
-import type { components, operations } from '../generated';
+import type { components, operations } from '../generated/api.types';
 
 // Session-related types (response DTOs use _Output in generated schema)
 export type Session = components['schemas']['GetSessionResponseDto_Output'];

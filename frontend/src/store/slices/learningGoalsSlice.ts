@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { LearningGoal } from "@/types/domain";
+import type { LearningGoal } from "@/types/domain/learning-goals.types";
 
 // Learning goals state for session setup
 
