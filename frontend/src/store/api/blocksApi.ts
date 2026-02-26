@@ -60,7 +60,7 @@ export const blocksApi = baseApi.injectEndpoints({
         method: "PUT",
         body: { studentAnswerOptionIndices },
       }),
-      invalidatesTags: (result, error, { sessionId, orderIndex }) => [{ type: "Block", id: `${sessionId}-${orderIndex}` }],
+      invalidatesTags: (result, error, { sessionId, orderIndex }) => [{ type: "Block", id: `${sessionId}-${orderIndex}` }], // Invalidate cache tags (so practice block is refetched with answer)
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ export const blocksApi = baseApi.injectEndpoints({
         method: "POST",
         body: {},
       }),
-      invalidatesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }],
+      invalidatesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }], // Invalidate cache tags (so session is refetched with new block sequence)
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ export const blocksApi = baseApi.injectEndpoints({
         method: "POST",
         body: {},
       }),
-      invalidatesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }],
+      invalidatesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }], // Invalidate cache tags (so session is refetched with summary block)
     }),
   }),
 });

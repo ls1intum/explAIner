@@ -22,7 +22,6 @@ export const learningGoalsApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["LearningGoal"],                                    // Invalidate cache so learning goals list is refetched
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -37,7 +36,6 @@ export const learningGoalsApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["LearningGoal"],                                     // Invalidate cache so learning goals list is refetched
     }),
   }),
 });

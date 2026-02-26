@@ -19,6 +19,18 @@ export const sessionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
 
     ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: GET /api/sessions/:sessionId
+    ////////////////////////////////////////////////////////////////////////////
+    getSession: builder.query<
+      GetSessionResponse,                                                   // API Response type
+      GetSessionRequest                                                     // API Request type
+    >({
+      query: ({ sessionId }) =>                                             // API call to server
+        `/api/sessions/${sessionId}`,
+      providesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }], // Provide cache tag (for mutations below to invalidate)
+    }),
+
+    ////////////////////////////////////////////////////////////////////////////
     // API endpoint: POST /api/sessions
     ////////////////////////////////////////////////////////////////////////////
     createSession: builder.mutation<
@@ -30,19 +42,7 @@ export const sessionsApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Session"],                                         // Invalidate cache so sessions list is refetched
-    }),
-
-    ////////////////////////////////////////////////////////////////////////////
-    // API endpoint: GET /api/sessions/:sessionId
-    ////////////////////////////////////////////////////////////////////////////
-    getSession: builder.query<
-      GetSessionResponse,                                                   // API Response type
-      GetSessionRequest                                                     // API Request type
-    >({
-      query: ({ sessionId }) =>                                             // API call to server
-        `/api/sessions/${sessionId}`,
-      providesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }],
+      invalidatesTags: ["Session"],                                         // Invalidate cache tag so sessions is refetched
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,6 @@ export const sessionsApi = baseApi.injectEndpoints({
         method: "POST",
         body: {},
       }),
-      // No invalidatesTags – on "navigate" we only set currentBlockIndex and fetch that block via getBlock
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -72,7 +71,7 @@ export const sessionsApi = baseApi.injectEndpoints({
         method: "PUT",
         body: { rating },
       }),
-      invalidatesTags: ["Session"],                                         // Invalidate cache so session is refetched
+      invalidatesTags: ["Session"],                                         // Invalidate cache tag so session is refetched
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -87,7 +86,6 @@ export const sessionsApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: { currentBlockIndex },
       }),
-      // No invalidatesTags – navbar uses highestAlreadyViewedBlockIndex in slice so chips stay visible when navigating back
     }),
 
     ////////////////////////////////////////////////////////////////////////////
@@ -101,7 +99,6 @@ export const sessionsApi = baseApi.injectEndpoints({
         url: `/api/sessions/${sessionId}`,
         method: "DELETE",
       }),
-      // No invalidatesTags – caller navigates away and clears state
     }),
   }),
 });
