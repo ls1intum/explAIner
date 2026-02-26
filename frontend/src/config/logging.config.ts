@@ -12,9 +12,6 @@ export const LOGGING_CONFIG = {
   'redux-rtk-query': true,
 };
 
-/**
- * Check if a specific log category is enabled
- */
 export function isLogEnabled(category: keyof typeof LOGGING_CONFIG): boolean {
   return LOGGING_CONFIG[category];
 }

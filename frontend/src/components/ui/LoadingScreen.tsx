@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { LOADING_SCREEN_MESSAGES } from '@/lib/loadingMessages';
-import { getRandomMessage } from '@/lib/utils';
+import { getRandomMessage } from '@/lib/loadingMessages';
 import LoadingScreenShell from './LoadingScreenShell';
 
 /** Client-only loading screen: picks random message after mount to avoid hydration mismatch. */

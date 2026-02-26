@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import type { Block } from '@/types/domain/block.types';
 import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
-import { getRandomMessage } from '@/lib/utils';
+import { getRandomMessage } from '@/lib/loadingMessages';
 import { INFORM_BLOCK_CHAT_LOADING_MESSAGES } from '@/lib/loadingMessages';
 import QuickActionChips from './QuickActionChips';
 
