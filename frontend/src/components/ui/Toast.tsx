@@ -45,35 +45,35 @@ function ToastItem({ id, message, type, onClose }: ToastItemProps) {
     return () => clearTimeout(timer);
   }, [id, dispatch]);
 
-  // Icon and color based on type
+  // Icon and colors from theme (themeable, consistent with app)
   const config = {
     success: {
       icon: <CheckCircledIcon className="w-5 h-5" />,
-      bgColor: "bg-green-50",
-      borderColor: "border-green-500",
-      textColor: "text-green-800",
-      iconColor: "text-green-500",
+      bgColor: "bg-success/10",
+      borderColor: "border-success",
+      textColor: "text-success",
+      iconColor: "text-success",
     },
     error: {
       icon: <CrossCircledIcon className="w-5 h-5" />,
-      bgColor: "bg-red-50",
-      borderColor: "border-red-500",
-      textColor: "text-red-800",
-      iconColor: "text-red-500",
+      bgColor: "bg-destructive/10",
+      borderColor: "border-destructive",
+      textColor: "text-destructive",
+      iconColor: "text-destructive",
     },
     info: {
       icon: <InfoCircledIcon className="w-5 h-5" />,
-      bgColor: "bg-blue-50",
-      borderColor: "border-blue-500",
-      textColor: "text-blue-800",
-      iconColor: "text-blue-500",
+      bgColor: "bg-primary/10",
+      borderColor: "border-primary",
+      textColor: "text-primary",
+      iconColor: "text-primary",
     },
     warning: {
       icon: <ExclamationTriangleIcon className="w-5 h-5" />,
-      bgColor: "bg-yellow-50",
-      borderColor: "border-yellow-500",
-      textColor: "text-yellow-800",
-      iconColor: "text-yellow-500",
+      bgColor: "bg-warning/10",
+      borderColor: "border-warning",
+      textColor: "text-warning",
+      iconColor: "text-warning",
     },
   }[type];
 

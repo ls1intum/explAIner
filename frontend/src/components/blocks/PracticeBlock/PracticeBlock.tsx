@@ -127,21 +127,19 @@ export default function PracticeBlock({
           {isChecked && (
             <div
               className={`p-4 rounded-xl flex items-center gap-3 ${
-                isCorrect
-                  ? 'bg-[#10b981]/10'
-                  : 'bg-[#ef4444]/10'
+                isCorrect ? 'bg-success/10' : 'bg-destructive/10'
               }`}
             >
               <div
                 className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                  isCorrect 
-                    ? 'bg-transparent border-[#10b981]' 
-                    : 'bg-transparent border-[#ef4444]'
+                  isCorrect
+                    ? 'bg-transparent border-success'
+                    : 'bg-transparent border-destructive'
                 }`}
               >
                 {isCorrect ? (
                   <svg
-                    className="w-4 h-4 text-[#10b981]"
+                    className="w-4 h-4 text-success"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -155,7 +153,7 @@ export default function PracticeBlock({
                   </svg>
                 ) : (
                   <svg
-                    className="w-4 h-4 text-[#ef4444]"
+                    className="w-4 h-4 text-destructive"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -171,7 +169,7 @@ export default function PracticeBlock({
               </div>
               <p
                 className={`font-medium ${
-                  isCorrect ? 'text-[#10b981]' : 'text-[#ef4444]'
+                  isCorrect ? 'text-success' : 'text-destructive'
                 }`}
               >
                 {isCorrect

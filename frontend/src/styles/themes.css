@@ -8,9 +8,6 @@
   --card: 0 0% 100%;
   --card-foreground: 222.2 84% 4.9%;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-
   /* Primary: Blue-600 - used in gradients */
   --primary: 250 83% 53%;
   --primary-foreground: 0 0% 100%;
@@ -34,6 +31,10 @@
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 100%;
 
+  /* Warning: Amber for toasts/alerts */
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 100%;
+
   --border: 270 30% 90%;
   --input: 220 30% 92%;
   --ring: 271 81% 56%;
@@ -48,9 +49,6 @@
 
   --card: 224 71% 8%;
   --card-foreground: 210 40% 98%;
-
-  --popover: 224 71% 8%;
-  --popover-foreground: 210 40% 98%;
 
   --primary: 221 83% 53%;
   --primary-foreground: 0 0% 100%;
@@ -71,6 +69,9 @@
 
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 100%;
+
+  --warning: 38 92% 55%;
+  --warning-foreground: 0 0% 100%;
 
   --border: 270 20% 20%;
   --input: 217.2 32.6% 17.5%;
