@@ -6,8 +6,9 @@ import learningGoalsReducer from "./slices/learningGoalsSlice";
 import toastReducer from "./slices/toastSlice";
 import { loggingMiddleware } from "./middleware/loggingMiddleware";
 
-// Redux store configuration
-
+/** 
+ * Redux store configuration 
+ */
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
