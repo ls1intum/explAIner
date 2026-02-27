@@ -1,9 +1,9 @@
-interface TopicOrQuestionInputProps {
+interface TopicInputProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export default function TopicOrQuestionInput({ value, onChange }: TopicOrQuestionInputProps) {
+export default function TopicInput({ value, onChange }: TopicInputProps) {
   return (
     <div className="relative w-full">
       <div className="absolute top-0 left-5 -translate-y-1/2 z-10">

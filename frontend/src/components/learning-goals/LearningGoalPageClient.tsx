@@ -4,8 +4,8 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
-import LearningGoalCard from '@/components/learning-goals/LearningGoalCard';
-import CustomLearningGoalCard from '@/components/learning-goals/CustomLearningGoalCard';
+import LearningGoalCard from '@/components/learning-goals/cards/LearningGoalCard';
+import CustomLearningGoalCard from '@/components/learning-goals/cards/CustomLearningGoalCard';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useCreateSessionMutation } from '@/store/api/sessionsApi';
@@ -18,7 +18,7 @@ export default function LearningGoalPageClient() {
   const dispatch = useAppDispatch();
   const { topic, priorKnowledge, learningGoals } = useAppSelector((state) => state.session);
   const pageData =
-    learningGoals === null ? null : { topic, keywords: priorKnowledge, goals: learningGoals };
+    learningGoals === null ? null : { topic, priorKnowledge, learningGoals };
 
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [showPredefined, setShowPredefined] = useState(true);
@@ -61,7 +61,7 @@ export default function LearningGoalPageClient() {
       finalGoal = `After this session, you will be able to ${customBloomsLevel} ${customObjective.trim()}.`;
       finalBloomsLevel = customBloomsLevel;
     } else {
-      const selectedGoal = pageData.goals.find((_goal: LearningGoal, index: number) => selectedGoalId === index.toString());
+      const selectedGoal = pageData.learningGoals.find((_goal: LearningGoal, index: number) => selectedGoalId === index.toString());
       if (!selectedGoal) return;
       finalGoal = selectedGoal.learningGoal;
       finalBloomsLevel = selectedGoal.bloomsLevel;
@@ -75,7 +75,7 @@ export default function LearningGoalPageClient() {
       const response = await createSession({
         topic: pageData.topic,
         learningGoal: { learningGoal: finalGoal, bloomsLevel: finalBloomsLevel as BloomsLevel },
-        priorKnowledge: pageData.keywords?.trim() || undefined,
+        priorKnowledge: pageData.priorKnowledge?.trim() || undefined,
       }).unwrap();
 
       dispatch(clearSessionCreationData());
@@ -94,7 +94,7 @@ export default function LearningGoalPageClient() {
   if (!pageData) return null;
   if (showLoadingScreen) return <LoadingScreen />;
 
-  const transformedGoals = pageData.goals.map((goal: LearningGoal, index: number) => {
+  const transformedGoals = pageData.learningGoals.map((goal: LearningGoal, index: number) => {
     const prefix = 'After this session, you will be able to ';
     let objective = goal.learningGoal;
     if (objective.startsWith(prefix)) objective = objective.substring(prefix.length);

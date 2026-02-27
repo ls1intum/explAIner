@@ -1,14 +1,14 @@
-interface GoalAdjustmentDialogProps {
+interface EasierLearningGoalDialogProps {
   isOpen: boolean;
-  onContinueWithCurrentGoal: () => void;
-  onAdjustGoal: () => void;
+  onContinueWithCurrentSession: () => void;
+  onStartNewSessionWithEasierLearningGoal: () => void;
 }
 
-export default function GoalAdjustmentDialog({
+export default function EasierLearningGoalDialog({
   isOpen,
-  onContinueWithCurrentGoal,
-  onAdjustGoal,
-}: GoalAdjustmentDialogProps) {
+  onContinueWithCurrentSession,
+  onStartNewSessionWithEasierLearningGoal,
+}: EasierLearningGoalDialogProps) {
   if (!isOpen) return null;
 
   return (
@@ -22,13 +22,13 @@ export default function GoalAdjustmentDialog({
         </p>
         <div className="flex flex-col gap-3">
           <button
-            onClick={onContinueWithCurrentGoal}
+            onClick={onContinueWithCurrentSession}
             className="w-full bg-success-gradient text-white font-semibold py-3 px-6 rounded-xl hover:opacity-90 transition-opacity"
           >
             Continue with Current Goal
           </button>
           <button
-            onClick={onAdjustGoal}
+            onClick={onStartNewSessionWithEasierLearningGoal}
             className="w-full bg-brand-gradient text-white font-semibold py-3 px-6 rounded-xl hover:opacity-90 transition-opacity"
           >
             Adjust Learning Goal

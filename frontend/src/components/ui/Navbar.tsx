@@ -7,7 +7,7 @@ import { ChevronLeftIcon, ChevronRightIcon, ExitIcon, RocketIcon } from '@radix-
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useDeleteSessionMutation } from '@/store/api/sessionsApi';
 import { resetSession } from '@/store/slices/sessionSlice';
-import EndSessionDialog from '@/components/session/EndSessionDialog';
+import EndSessionDialog from '@/components/session/dialogs/EndSessionDialog';
 import BlockNavigation from '@/components/session/BlockNavigation';
 
 /** Navbar component */

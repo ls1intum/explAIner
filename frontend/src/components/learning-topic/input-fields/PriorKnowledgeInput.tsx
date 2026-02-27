@@ -1,9 +1,9 @@
-interface PriorKnowledgeKeywordsInputProps {
+interface PriorKnowledgeInputProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export default function PriorKnowledgeKeywordsInput({ value, onChange }: PriorKnowledgeKeywordsInputProps) {
+export default function PriorKnowledgeInput({ value, onChange }: PriorKnowledgeInputProps) {
   return (
     <div className="relative w-full">
       <div className="absolute top-0 left-5 -translate-y-1/2 z-10">

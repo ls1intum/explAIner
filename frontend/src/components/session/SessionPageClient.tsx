@@ -13,7 +13,7 @@ import InformBlock from '@/components/blocks/InformBlock/InformBlock';
 import PracticeBlock from '@/components/blocks/PracticeBlock/PracticeBlock';
 import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import BlockContainer from '@/components/blocks/BlockContainer';
-import GoalAdjustmentDialog from '@/components/session/GoalAdjustmentDialog';
+import EasierLearningGoalDialog from '@/components/session/dialogs/EasierLearningGoalDialog';
 import type { Block } from '@/types/domain/block.types';
 
 interface SessionPageClientProps {
@@ -212,7 +212,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
         </BlockContainer>
       </main>
 
-      <GoalAdjustmentDialog
+      <EasierLearningGoalDialog
         isOpen={showPromptDialog}
         onContinueWithCurrentGoal={handleContinueWithCurrentGoal}
         onAdjustGoal={handleEasierGoal}
