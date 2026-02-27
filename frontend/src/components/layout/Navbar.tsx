@@ -123,7 +123,7 @@ export default function Navbar() {
         )}
       </div>
       
-      {/* End Session Dialog */}
+      {/* "End Session" dialog */}
       <EndSessionDialog
         isOpen={showEndSessionDialog}
         onClose={() => setShowEndSessionDialog(false)}

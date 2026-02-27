@@ -52,13 +52,13 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
       <div className="w-full max-w-[80%] space-y-6">
         <div className="bg-card rounded-2xl shadow-sm border border-border p-8 space-y-6">
           
-          {/* Learning Goal Achievement Component */}
+          {/* Learning goal achievement message */}
           <LearningGoalAchievement learningGoal={learningGoal} bloomsLevel={bloomsLevel} />
 
-          {/* Session Stats Component */}
+          {/* Total number of blocks completed & session duration */}
           <SessionStats totalBlocks={totalBlocks} sessionDuration={sessionDuration} />
 
-          {/* Session Summary Text */}
+          {/* Session summary text */}
           <div className="space-y-3">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               SUMMARY
@@ -68,11 +68,11 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
             </div>
           </div>
 
-          {/* Feedback Rating Component */}
+          {/* Feedback section where the user can rate the session as helpful or unhelpful (1-5) */}
           <FeedbackRating sessionId={block.sessionId} />
         </div>
 
-        {/* Start New Session Button */}
+        {/* "Start New Session" button */}
         <button
           onClick={handleStartNewSession}
           className="w-full bg-brand-gradient text-white font-semibold text-lg py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg"

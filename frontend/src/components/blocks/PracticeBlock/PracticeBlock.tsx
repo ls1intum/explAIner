@@ -8,6 +8,7 @@ import { addToast } from '@/store/slices/uiSlice';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 import AnswerOption from './AnswerOption';
+import FeedbackMessage from './FeedbackMessage';
 
 interface PracticeBlockProps {
   block: Block;
@@ -44,7 +45,7 @@ export default function PracticeBlock({
   // Extract practice block data
   const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock;
 
-  // Single answer option is clicked (selected/deselected)
+  // Single answer option is selected/deselected
   const handleOptionToggle = (index: number) => {
     if (isChecked) return; // Prevent changes after checking
     setSelectedOptions((prev) =>
@@ -95,7 +96,7 @@ export default function PracticeBlock({
             </p>
           </div>
 
-          {/* All Answer Options */}
+          {/* All answer options */}
           <div className="space-y-3">
             {answerOptions.map((option, index) => {
 
@@ -107,7 +108,7 @@ export default function PracticeBlock({
               const showMissed = isChecked && !isSelected && isCorrectOption; // derive missed answer option
 
               return (
-                /* Answer Option */
+                /* Answer option */
                 <AnswerOption
                   key={index}
                   label={String.fromCharCode(65 + index)} // A, B, C, D
@@ -123,64 +124,11 @@ export default function PracticeBlock({
             })}
           </div>
 
-          {/* Feedback Message after checking the answer */}
-          {isChecked && (
-            <div
-              className={`p-4 rounded-xl flex items-center gap-3 ${
-                isCorrect ? 'bg-success/10' : 'bg-destructive/10'
-              }`}
-            >
-              <div
-                className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                  isCorrect
-                    ? 'bg-transparent border-success'
-                    : 'bg-transparent border-destructive'
-                }`}
-              >
-                {isCorrect ? (
-                  <svg
-                    className="w-4 h-4 text-success"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-4 h-4 text-destructive"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                )}
-              </div>
-              <p
-                className={`font-medium ${
-                  isCorrect ? 'text-success' : 'text-destructive'
-                }`}
-              >
-                {isCorrect
-                  ? 'Correct! Well done.'
-                  : 'Not quite right. Check the correct answer above.'}
-              </p>
-            </div>
-          )}
+          {/* Feedback message after checking the answer */}
+          {isChecked && <FeedbackMessage isCorrect={isCorrect} />}
         </div>
 
-        {/* Check Answer Button */}
+        {/* "Check Answer" button */}
         {!isChecked && (
           <div className="flex justify-end">
             <span className="inline-block rounded-xl shadow-lg overflow-hidden">
@@ -195,7 +143,7 @@ export default function PracticeBlock({
           </div>
         )}
 
-        {/* Continue Button */}
+        {/* "Continue" button */}
         {isChecked && (
           <div className="flex justify-end">
             <span className="inline-block rounded-xl shadow-lg overflow-hidden">

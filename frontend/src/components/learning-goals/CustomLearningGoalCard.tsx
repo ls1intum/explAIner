@@ -59,7 +59,7 @@ export default function CustomLearningGoalCard({
         />
       </div>
 
-      {/* Live Preview Card */}
+      {/* "Live Preview" card */}
       <div className="w-full">
         <label className="block text-sm text-muted-foreground mb-2 px-1">
           Preview

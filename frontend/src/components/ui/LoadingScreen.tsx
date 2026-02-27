@@ -7,7 +7,7 @@ import { LOADING_SCREEN_MESSAGES, getRandomMessage } from '@/lib/loadingMessages
 /** LoadingScreen component - displays funny & cute Owlbert messages that are selected randomly each time :) */
 export default function LoadingScreen() {
 
-  // selects the message after mount to avoid server-client hydration mismatch
+  // Selects the message after mount to avoid server-client hydration mismatch
   const [message, setMessage] = useState('...');
   useEffect(() => {
     setMessage(getRandomMessage(LOADING_SCREEN_MESSAGES));

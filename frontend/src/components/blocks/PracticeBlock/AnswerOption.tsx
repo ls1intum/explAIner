@@ -61,12 +61,12 @@ export default function AnswerOption({
         {label}
       </div>
 
-      {/* Answer Text */}
+      {/* Answer text */}
       <div className="flex-1 text-base text-foreground">
         {text}
       </div>
 
-      {/* Status Icons (only shown after checking) */}
+      {/* Status icons (only shown after checking) */}
       {showCorrect && (
         <div className="flex-shrink-0 w-6 h-6 rounded-full bg-practice-correct flex items-center justify-center">
           <svg

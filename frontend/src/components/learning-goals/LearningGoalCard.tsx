@@ -10,6 +10,7 @@ interface LearningGoalCardProps {
 /** LearningGoalCard component - displays a single selectable learning-goal card with the pre-defined structure:"After this session, you will be able to <Bloom's level> <objective>". */
 export default function LearningGoalCard({ goal, bloomsLevel, isSelected, onClick }: LearningGoalCardProps) {
   return (
+    /* Clickable card */
     <button
       onClick={onClick}
       className={`
