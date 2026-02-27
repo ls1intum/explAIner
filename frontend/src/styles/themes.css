@@ -41,6 +41,10 @@
   --input: 220 30% 92%;
   --ring: 271 81% 56%;
 
+  --practice-correct: 160 84% 39%;
+  --practice-incorrect: 0 84% 60%;
+  --practice-missed: 160 84% 39%;
+
   --radius: 1rem;
 }
 
@@ -77,4 +81,8 @@
   --border: 270 20% 20%;
   --input: 217.2 32.6% 17.5%;
   --ring: 271 91% 75%;
+
+  --practice-correct: 160 84% 39%;
+  --practice-incorrect: 0 84% 60%;
+  --practice-missed: 160 84% 39%;
 }

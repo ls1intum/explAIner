@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import { useSubmitAnswerMutation } from '@/store/api/blocksApi';
+import { useAppDispatch } from '@/store/hooks';
+import { addToast } from '@/store/slices/uiSlice';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 import AnswerOption from './AnswerOption';
@@ -13,24 +15,23 @@ interface PracticeBlockProps {
   onContinue: () => void;
 }
 
+/** PracticeBlock component */
 export default function PracticeBlock({
   block,
   sessionId,
   onContinue,
 }: PracticeBlockProps) {
+
+  // Redux hooks
+  const dispatch = useAppDispatch();
+  const [submitAnswer, { isLoading: isSubmittingAnswer }] = useSubmitAnswerMutation();
+
+  // Extract practice block data
   const practiceBlock = block.type === BLOCK_TYPE.PRACTICE ? block.practiceBlock : undefined;
-  const [submitAnswer, { isLoading: isSubmittingAnswer }] =
-    useSubmitAnswerMutation();
+  const [selectedOptions, setSelectedOptions] = useState<number[]>(practiceBlock?.studentAnswerOptionIndices || []);
+  const [isChecked, setIsChecked] = useState(practiceBlock?.studentAnswerIsCorrect !== null);
 
-  // Initialize state from persisted data if available
-  const [selectedOptions, setSelectedOptions] = useState<number[]>(
-    practiceBlock?.studentAnswerOptionIndices || []
-  );
-  const [isChecked, setIsChecked] = useState(
-    practiceBlock?.studentAnswerIsCorrect !== null
-  );
-
-  // Sync local state when block or practiceBlock data changes
+  // Sync local state (e.g. after block refetch post-submit or when navigating blocks)
   useEffect(() => {
     if (practiceBlock) {
       setSelectedOptions(practiceBlock.studentAnswerOptionIndices || []);
@@ -40,12 +41,12 @@ export default function PracticeBlock({
 
   if (!practiceBlock) return null;
 
+  // Extract practice block data
   const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock;
 
-  // Handle option selection
+  // Single answer option is clicked (selected/deselected)
   const handleOptionToggle = (index: number) => {
     if (isChecked) return; // Prevent changes after checking
-
     setSelectedOptions((prev) =>
       prev.includes(index)
         ? prev.filter((i) => i !== index)
@@ -53,32 +54,27 @@ export default function PracticeBlock({
     );
   };
 
-  // Check answer
+  // "Check Answer" button is clicked
   const handleCheckAnswer = async () => {
     if (!practiceBlock) return;
-
     try {
-      // Submit answer to backend (stores for analytics); Block tag invalidated, getBlock refetches
       await submitAnswer({
         sessionId,
         orderIndex: String(block.orderIndex),
         studentAnswerOptionIndices: selectedOptions,
       });
-
       setIsChecked(true);
-      // Block tag invalidated by submitAnswer; getBlock refetches and parent passes updated block
     } catch (error) {
-      console.error('Failed to submit answer:', error);
-      // Handle error (could show toast notification)
+      dispatch(addToast({ message: 'Could not submit answer. Please try again.', type: 'error' }));
     }
   };
 
-  // Handle continue - just move to next block
+  // "Continue" button is clicked
   const handleContinue = () => {
     onContinue();
   };
 
-  // Determine if answer is correct
+  // Determine if whole practicequestion is correctly answered (i.e. all selected answer options are correct)
   const isCorrect =
     isChecked &&
     selectedOptions.length === correctAnswerOptionIndices.length &&
@@ -87,9 +83,9 @@ export default function PracticeBlock({
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-[80%] space-y-4">
-        {/* Card Container */}
+        {/* Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border p-6 space-y-6">
-          {/* Question Section (no card wrapper) */}
+          {/* Question */}
           <div className="space-y-1">
             <h3 className="text-xl font-semibold text-foreground">
               {question}
@@ -99,16 +95,19 @@ export default function PracticeBlock({
             </p>
           </div>
 
-          {/* Answer Options */}
+          {/* All Answer Options */}
           <div className="space-y-3">
             {answerOptions.map((option, index) => {
-              const isSelected = selectedOptions.includes(index);
-              const isCorrectOption = correctAnswerOptionIndices.includes(index);
-              const showCorrect = isChecked && isSelected && isCorrectOption;
-              const showIncorrect = isChecked && isSelected && !isCorrectOption;
-              const showMissed = isChecked && !isSelected && isCorrectOption;
+
+              // Determine the state of the answer option
+              const isSelected = selectedOptions.includes(index); // whether the answer option is selected by the user
+              const isCorrectOption = correctAnswerOptionIndices.includes(index); // whether the answer option is correct 
+              const showCorrect = isChecked && isSelected && isCorrectOption; // derive correct answer option
+              const showIncorrect = isChecked && isSelected && !isCorrectOption; // derive incorrect answer option
+              const showMissed = isChecked && !isSelected && isCorrectOption; // derive missed answer option
 
               return (
+                /* Answer Option */
                 <AnswerOption
                   key={index}
                   label={String.fromCharCode(65 + index)} // A, B, C, D
@@ -124,7 +123,7 @@ export default function PracticeBlock({
             })}
           </div>
 
-          {/* Feedback */}
+          {/* Feedback Message after checking the answer */}
           {isChecked && (
             <div
               className={`p-4 rounded-xl flex items-center gap-3 ${
@@ -181,7 +180,7 @@ export default function PracticeBlock({
           )}
         </div>
 
-        {/* Check Answer Button (outside card). Shadow on wrapper to avoid Safari box-shadow + gradient glitch. */}
+        {/* Check Answer Button */}
         {!isChecked && (
           <div className="flex justify-end">
             <span className="inline-block rounded-xl shadow-lg overflow-hidden">
@@ -196,7 +195,7 @@ export default function PracticeBlock({
           </div>
         )}
 
-        {/* Continue Button (outside card). Shadow on wrapper to avoid Safari box-shadow + gradient glitch. */}
+        {/* Continue Button */}
         {isChecked && (
           <div className="flex justify-end">
             <span className="inline-block rounded-xl shadow-lg overflow-hidden">

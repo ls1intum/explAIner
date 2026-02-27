@@ -16,6 +16,7 @@ interface InformBlockProps {
   onContinue: () => void;
 }
 
+/** InformBlock component */
 export default function InformBlock({
   block,
   sessionId,

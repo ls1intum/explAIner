@@ -4,13 +4,14 @@ interface AnswerOptionProps {
   label: string; // A, B, C, D
   text: string;
   isSelected: boolean;
-  isChecked: boolean; // Has the user checked their answer?
+  isChecked: boolean; // Has the user checked their answer yet?
   showCorrect: boolean; // Selected and correct
   showIncorrect: boolean; // Selected but incorrect
   showMissed: boolean; // Not selected but was correct
   onToggle: () => void;
 }
 
+/** AnswerOption component - displays a single answer option for a practice block question, color-coded based on its state */
 export default function AnswerOption({
   label,
   text,
@@ -21,24 +22,18 @@ export default function AnswerOption({
   showMissed,
   onToggle,
 }: AnswerOptionProps) {
-  // Determine styling based on state
+  // Determine styling based on the answer option's state
   let containerClasses = 'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all';
-  
   if (showCorrect) {
-    // Selected and correct (green background)
-    containerClasses += ' bg-[#10b981]/15 border-[#10b981]';
+    containerClasses += ' bg-practice-correct/15 border-practice-correct'; // correct = green
   } else if (showIncorrect) {
-    // Selected but incorrect (red background)
-    containerClasses += ' bg-[#ef4444]/15 border-[#ef4444]';
+    containerClasses += ' bg-practice-incorrect/15 border-practice-incorrect'; // incorrect = red
   } else if (showMissed) {
-    // Not selected but was correct (light green background, faded)
-    containerClasses += ' bg-[#10b981]/8 border-[#10b981]/40';
+    containerClasses += ' bg-practice-missed/8 border-practice-missed/40'; // missed = light green
   } else if (isSelected) {
-    // Selected but not checked yet (primary color highlight)
-    containerClasses += ' bg-primary/10 border-primary cursor-pointer';
+    containerClasses += ' bg-primary/10 border-primary cursor-pointer'; // selected (but not yet checked) = primary
   } else {
-    // Unselected (default)
-    containerClasses += ' bg-card border-border hover:border-primary cursor-pointer';
+    containerClasses += ' bg-card border-border hover:border-primary cursor-pointer'; // unselected = default
   }
 
   // Prevent clicks after checking
@@ -73,7 +68,7 @@ export default function AnswerOption({
 
       {/* Status Icons (only shown after checking) */}
       {showCorrect && (
-        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#10b981] flex items-center justify-center">
+        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-practice-correct flex items-center justify-center">
           <svg
             className="w-4 h-4 text-white"
             fill="none"
@@ -90,7 +85,7 @@ export default function AnswerOption({
         </div>
       )}
       {showIncorrect && (
-        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#ef4444] flex items-center justify-center">
+        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-practice-incorrect flex items-center justify-center">
           <svg
             className="w-4 h-4 text-white"
             fill="none"
@@ -107,9 +102,9 @@ export default function AnswerOption({
         </div>
       )}
       {showMissed && (
-        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#10b981]/40 flex items-center justify-center">
+        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-practice-missed/40 flex items-center justify-center">
           <svg
-            className="w-4 h-4 text-[#10b981]/70"
+            className="w-4 h-4 text-practice-missed/70"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
