@@ -25,7 +25,7 @@ const initialState: SessionState = {
 export const sessionSlice = createSlice({
   name: "session",
   initialState,
-  // reducers: update the session state based on the given action
+  // reducers: update the session state slice based on the given action
   reducers: {
     setTopic: (state, action: PayloadAction<string>) => {
       state.topic = action.payload;

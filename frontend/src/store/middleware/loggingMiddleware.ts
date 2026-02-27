@@ -6,7 +6,9 @@ type ActionWithMeta = { type?: string; meta?: { arg?: { endpointName?: string; o
 
 /**
  * Redux logging middleware
- * Format: [REDUX-RTK-QUERY] <API endpoint> <body>
+ * 
+ * Purpose:   Logs all RTK Query calls sent to from the client via the API to the server
+ * Format:    [REDUX-RTK-QUERY] <API endpoint> <body>
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- redux middleware has a fixed signature that requires the first param (storeApi)
 export const loggingMiddleware: Middleware = (storeApi) => (next) => (action: unknown) => {

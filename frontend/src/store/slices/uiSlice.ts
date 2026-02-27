@@ -22,7 +22,7 @@ const initialState: UiState = {
 export const uiSlice = createSlice({
   name: "ui",
   initialState,
-  // reducers = update the ui state based on the given action
+  // reducers = update the ui state slice based on the given action
   reducers: {
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
