@@ -1,14 +1,15 @@
 'use client';
 
-interface QuickActionChipsProps {
+interface FollowUpQuestionQuickChipsProps {
   onQuestionClick: (label: string) => void;
   disabled?: boolean;
 }
 
-export default function QuickActionChips({
+/** Preset follow-up prompts (e.g. simpler explanation, more details) */
+export default function FollowUpQuestionQuickChips({
   onQuestionClick,
   disabled = false,
-}: QuickActionChipsProps) {
+}: FollowUpQuestionQuickChipsProps) {
   const quickActions = [
     { id: 1, label: 'Try a simpler explanation' },
     { id: 2, label: 'Give more details' },
