@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import type { Block } from '@/types/domain/block.types';
+import { BLOCK_TYPE } from '@/types/domain/enums';
 import LearningGoalAchievement from './LearningGoalAchievement';
 import SessionStats from './SessionStats';
 import FeedbackRating from './FeedbackRating';
@@ -18,7 +19,7 @@ interface SummaryBlockProps {
 
 export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) {
   const router = useRouter();
-  const summaryBlock = block.type === 'Summary' ? block.summaryBlock : undefined;
+  const summaryBlock = block.type === BLOCK_TYPE.SUMMARY ? block.summaryBlock : undefined;
 
   if (!summaryBlock) return null;
 

@@ -1,21 +1,13 @@
 'use client';
 
+import { BLOOMS_LEVELS, type BloomsLevel } from '@/types/domain/enums';
+
 interface CustomLearningGoalCardProps {
   objective: string;
-  bloomsLevel: string;
+  bloomsLevel: BloomsLevel;
   onObjectiveChange: (value: string) => void;
-  onBloomsLevelChange: (value: string) => void;
+  onBloomsLevelChange: (value: BloomsLevel) => void;
 }
-
-// All 6 Bloom's taxonomy levels
-const bloomsLevels = [
-  'Remember',
-  'Understand',
-  'Apply',
-  'Analyze',
-  'Evaluate',
-  'Create',
-];
 
 export default function CustomLearningGoalCard({ 
   objective, 
@@ -39,7 +31,7 @@ export default function CustomLearningGoalCard({
         
         {/* Horizontal buttons for Bloom's levels */}
         <div className="w-full flex gap-2">
-          {bloomsLevels.map((level) => (
+          {BLOOMS_LEVELS.map((level) => (
             <button
               key={level}
               onClick={() => onBloomsLevelChange(level)}

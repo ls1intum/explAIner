@@ -6,6 +6,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex } from '@/store/slices/sessionSlice';
 import { useGetSessionQuery, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
 import type { Block } from '@/types/domain/block.types';
+import { BLOCK_TYPE } from '@/types/domain/enums';
 
 export default function BlockNavigation() {
   const dispatch = useAppDispatch();
@@ -74,9 +75,9 @@ export default function BlockNavigation() {
               title={`${block.type} block ${index + 1}`}
               type="button"
             >
-              {block.type === 'Inform' ? (
+              {block.type === BLOCK_TYPE.INFORM ? (
                 <ReaderIcon className={isActive ? 'w-5 h-5' : 'w-4 h-4'} />
-              ) : block.type === 'Practice' ? (
+              ) : block.type === BLOCK_TYPE.PRACTICE ? (
                 <QuestionMarkCircledIcon className={isActive ? 'w-5 h-5' : 'w-4 h-4'} />
               ) : null}
               <span>{block.type}</span>

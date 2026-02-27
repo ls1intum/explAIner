@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import type { Block } from '@/types/domain/block.types';
+import { BLOCK_TYPE } from '@/types/domain/enums';
 import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
 import { getRandomMessage } from '@/lib/loadingMessages';
 import { INFORM_BLOCK_CHAT_LOADING_MESSAGES } from '@/lib/loadingMessages';
@@ -22,7 +23,7 @@ export default function InformBlock({
 }: InformBlockProps) {
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const informMessages = useMemo(
-    () => (block.type === 'Inform' ? block.informBlock.messages : []),
+    () => (block.type === BLOCK_TYPE.INFORM ? block.informBlock.messages : []),
     [block]
   );
   const [localMessages, setLocalMessages] = useState(informMessages);

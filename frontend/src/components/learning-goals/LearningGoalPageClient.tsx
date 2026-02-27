@@ -12,6 +12,7 @@ import { useCreateSessionMutation } from '@/store/api/sessionsApi';
 import { setLoading } from '@/store/slices/uiSlice';
 import { clearSessionCreationData } from '@/store/slices/sessionSlice';
 import type { LearningGoal } from '@/types/domain/learning-goals.types';
+import { BLOOMS_LEVELS, type BloomsLevel } from '@/types/domain/enums';
 
 export default function LearningGoalPageClient() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function LearningGoalPageClient() {
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [showPredefined, setShowPredefined] = useState(true);
   const [customObjective, setCustomObjective] = useState('');
-  const [customBloomsLevel, setCustomBloomsLevel] = useState('Understand');
+  const [customBloomsLevel, setCustomBloomsLevel] = useState<BloomsLevel>(BLOOMS_LEVELS[1]); // 'Understand'
   const [createSession, { isLoading }] = useCreateSessionMutation();
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
 
@@ -54,27 +55,26 @@ export default function LearningGoalPageClient() {
   const handleStartSession = async () => {
     if (!pageData) return;
 
-    let finalGoal: string;
-    let finalBloomsLevel: string;
+    let selectedGoal: string;
+    let selectedBloomsLevel: BloomsLevel;
 
     if (!showPredefined && customObjective.trim()) {
-      finalGoal = `After this session, you will be able to ${customBloomsLevel} ${customObjective.trim()}.`;
-      finalBloomsLevel = customBloomsLevel;
+      selectedGoal = `After this session, you will be able to ${customBloomsLevel} ${customObjective.trim()}.`;
+      selectedBloomsLevel = customBloomsLevel;
     } else {
-      const selectedGoal = pageData.learningGoals.find((_goal: LearningGoal, index: number) => selectedGoalId === index.toString());
-      if (!selectedGoal) return;
-      finalGoal = selectedGoal.learningGoal;
-      finalBloomsLevel = selectedGoal.bloomsLevel;
+      const predefinedGoal = pageData.learningGoals.find((_goal: LearningGoal, index: number) => selectedGoalId === index.toString());
+      if (!predefinedGoal) return;
+      selectedGoal = predefinedGoal.learningGoal;
+      selectedBloomsLevel = predefinedGoal.bloomsLevel;
     }
 
     try {
       setShowLoadingScreen(true);
       dispatch(setLoading(true));
 
-      type BloomsLevel = 'Remember' | 'Understand' | 'Apply' | 'Analyze' | 'Evaluate' | 'Create';
       const response = await createSession({
         topic: pageData.topic,
-        learningGoal: { learningGoal: finalGoal, bloomsLevel: finalBloomsLevel as BloomsLevel },
+        learningGoal: { learningGoal: selectedGoal, bloomsLevel: selectedBloomsLevel },
         priorKnowledge: pageData.priorKnowledge?.trim() || undefined,
       }).unwrap();
 

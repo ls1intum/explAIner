@@ -15,6 +15,7 @@ import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import BlockContainer from '@/components/blocks/BlockContainer';
 import EasierLearningGoalDialog from '@/components/session/dialogs/EasierLearningGoalDialog';
 import type { Block } from '@/types/domain/block.types';
+import { BLOCK_TYPE } from '@/types/domain/enums';
 
 interface SessionPageClientProps {
   sessionId: string;
@@ -65,7 +66,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
   const displayBlock = blockResponse?.data;
 
   const summarySessionInfo =
-    displayBlock?.type === 'Summary' && sessionData
+    displayBlock?.type === BLOCK_TYPE.SUMMARY && sessionData
       ? {
           learningGoal: sessionData.learningGoal?.learningGoal ?? '',
           bloomsLevel: sessionData.learningGoal?.bloomsLevel ?? '',
@@ -152,7 +153,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     }
   };
 
-  const handleEasierGoal = async () => {
+  const handleStartNewSessionWithEasierLearningGoal = async () => {
     setShowPromptDialog(false);
     try {
       dispatch(setLoading(true));
@@ -168,7 +169,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     }
   };
 
-  const handleContinueWithCurrentGoal = async () => {
+  const handleContinueWithCurrentSession = async () => {
     setShowPromptDialog(false);
     await handleGenerateNextSequence();
   };
@@ -189,21 +190,21 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     <div className="min-h-[calc(100vh-4rem)] bg-background">
       <main className="container mx-auto px-4 flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <BlockContainer>
-          {displayBlock.type === 'Inform' && (
+          {displayBlock.type === BLOCK_TYPE.INFORM && (
             <InformBlock
               block={displayBlock}
               sessionId={sessionId}
               onContinue={handleContinue}
             />
           )}
-          {displayBlock.type === 'Practice' && (
+          {displayBlock.type === BLOCK_TYPE.PRACTICE && (
             <PracticeBlock
               block={displayBlock}
               sessionId={sessionId}
               onContinue={handleContinue}
             />
           )}
-          {displayBlock.type === 'Summary' && summarySessionInfo && (
+          {displayBlock.type === BLOCK_TYPE.SUMMARY && summarySessionInfo && (
             <SummaryBlock
               block={displayBlock}
               sessionInfo={summarySessionInfo}
@@ -214,8 +215,8 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
 
       <EasierLearningGoalDialog
         isOpen={showPromptDialog}
-        onContinueWithCurrentGoal={handleContinueWithCurrentGoal}
-        onAdjustGoal={handleEasierGoal}
+        onContinueWithCurrentSession={handleContinueWithCurrentSession}
+        onStartNewSessionWithEasierLearningGoal={handleStartNewSessionWithEasierLearningGoal}
       />
     </div>
   );

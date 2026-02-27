@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import { useSubmitAnswerMutation } from '@/store/api/blocksApi';
 import type { Block } from '@/types/domain/block.types';
+import { BLOCK_TYPE } from '@/types/domain/enums';
 import AnswerOption from './AnswerOption';
 
 interface PracticeBlockProps {
@@ -17,7 +18,7 @@ export default function PracticeBlock({
   sessionId,
   onContinue,
 }: PracticeBlockProps) {
-  const practiceBlock = block.type === 'Practice' ? block.practiceBlock : undefined;
+  const practiceBlock = block.type === BLOCK_TYPE.PRACTICE ? block.practiceBlock : undefined;
   const [submitAnswer, { isLoading: isSubmittingAnswer }] =
     useSubmitAnswerMutation();
 
