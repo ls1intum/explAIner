@@ -1,5 +1,6 @@
 'use client';
 
+import { createPortal } from 'react-dom';
 import { ExitIcon } from '@radix-ui/react-icons';
 
 interface EndSessionDialogProps {
@@ -14,20 +15,21 @@ export default function EndSessionDialog({
   onClose,
   onConfirm,
 }: EndSessionDialogProps) {
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
-  return (
-    <div className="fixed inset-0">
+  // Rendered via portal to fix bug where it would not appear above page content on practice blocks
+  return createPortal(
+    <div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-labelledby="end-session-title">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 z-40 animate-fadeIn"
+        className="absolute inset-0 bg-black/50"
         onClick={onClose}
       />
 
       {/* Dialog */}
-      <div className="absolute inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
-          className="bg-card rounded-3xl shadow-xl max-w-md w-full p-8 animate-fadeIn"
+          className="bg-card rounded-3xl shadow-xl max-w-md w-full p-8"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Icon */}
@@ -38,7 +40,7 @@ export default function EndSessionDialog({
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl font-bold text-center mb-3 text-foreground">
+          <h2 id="end-session-title" className="text-3xl font-bold text-center mb-3 text-foreground">
             End session?
           </h2>
 
@@ -64,6 +66,7 @@ export default function EndSessionDialog({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
