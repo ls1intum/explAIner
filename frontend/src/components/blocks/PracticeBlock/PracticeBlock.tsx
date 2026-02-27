@@ -45,7 +45,7 @@ export default function PracticeBlock({
   // Extract practice block data
   const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock;
 
-  // Single answer option is selected/deselected
+  // Select/deselect single answer option
   const handleOptionToggle = (index: number) => {
     if (isChecked) return; // Prevent changes after checking
     setSelectedOptions((prev) =>
@@ -75,7 +75,7 @@ export default function PracticeBlock({
     onContinue();
   };
 
-  // Determine if whole practicequestion is correctly answered (i.e. all selected answer options are correct)
+  // Determine if whole practice question is answered correctly (i.e. all selected answer options are correct)
   const isCorrect =
     isChecked &&
     selectedOptions.length === correctAnswerOptionIndices.length &&

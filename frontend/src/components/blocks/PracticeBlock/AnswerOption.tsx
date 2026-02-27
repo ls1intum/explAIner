@@ -22,7 +22,7 @@ export default function AnswerOption({
   showMissed,
   onToggle,
 }: AnswerOptionProps) {
-  // Determine styling based on the answer option's state
+  // Determine container styling based on the answer option's state
   let containerClasses = 'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all';
   if (showCorrect) {
     containerClasses += ' bg-practice-correct/15 border-practice-correct'; // correct = green
@@ -44,6 +44,7 @@ export default function AnswerOption({
   };
 
   return (
+    /* Clickable answer option */
     <div
       onClick={handleClick}
       className={containerClasses}

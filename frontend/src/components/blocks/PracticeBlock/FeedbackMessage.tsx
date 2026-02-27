@@ -18,6 +18,7 @@ export default function FeedbackMessage({ isCorrect }: FeedbackMessageProps) {
       <div
         className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center bg-transparent ${borderClass}`}
       >
+        {/* Status icon */}
         {isCorrect ? (
           <svg
             className={`w-4 h-4 ${textClass}`}
@@ -48,6 +49,7 @@ export default function FeedbackMessage({ isCorrect }: FeedbackMessageProps) {
           </svg>
         )}
       </div>
+      {/* Feedback message */}
       <p className={`font-medium ${textClass}`}>{message}</p>
     </div>
   );
