@@ -9,9 +9,9 @@ import { useGetSessionQuery, useContinueSessionMutation, useUpdateCurrentBlockIn
 import { useGetBlockQuery, useGenerateBlockSequenceMutation, useGenerateSummaryBlockMutation } from '@/store/api/blocksApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import LoadingScreen from '@/components/shared/ui/LoadingScreen';
-import InformBlock from '@/components/blocks/inform/InformBlock';
-import PracticeBlock from '@/components/blocks/practice/PracticeBlock';
-import SummaryBlock from '@/components/blocks/summary/SummaryBlock';
+import InformBlock from '@/components/blocks/InformBlock/InformBlock';
+import PracticeBlock from '@/components/blocks/PracticeBlock/PracticeBlock';
+import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import EasierLearningGoalDialog from '@/components/session/dialogs/EasierLearningGoalDialog';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
