@@ -3,14 +3,17 @@ interface PriorKnowledgeInputProps {
   onChange: (value: string) => void;
 }
 
+/** PriorKnowledgeInput component - allows the user to optionally enter prior knowledge keywords to indicate what they already know about the topic */
 export default function PriorKnowledgeInput({ value, onChange }: PriorKnowledgeInputProps) {
   return (
     <div className="relative w-full">
+      {/* Floating label */}
       <div className="absolute top-0 left-5 -translate-y-1/2 z-10">
         <span className="inline-block bg-muted text-muted-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-sm">
           Optional: Tell Owlbert what you already know
         </span>
       </div>
+      {/* Input field */}
       <input
         type="text"
         value={value}

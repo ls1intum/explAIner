@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { removeToast, type Toast } from "@/store/slices/uiSlice";
 import { CrossCircledIcon, CheckCircledIcon, InfoCircledIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
-/** Toast notification component */
+/** Toast component - displays pop-up notifications */
 export default function Toast() {
   const dispatch = useAppDispatch();
   const toasts = useAppSelector((state) => state.ui.toasts);

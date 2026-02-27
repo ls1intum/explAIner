@@ -4,6 +4,7 @@ interface EasierLearningGoalDialogProps {
   onStartNewSessionWithEasierLearningGoal: () => void;
 }
 
+/** EasierLearningGoalDialog component - displays a dialog to choose between continuing with the current learning goal or starting a new session with easier learning goals */
 export default function EasierLearningGoalDialog({
   isOpen,
   onContinueWithCurrentSession,
@@ -13,13 +14,17 @@ export default function EasierLearningGoalDialog({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      {/* Dialog */}
       <div className="bg-card rounded-2xl shadow-xl p-6 max-w-md mx-4 space-y-4">
+        {/* Title */}
         <h2 className="text-xl font-semibold text-foreground">
           Choose Your Path
         </h2>
+        {/* Subtitle */}
         <p className="text-muted-foreground">
           Would you like to adjust your learning goal to focus on the fundamentals first, or continue with the current goal?
         </p>
+        {/* Buttons */}
         <div className="flex flex-col gap-3">
           <button
             onClick={onContinueWithCurrentSession}

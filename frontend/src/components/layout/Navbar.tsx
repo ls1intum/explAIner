@@ -29,7 +29,6 @@ export default function Navbar() {
   // Handle end session dialog confirmation
   const handleEndSession = async () => {
     setShowEndSessionDialog(false);
-
     if (sessionIdFromPath) {
       try {
         await deleteSession({ sessionId: sessionIdFromPath }).unwrap();
@@ -37,7 +36,6 @@ export default function Navbar() {
         console.error('Failed to delete session:', error);
       }
     }
-
     dispatch(resetSession());
     router.push('/');
   };

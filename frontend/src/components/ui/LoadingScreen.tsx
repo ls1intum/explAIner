@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { LOADING_SCREEN_MESSAGES, getRandomMessage } from '@/lib/loadingMessages';
 
-/** Loading screen component - displaying funny & cute Owlbert messages selected randomly each time :) */
+/** LoadingScreen component - displays funny & cute Owlbert messages that are selected randomly each time :) */
 export default function LoadingScreen() {
 
   // selects the message after mount to avoid server-client hydration mismatch

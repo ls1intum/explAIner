@@ -8,6 +8,7 @@ interface EndSessionDialogProps {
   onConfirm: () => void;
 }
 
+/** EndSessionDialog component - displays a dialog to confirm ending the current session */
 export default function EndSessionDialog({
   isOpen,
   onClose,
@@ -16,15 +17,15 @@ export default function EndSessionDialog({
   if (!isOpen) return null;
 
   return (
-    <>
+    <div className="fixed inset-0">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 animate-fadeIn"
+        className="absolute inset-0 bg-black/50 z-40 animate-fadeIn"
         onClick={onClose}
       />
 
       {/* Dialog */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 z-50 flex items-center justify-center p-4">
         <div
           className="bg-card rounded-3xl shadow-xl max-w-md w-full p-8 animate-fadeIn"
           onClick={(e) => e.stopPropagation()}
@@ -63,6 +64,6 @@ export default function EndSessionDialog({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

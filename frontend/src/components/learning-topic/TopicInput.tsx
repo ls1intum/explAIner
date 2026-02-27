@@ -3,14 +3,17 @@ interface TopicInputProps {
   onChange: (value: string) => void;
 }
 
+/** TopicInput component - allows the user to enter a topic or question they want to learn about */
 export default function TopicInput({ value, onChange }: TopicInputProps) {
   return (
     <div className="relative w-full">
+      {/* Floating label */}
       <div className="absolute top-0 left-5 -translate-y-1/2 z-10">
         <span className="inline-block bg-brand-gradient text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">
           What do you want to learn?
         </span>
       </div>
+      {/* Input field */}
       <input
         type="text"
         value={value}

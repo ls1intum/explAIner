@@ -17,6 +17,7 @@ interface SummaryBlockProps {
   };
 }
 
+/** SummaryBlock component */
 export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) {
   const router = useRouter();
   const summaryBlock = block.type === BLOCK_TYPE.SUMMARY ? block.summaryBlock : undefined;
@@ -26,7 +27,7 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
   const { sessionSummary } = summaryBlock;
   const { learningGoal, bloomsLevel, totalBlocks, sessionDuration } = sessionInfo;
 
-  // Parse summary content to render with markdown-style formatting (with primary color)
+  // Parse summary content to render with markdown-style formatting
   const renderSummary = (text: string) => {
     const parts = text.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, index) => {
@@ -49,15 +50,15 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-[80%] space-y-6">
-        {/* Main Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border p-8 space-y-6">
-          {/* Learning Goal Section */}
+          
+          {/* Learning Goal Achievement Component */}
           <LearningGoalAchievement learningGoal={learningGoal} bloomsLevel={bloomsLevel} />
 
-          {/* Stats Section */}
+          {/* Session Stats Component */}
           <SessionStats totalBlocks={totalBlocks} sessionDuration={sessionDuration} />
 
-          {/* Summary Section */}
+          {/* Session Summary Text */}
           <div className="space-y-3">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               SUMMARY
@@ -67,7 +68,7 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
             </div>
           </div>
 
-          {/* Feedback Section */}
+          {/* Feedback Rating Component */}
           <FeedbackRating sessionId={block.sessionId} />
         </div>
 

@@ -8,10 +8,11 @@ import { useGetSessionQuery, useUpdateCurrentBlockIndexMutation } from '@/store/
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 
+/** BlockNavigation component - displays block chips in the navbar to allow navigation between already-viewed blocks */
 export default function BlockNavigation() {
-  const dispatch = useAppDispatch();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeChipRef = useRef<HTMLButtonElement>(null);
+  const dispatch = useAppDispatch();
   const { sessionId: sessionIdFromState, currentBlockIndex, highestAlreadyViewedBlockIndex } = useAppSelector((state) => state.session);
   const { data: sessionData } = useGetSessionQuery(
     { sessionId: sessionIdFromState! },
@@ -19,24 +20,25 @@ export default function BlockNavigation() {
   );
   const sessionId = sessionIdFromState ?? '';
   const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
-
   const blocks = sessionData?.blocks ?? [];
-  const effectiveMax = Math.max(currentBlockIndex, highestAlreadyViewedBlockIndex);
-  const viewedBlocks = blocks
-    .filter((block: Block) => block.alreadyViewed || block.orderIndex <= effectiveMax)
+
+  // Include current block in "already viewed" even if server's alreadyViewed hasn't caught up yet
+  const effectiveMaxIndex = Math.max(currentBlockIndex, highestAlreadyViewedBlockIndex);
+  const alreadyViewedBlocks = blocks
+    .filter((block: Block) => block.alreadyViewed || block.orderIndex <= effectiveMaxIndex)
     .sort((a: Block, b: Block) => a.orderIndex - b.orderIndex);
 
-  // Scroll so the active chip is visible (navbar is horizontally scrollable)
+  // Scroll so the currently viewed block chip is visible
   useEffect(() => {
     activeChipRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  }, [currentBlockIndex, viewedBlocks.length]);
+  }, [currentBlockIndex, alreadyViewedBlocks.length]);
 
-  const handleBlockClick = (index: number) => {
+  const handleBlockChipClick = (index: number) => {
     dispatch(setCurrentBlockIndex(index));
-    void updateCurrentBlockIndex({ sessionId, currentBlockIndex: index });
+    void updateCurrentBlockIndex({ sessionId, currentBlockIndex: index }); // persist to server
   };
 
-  if (viewedBlocks.length === 0) {
+  if (alreadyViewedBlocks.length === 0) {
     return null;
   }
 
@@ -46,20 +48,21 @@ export default function BlockNavigation() {
       className="flex items-center gap-0 overflow-x-auto overflow-y-hidden min-w-0 scrollbar-thin"
       style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
     >
-      {viewedBlocks.map((block: Block, viewedIndex: number) => {
+      {/* All block chips */}
+      {alreadyViewedBlocks.map((block: Block, viewedIndex: number) => {
         const index = block.orderIndex;
         const isActive = index === currentBlockIndex;
         const isPast = index < currentBlockIndex;
 
         return (
+          /* Block chip */
           <div key={block.id} className="flex items-center flex-shrink-0">
             {viewedIndex > 0 && (
               <div className="h-[2px] w-4 bg-white/40 flex-shrink-0" />
             )}
-
             <button
               ref={isActive ? activeChipRef : undefined}
-              onClick={() => handleBlockClick(index)}
+              onClick={() => handleBlockChipClick(index)}
               className={`
                 flex items-center justify-center gap-1.5 rounded-full
                 font-medium transition-all whitespace-nowrap flex-shrink-0
@@ -75,6 +78,7 @@ export default function BlockNavigation() {
               title={`${block.type} block ${index + 1}`}
               type="button"
             >
+              {/* Icon based on block type */}
               {block.type === BLOCK_TYPE.INFORM ? (
                 <ReaderIcon className={isActive ? 'w-5 h-5' : 'w-4 h-4'} />
               ) : block.type === BLOCK_TYPE.PRACTICE ? (

@@ -1,13 +1,14 @@
 interface SessionStatsProps {
   totalBlocks: number;
-  /** Minutes; when 0 (e.g. after reload) the duration block is hidden. */
   sessionDuration: number;
 }
 
+/** SessionStats component - displays the total number of session blocks and the session duration */
 export default function SessionStats({ totalBlocks, sessionDuration }: SessionStatsProps) {
   return (
     <div className={`grid gap-6 ${sessionDuration > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-      {/* Blocks Completed */}
+
+      {/* Total number of blocks completed */}
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
           <svg
@@ -30,7 +31,7 @@ export default function SessionStats({ totalBlocks, sessionDuration }: SessionSt
         </div>
       </div>
 
-      {/* Session Duration (hidden when 0, e.g. summary shown after page reload) */}
+      {/* Session Duration (hidden when 0, e.g. when the summary block is shown after page reload) */}
       {sessionDuration > 0 && (
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">

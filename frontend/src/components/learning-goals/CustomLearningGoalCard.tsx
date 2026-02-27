@@ -9,6 +9,7 @@ interface CustomLearningGoalCardProps {
   onBloomsLevelChange: (value: BloomsLevel) => void;
 }
 
+/** CustomLearningGoalCard component - allows the user to enter a custom learning goal within the pre-defined structure:"After this session, you will be able to <Bloom's level> <objective>". */
 export default function CustomLearningGoalCard({ 
   objective, 
   bloomsLevel,
@@ -22,14 +23,11 @@ export default function CustomLearningGoalCard({
         ... or enter your own learning goal
       </div>
       
-      {/* Input fields */}
+      {/* Horizontal buttons for selecting Bloom's levels */}
       <div className="w-full space-y-3">
-        {/* Label for Bloom's levels */}
         <label className="block text-sm text-muted-foreground px-1">
           Choose your complexity level:
         </label>
-        
-        {/* Horizontal buttons for Bloom's levels */}
         <div className="w-full flex gap-2">
           {BLOOMS_LEVELS.map((level) => (
             <button
