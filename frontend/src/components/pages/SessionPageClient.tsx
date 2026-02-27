@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { setCurrentBlockIndex, setCurrentSessionId, setHighestAlreadyViewedBlockIndex } from '@/store/slices/sessionSlice';
+import { setCurrentBlockIndex, setSessionId, setHighestAlreadyViewedBlockIndex, setTopic, setPriorKnowledge, setLearningGoals } from '@/store/slices/sessionSlice';
 import { setLoading } from '@/store/slices/uiSlice';
-import { setLearningGoalPageData } from '@/store/slices/learningGoalsSlice';
 import { useGetSessionQuery, useContinueSessionMutation, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
 import { useGetBlockQuery, useGenerateBlockSequenceMutation, useGenerateSummaryBlockMutation } from '@/store/api/blocksApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
@@ -24,7 +23,7 @@ interface SessionPageClientProps {
 export default function SessionPageClient({ sessionId }: SessionPageClientProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { currentSessionId, currentBlockIndex } = useAppSelector((state) => state.session);
+  const { sessionId: sessionIdFromState, currentBlockIndex } = useAppSelector((state) => state.session);
   const [showPromptDialog, setShowPromptDialog] = useState(false);
   const [summaryData, setSummaryData] = useState<{
     block: Block;
@@ -50,14 +49,14 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
   // Hydrate Redux from sessionData when it arrives (or when refetch returns after generate)
   useEffect(() => {
     if (!sessionData || sessionData.id !== sessionId) return;
-    dispatch(setCurrentSessionId(sessionData.id));
-    if (currentSessionId !== sessionId) {
+    dispatch(setSessionId(sessionData.id));
+    if (sessionIdFromState !== sessionId) {
       const blocks = sessionData.blocks ?? [];
       const maxFromServer = blocks.filter((b: Block) => b.alreadyViewed).reduce((max: number, b: Block) => Math.max(max, b.orderIndex), 0);
       dispatch(setHighestAlreadyViewedBlockIndex(maxFromServer));
       dispatch(setCurrentBlockIndex(sessionData.currentBlockIndex));
     }
-  }, [sessionData, sessionId, currentSessionId, dispatch]);
+  }, [sessionData, sessionId, sessionIdFromState, dispatch]);
 
   const { data: blockResponse, isLoading: isBlockLoading } = useGetBlockQuery(
     { sessionId, orderIndex: String(currentBlockIndex) },
@@ -158,11 +157,9 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     try {
       dispatch(setLoading(true));
       const result = await generateEasierLearningGoals({ sessionId }).unwrap();
-      dispatch(setLearningGoalPageData({
-        topic: result.topic,
-        keywords: result.priorKnowledge || '',
-        goals: result.learningGoals,
-      }));
+      dispatch(setTopic(result.topic));
+      dispatch(setPriorKnowledge(result.priorKnowledge ?? ''));
+      dispatch(setLearningGoals(result.learningGoals));
       router.push('/learning-goal');
     } catch (error) {
       console.error('Failed to generate easier learning goals:', error);

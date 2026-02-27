@@ -10,12 +10,12 @@ import LoadingScreen from '@/components/ui/LoadingScreen';
 import { useGenerateLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setLoading, addToast } from '@/store/slices/uiSlice';
-import { setLearningGoalPageData, setLandingPageTopic, setLandingPagePriorKnowledge, clearLandingPageData } from '@/store/slices/learningGoalsSlice';
+import { setTopic, setPriorKnowledge, setLearningGoals } from '@/store/slices/sessionSlice';
 
 export default function HomePageClient() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { topic, priorKnowledge } = useAppSelector((state) => state.learningGoals.landingPageData);
+  const { topic, priorKnowledge } = useAppSelector((state) => state.session);
   const hasStartedTyping = topic.length > 0;
 
   const [generateLearningGoals, { isLoading }] =
@@ -32,15 +32,7 @@ export default function HomePageClient() {
         priorKnowledge: priorKnowledge.trim() || undefined,
       }).unwrap();
 
-      dispatch(
-        setLearningGoalPageData({
-          topic,
-          keywords: priorKnowledge,
-          goals: result.learningGoals,
-        })
-      );
-
-      dispatch(clearLandingPageData());
+      dispatch(setLearningGoals(result.learningGoals));
       router.push('/learning-goal');
     } catch (err) {
       console.error('Failed to generate learning goals:', err);
@@ -93,11 +85,11 @@ export default function HomePageClient() {
         )}
 
         <div className="w-full max-w-2xl flex flex-col items-center space-y-6 mt-5">
-          <TopicOrQuestionInput value={topic} onChange={(v) => dispatch(setLandingPageTopic(v))} />
+          <TopicOrQuestionInput value={topic} onChange={(v) => dispatch(setTopic(v))} />
 
           {hasStartedTyping && (
             <>
-              <PriorKnowledgeKeywordsInput value={priorKnowledge} onChange={(v) => dispatch(setLandingPagePriorKnowledge(v))} />
+              <PriorKnowledgeKeywordsInput value={priorKnowledge} onChange={(v) => dispatch(setPriorKnowledge(v))} />
 
               <button
                 onClick={handleStartSession}

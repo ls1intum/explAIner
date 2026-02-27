@@ -1,13 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { LearningGoal } from "@/types/domain/learning-goals.types";
 
 interface SessionState {
-  currentSessionId: string | null;
+  topic: string;
+  priorKnowledge: string;
+  learningGoals: LearningGoal[] | null;
+  sessionId: string | null;
   currentBlockIndex: number; // block index of block currently being viewed by the client (synced to server via updateCurrentBlockIndex, hydrated from getSession)
   highestAlreadyViewedBlockIndex: number; // highest block index ever viewed by the client (necessary to show/hide the already viewed / not yet viewed block chips in the navbar which allow to navigate between blocks; hydrated from blocks.alreadyViewed)
 }
 
 const initialState: SessionState = {
-  currentSessionId: null,
+  topic: "",
+  priorKnowledge: "",
+  learningGoals: null,
+  sessionId: null,
   currentBlockIndex: 0,
   highestAlreadyViewedBlockIndex: 0,
 };
@@ -19,8 +26,17 @@ export const sessionSlice = createSlice({
   name: "session",
   initialState,
   reducers: {
-    setCurrentSessionId: (state, action: PayloadAction<string>) => {
-      state.currentSessionId = action.payload;
+    setTopic: (state, action: PayloadAction<string>) => {
+      state.topic = action.payload;
+    },
+    setPriorKnowledge: (state, action: PayloadAction<string>) => {
+      state.priorKnowledge = action.payload;
+    },
+    setLearningGoals: (state, action: PayloadAction<LearningGoal[] | null>) => {
+      state.learningGoals = action.payload;
+    },
+    setSessionId: (state, action: PayloadAction<string>) => {
+      state.sessionId = action.payload;
     },
     setCurrentBlockIndex: (state, action: PayloadAction<number>) => {
       state.currentBlockIndex = action.payload;
@@ -30,12 +46,29 @@ export const sessionSlice = createSlice({
       state.highestAlreadyViewedBlockIndex = action.payload;
     },
     resetSession: (state) => {
-      state.currentSessionId = null;
+      state.topic = "";
+      state.priorKnowledge = "";
+      state.learningGoals = null;
+      state.sessionId = null;
       state.currentBlockIndex = 0;
       state.highestAlreadyViewedBlockIndex = 0;
+    },
+    clearSessionCreationData: (state) => {
+      state.topic = "";
+      state.priorKnowledge = "";
+      state.learningGoals = null;
     },
   },
 });
 
-export const { setCurrentSessionId, setCurrentBlockIndex, setHighestAlreadyViewedBlockIndex, resetSession } = sessionSlice.actions;
+export const {
+  setTopic,
+  setPriorKnowledge,
+  setLearningGoals,
+  setSessionId,
+  setCurrentBlockIndex,
+  setHighestAlreadyViewedBlockIndex,
+  resetSession,
+  clearSessionCreationData,
+} = sessionSlice.actions;
 export default sessionSlice.reducer;

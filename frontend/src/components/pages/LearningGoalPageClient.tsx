@@ -10,12 +10,15 @@ import LoadingScreen from '@/components/ui/LoadingScreen';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useCreateSessionMutation } from '@/store/api/sessionsApi';
 import { setLoading } from '@/store/slices/uiSlice';
+import { clearSessionCreationData } from '@/store/slices/sessionSlice';
 import type { LearningGoal } from '@/types/domain/learning-goals.types';
 
 export default function LearningGoalPageClient() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const pageData = useAppSelector((state) => state.learningGoals.learningGoalPageData);
+  const { topic, priorKnowledge, learningGoals } = useAppSelector((state) => state.session);
+  const pageData =
+    learningGoals === null ? null : { topic, keywords: priorKnowledge, goals: learningGoals };
 
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [showPredefined, setShowPredefined] = useState(true);
@@ -75,6 +78,7 @@ export default function LearningGoalPageClient() {
         priorKnowledge: pageData.keywords?.trim() || undefined,
       }).unwrap();
 
+      dispatch(clearSessionCreationData());
       router.push(`/session/${response.id}`);
     } catch (error) {
       console.error('Failed to create session:', error);

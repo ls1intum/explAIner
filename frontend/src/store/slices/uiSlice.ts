@@ -17,7 +17,7 @@ const initialState: UiState = {
 };
 
 /** 
- * Redux UI slice
+ * Redux UI slice (Loading Screen, Toasts)
  */
 export const uiSlice = createSlice({
   name: "ui",

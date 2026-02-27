@@ -11,12 +11,12 @@ export default function BlockNavigation() {
   const dispatch = useAppDispatch();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeChipRef = useRef<HTMLButtonElement>(null);
-  const { currentSessionId, currentBlockIndex, highestAlreadyViewedBlockIndex } = useAppSelector((state) => state.session);
+  const { sessionId: sessionIdFromState, currentBlockIndex, highestAlreadyViewedBlockIndex } = useAppSelector((state) => state.session);
   const { data: sessionData } = useGetSessionQuery(
-    { sessionId: currentSessionId! },
-    { skip: !currentSessionId }
+    { sessionId: sessionIdFromState! },
+    { skip: !sessionIdFromState }
   );
-  const sessionId = currentSessionId ?? '';
+  const sessionId = sessionIdFromState ?? '';
   const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
 
   const blocks = sessionData?.blocks ?? [];
