@@ -10,6 +10,7 @@ import { resetSession } from '@/store/slices/sessionSlice';
 import EndSessionDialog from '@/components/session/EndSessionDialog';
 import BlockNavigation from '@/components/session/BlockNavigation';
 
+/** Navbar component */
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -20,14 +21,12 @@ export default function Navbar() {
   const isLearningGoalPage = pathname === '/learning-goal';
   const isSessionPage = pathname.startsWith('/session/');
   const sessionIdFromPath = isSessionPage ? pathname.split('/')[2] : null;
-  
-  // Dialog state
-  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
-  
-  // Delete session mutation
   const [deleteSession] = useDeleteSessionMutation();
   
-  // Handle end session confirmation
+  // End session dialog state
+  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
+
+  // Handle end session dialog confirmation
   const handleEndSession = async () => {
     setShowEndSessionDialog(false);
 
@@ -46,9 +45,9 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-brand-gradient px-6 py-4">
       <div className="w-full flex items-center gap-4 min-h-[2rem]">
-        {/* Show invisible placeholder when loading to maintain height */}
         {isLoading ? (
           <>
+            {/* Show invisible placeholder when loading to maintain navbar height */}
             <div className="invisible flex items-center gap-2 text-sm font-medium">
               <span className="w-5 h-5"></span>
               <span>Placeholder</span>

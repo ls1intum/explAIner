@@ -1,17 +1,33 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { LOADING_SCREEN_MESSAGES } from '@/lib/loadingMessages';
-import { getRandomMessage } from '@/lib/loadingMessages';
-import LoadingScreenShell from './LoadingScreenShell';
+import Image from 'next/image';
+import { LOADING_SCREEN_MESSAGES, getRandomMessage } from '@/lib/loadingMessages';
 
-/** Client-only loading screen: picks random message after mount to avoid hydration mismatch. */
+/** Loading screen component - displaying funny & cute Owlbert messages selected randomly each time :) */
 export default function LoadingScreen() {
-  const [message, setMessage] = useState(LOADING_SCREEN_MESSAGES[0]);
 
+  // selects the message after mount to avoid server-client hydration mismatch
+  const [message, setMessage] = useState('...');
   useEffect(() => {
     setMessage(getRandomMessage(LOADING_SCREEN_MESSAGES));
   }, []);
 
-  return <LoadingScreenShell message={message} />;
+  return (
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-6 bg-background">
+      <div className="mb-8 animate-bounce">
+        <Image
+          src="/images/owlbert/flying.png"
+          alt="Owlbert is thinking..."
+          width={150}
+          height={150}
+          className="object-contain"
+          priority
+        />
+      </div>
+      <p className="text-muted-foreground text-center text-lg max-w-md">
+        {message}
+      </p>
+    </div>
+  );
 }

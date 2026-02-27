@@ -5,8 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { removeToast, type Toast } from "@/store/slices/uiSlice";
 import { CrossCircledIcon, CheckCircledIcon, InfoCircledIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
-// Toast notification component
-
+/** Toast notification component */
 export default function Toast() {
   const dispatch = useAppDispatch();
   const toasts = useAppSelector((state) => state.ui.toasts);
@@ -41,11 +40,10 @@ function ToastItem({ id, message, type, onClose }: ToastItemProps) {
     const timer = setTimeout(() => {
       dispatch(removeToast(id));
     }, 3000);
-
     return () => clearTimeout(timer);
   }, [id, dispatch]);
 
-  // Icon and colors from theme (themeable, consistent with app)
+  // Icon and colors from theme
   const config = {
     success: {
       icon: <CheckCircledIcon className="w-5 h-5" />,

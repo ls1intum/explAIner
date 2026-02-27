@@ -1,4 +1,4 @@
-import SessionPageClient from '@/components/pages/SessionPageClient';
+import SessionPageClient from '@/components/session/SessionPageClient';
 
 export default function SessionPage({
   params,
