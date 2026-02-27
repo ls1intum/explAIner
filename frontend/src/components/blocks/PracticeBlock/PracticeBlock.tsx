@@ -66,6 +66,7 @@ export default function PracticeBlock({
       });
       setIsChecked(true);
     } catch (error) {
+      console.error(error);
       dispatch(addToast({ message: 'Could not submit answer. Please try again.', type: 'error' }));
     }
   };
