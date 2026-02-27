@@ -6,22 +6,14 @@ import InitialChatMessage from './InitialChatMessage';
 interface ChatMessageBubbleProps {
   sender: 'User' | 'Owlbert';
   message: string;
-  animationDelay?: number;
 }
 
 /** Single chat message row: avatar (Owlbert only) + bubble with parsed message content */
-export default function ChatMessageBubble({
-  sender,
-  message,
-  animationDelay = 0,
-}: ChatMessageBubbleProps) {
+export default function ChatMessageBubble({ sender, message }: ChatMessageBubbleProps) {
   const isUser = sender === 'User';
 
   return (
-    <div
-      className={`flex gap-3 items-start animate-fadeIn ${isUser ? 'flex-row-reverse' : ''}`}
-      style={{ animationDelay: `${animationDelay}ms` }}
-    >
+    <div className={`flex gap-3 items-start ${isUser ? 'flex-row-reverse' : ''}`}>
       {!isUser && (
         <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center">
           <Image

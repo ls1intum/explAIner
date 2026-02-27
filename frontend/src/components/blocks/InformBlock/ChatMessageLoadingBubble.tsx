@@ -9,7 +9,7 @@ interface ChatMessageLoadingBubbleProps {
 /** Loading state row: Owlbert avatar + animated "..." message */
 export default function ChatMessageLoadingBubble({ loadingMessage }: ChatMessageLoadingBubbleProps) {
   return (
-    <div className="flex gap-3 items-start animate-fadeIn">
+    <div className="flex gap-3 items-start">
       <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center">
         <Image
           src="/images/owlbert/chat.png"

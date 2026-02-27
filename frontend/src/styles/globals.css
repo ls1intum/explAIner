@@ -65,7 +65,7 @@ body {
     border-top-color: hsl(var(--secondary));
   }
 
-  /* Fade in animation (e.g. used in block container, inform block chat messages, end-session dialog) */
+  /* Fade in animation (e.g. used in block container, end-session dialog) */
   .animate-fadeIn {
     animation: fadeIn 0.4s ease-in-out;
   }

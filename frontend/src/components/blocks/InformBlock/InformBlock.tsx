@@ -112,12 +112,11 @@ export default function InformBlock({
             ref={chatContainerRef}
             className="max-h-[500px] overflow-y-auto p-6 space-y-4"
           >
-            {localMessages.map((msg, index) => (
+            {localMessages.map((msg) => (
               <ChatMessageBubble
                 key={msg.id}
                 sender={msg.sender}
                 message={msg.message}
-                animationDelay={index * 150}
               />
             ))}
             {isLoading && <ChatMessageLoadingBubble loadingMessage={loadingMessage} />}
