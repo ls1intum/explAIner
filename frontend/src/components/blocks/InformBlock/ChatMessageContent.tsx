@@ -1,11 +1,11 @@
 'use client';
 
-interface InitialChatMessageProps {
+interface ChatMessageContentProps {
   message: string;
 }
 
 /** Renders inform block message with KEY FACTS / KEY MISCONCEPTIONS / SUMMARY sections and bold (**text**) highlighting */
-export default function InitialChatMessage({ message }: InitialChatMessageProps) {
+export default function ChatMessageContent({ message }: ChatMessageContentProps) {
   const sections = message.split(/(?=KEY FACTS|KEY MISCONCEPTIONS|SUMMARY)/);
 
   return (

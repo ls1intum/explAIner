@@ -6,11 +6,12 @@ interface ChatMessageLoadingBubbleProps {
   loadingMessage: string;
 }
 
-/** Loading state row: Owlbert avatar + animated "..." message */
+/** ChatMessageLoadingBubble component - displays the loading animation chat message while the answer is generated */
 export default function ChatMessageLoadingBubble({ loadingMessage }: ChatMessageLoadingBubbleProps) {
   return (
     <div className="flex gap-3 items-start">
       <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center">
+        {/* Owlbert avatar */}
         <Image
           src="/images/owlbert/chat.png"
           alt="Owlbert"
@@ -19,7 +20,9 @@ export default function ChatMessageLoadingBubble({ loadingMessage }: ChatMessage
           className="object-contain"
         />
       </div>
+      {/* Chat message bubble */}
       <div className="max-w-[85%] rounded-2xl p-5 bg-muted rounded-tl-sm">
+        {/* Funny & cute Owlbert loading message */}
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground italic text-sm">{loadingMessage}</span>
           <div className="flex gap-1">
