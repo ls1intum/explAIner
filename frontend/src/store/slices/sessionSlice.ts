@@ -20,11 +20,12 @@ const initialState: SessionState = {
 };
 
 /** 
- * Redux session slice 
+ * Redux store "session" slice 
  */
 export const sessionSlice = createSlice({
   name: "session",
   initialState,
+  // reducers: update the session state based on the given action
   reducers: {
     setTopic: (state, action: PayloadAction<string>) => {
       state.topic = action.payload;
@@ -61,6 +62,7 @@ export const sessionSlice = createSlice({
   },
 });
 
+// export all possible actions that can be dispatched to update the session state slice
 export const {
   setTopic,
   setPriorKnowledge,

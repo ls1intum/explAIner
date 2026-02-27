@@ -17,11 +17,12 @@ const initialState: UiState = {
 };
 
 /** 
- * Redux UI slice (Loading Screen, Toasts)
+ * Redux store "ui" slice (Loading Screen, Toasts)
  */
 export const uiSlice = createSlice({
   name: "ui",
   initialState,
+  // reducers = update the ui state based on the given action
   reducers: {
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -43,6 +44,6 @@ export const uiSlice = createSlice({
   },
 });
 
+// export all possible actions that can be dispatched to update the ui state slice
 export const { setLoading, addToast, removeToast } = uiSlice.actions;
-
 export default uiSlice.reducer;
