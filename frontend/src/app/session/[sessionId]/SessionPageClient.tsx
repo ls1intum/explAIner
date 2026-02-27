@@ -8,11 +8,10 @@ import { setLoading } from '@/store/slices/uiSlice';
 import { useGetSessionQuery, useContinueSessionMutation, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
 import { useGetBlockQuery, useGenerateBlockSequenceMutation, useGenerateSummaryBlockMutation } from '@/store/api/blocksApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
-import LoadingScreen from '@/components/ui/LoadingScreen';
-import InformBlock from '@/components/blocks/InformBlock/InformBlock';
-import PracticeBlock from '@/components/blocks/PracticeBlock/PracticeBlock';
-import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
-import BlockContainer from '@/components/blocks/BlockContainer';
+import LoadingScreen from '@/components/shared/ui/LoadingScreen';
+import InformBlock from '@/components/blocks/inform/InformBlock';
+import PracticeBlock from '@/components/blocks/practice/PracticeBlock';
+import SummaryBlock from '@/components/blocks/summary/SummaryBlock';
 import EasierLearningGoalDialog from '@/components/session/dialogs/EasierLearningGoalDialog';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
@@ -189,7 +188,8 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-background">
       <main className="container mx-auto px-4 flex items-center justify-center min-h-[calc(100vh-4rem)]">
-        <BlockContainer>
+        {/* Block */}
+        <div className="w-full">
           {displayBlock.type === BLOCK_TYPE.INFORM && (
             <InformBlock
               block={displayBlock}
@@ -210,7 +210,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
               sessionInfo={summarySessionInfo}
             />
           )}
-        </BlockContainer>
+        </div>
       </main>
 
       <EasierLearningGoalDialog

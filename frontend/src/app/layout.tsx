@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import { selectedFont } from "../styles/fonts";
-import Navbar from "@/components/layout/Navbar";
+import Navbar from "@/components/shared/layout/Navbar";
 import ReduxProvider from "@/providers/ReduxProvider";
 import ToastProvider from "@/providers/ToastProvider";
 

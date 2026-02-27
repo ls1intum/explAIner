@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
 import LearningGoalCard from '@/components/learning-goals/LearningGoalCard';
 import CustomLearningGoalCard from '@/components/learning-goals/CustomLearningGoalCard';
-import LoadingScreen from '@/components/ui/LoadingScreen';
+import LoadingScreen from '@/components/shared/ui/LoadingScreen';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useCreateSessionMutation } from '@/store/api/sessionsApi';
 import { setLoading } from '@/store/slices/uiSlice';
