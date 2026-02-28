@@ -19,25 +19,18 @@ export default function LearningGoalPageClient() {
   // Navigation
   const router = useRouter();
 
-  // Redux hooks
+  // Redux store hooks
   const dispatch = useAppDispatch();
   const { topic, priorKnowledge, learningGoals } = useAppSelector((state) => state.session);
   const isLoading = useAppSelector((state) => state.ui.isLoading);
+
+  // API call hook
   const [createSession, { isLoading: isCreatingSession }] = useCreateSessionMutation();
 
   // Extract page data
   const pageData =
     learningGoals === null ? null : { topic, priorKnowledge, learningGoals };
   if (!pageData) return null;
-  // Transform generated learning goals to display only the objective and Bloom's level
-  const transformedGoals = pageData.learningGoals.map((goal: LearningGoal, index: number) => {
-    const prefix = 'After this session, you will be able to ';
-    let objective = goal.learningGoal;
-    if (objective.startsWith(prefix)) objective = objective.substring(prefix.length);
-    const bloomsLevel = goal.bloomsLevel;
-    if (objective.startsWith(bloomsLevel + ' ')) objective = objective.substring(bloomsLevel.length + 1);
-    return { id: index.toString(), goal: objective, bloomsLevel };
-  });
 
   // Init & sync component state
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
@@ -150,13 +143,13 @@ export default function LearningGoalPageClient() {
                 Choose a learning goal...
               </div>
               <div className="space-y-3">
-                {transformedGoals.map((goal: (typeof transformedGoals)[number]) => (
+                {pageData.learningGoals.map((goal: LearningGoal, index: number) => (
                   <LearningGoalCard
-                    key={goal.id}
-                    goal={goal.goal}
+                    key={index}
+                    learningGoal={goal.learningGoal}
                     bloomsLevel={goal.bloomsLevel}
-                    isSelected={selectedGoalId === goal.id}
-                    onClick={() => handleSelectGoal(goal.id)}
+                    isSelected={selectedGoalId === index.toString()}
+                    onClick={() => handleSelectGoal(index.toString())}
                   />
                 ))}
               </div>

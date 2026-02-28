@@ -36,11 +36,7 @@ export const loggingMiddleware: Middleware = (storeApi) => (next) => (action: un
   return next(action);
 };
 
-/* 
- * Helper functions
- */
-
-// extracts the endpoint name from the action type
+// Helper function - extracts the endpoint name from the action type
 function extractEndpointFromType(type: string): string {
   const parts = type.split('/');
   if (parts.includes('executeQuery') || parts.includes('executeMutation')) {
@@ -53,7 +49,7 @@ function extractEndpointFromType(type: string): string {
   return 'unknown';
 }
 
-// redacts sensitive keys, truncates long strings to 30 chars, returns one-line JSON
+// Helper function - redacts sensitive keys, truncates long strings to 30 chars, returns one-line JSON
 export function formatForLogging(body: unknown): string {
   if (!body) return '{}';
   const sensitiveKeys = ['password', 'token', 'apiKey', 'secret'];

@@ -17,9 +17,11 @@ export default function HomePageClient() {
   // Navigation
   const router = useRouter();
 
-  // Redux hooks
+  // Redux store hooks
   const dispatch = useAppDispatch();
   const { topic, priorKnowledge } = useAppSelector((state) => state.session);
+
+  // API call hook
   const [generateLearningGoals, { isLoading }] =
     useGenerateLearningGoalsMutation();
 

@@ -16,7 +16,7 @@ export default function FeedbackRating({ sessionId }: FeedbackRatingProps) {
     { emoji: '😊', label: 'Very helpful', value: 5 },
   ];
 
-  // Redux hook
+  // API call hook
   const [submitFeedback] = useSubmitFeedbackMutation();
 
   // Init & sync component state

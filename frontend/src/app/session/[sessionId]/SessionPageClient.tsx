@@ -21,9 +21,27 @@ interface SessionPageClientProps {
 }
 
 export default function SessionPageClient({ sessionId }: SessionPageClientProps) {
+
+  // Navigation
   const router = useRouter();
+
+  // Redux store hooks
   const dispatch = useAppDispatch();
   const { sessionId: sessionIdFromState, currentBlockIndex } = useAppSelector((state) => state.session);
+
+  // API call hooks
+  const { data: sessionData, isLoading: isLoadingSession } = useGetSessionQuery(
+    { sessionId },
+    { skip: false }
+  );
+  const [continueSession] = useContinueSessionMutation();
+  const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
+  const [generateBlockSequence, { isLoading: isGeneratingSequence }] = useGenerateBlockSequenceMutation();
+  const [generateSummaryBlock, { isLoading: isGeneratingSummary }] = useGenerateSummaryBlockMutation();
+  const [generateEasierLearningGoals, { isLoading: isGeneratingEasierGoals }] = useGenerateEasierLearningGoalsMutation();
+
+
+  // Init & sync component state
   const [showPromptDialog, setShowPromptDialog] = useState(false);
   const [summaryData, setSummaryData] = useState<{
     block: Block;
@@ -35,16 +53,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     };
   } | null>(null);
 
-  const [continueSession] = useContinueSessionMutation();
-  const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
-  const [generateBlockSequence, { isLoading: isGeneratingSequence }] = useGenerateBlockSequenceMutation();
-  const [generateSummaryBlock, { isLoading: isGeneratingSummary }] = useGenerateSummaryBlockMutation();
-  const [generateEasierLearningGoals, { isLoading: isGeneratingEasierGoals }] = useGenerateEasierLearningGoalsMutation();
 
-  const { data: sessionData, isLoading: isLoadingSession } = useGetSessionQuery(
-    { sessionId },
-    { skip: false }
-  );
 
   // Hydrate Redux from sessionData when it arrives (or when refetch returns after generate)
   useEffect(() => {

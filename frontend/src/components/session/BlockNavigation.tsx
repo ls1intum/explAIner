@@ -15,10 +15,11 @@ export default function BlockNavigation() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeChipRef = useRef<HTMLButtonElement>(null);
 
-  // Redux hooks
+  // Redux store hooks
   const dispatch = useAppDispatch();
-
   const { sessionId: sessionIdFromState, currentBlockIndex, highestAlreadyViewedBlockIndex } = useAppSelector((state) => state.session);
+
+  // API call hooks
   const { data: sessionData } = useGetSessionQuery(
     { sessionId: sessionIdFromState! },
     { skip: !sessionIdFromState }

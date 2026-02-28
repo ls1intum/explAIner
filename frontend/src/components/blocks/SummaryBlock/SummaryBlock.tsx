@@ -29,22 +29,6 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
   const { sessionSummary } = summaryBlock;
   const { learningGoal, bloomsLevel, totalBlocks, sessionDuration } = sessionInfo;
 
-  // Helper function to parse session summary text to render with markdown-style formatting
-  const renderSummary = (text: string) => {
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        const boldText = part.slice(2, -2);
-        return (
-          <strong key={index} className="font-semibold text-primary">
-            {boldText}
-          </strong>
-        );
-      }
-      return <span key={index}>{part}</span>;
-    });
-  };
-
   // "Start New Session" button is clicked (navigates to home page)
   const handleStartNewSession = () => {
     router.push('/');
@@ -86,3 +70,19 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
     </div>
   );
 }
+
+// Helper function - parses session summary text to render with markdown-style formatting
+const renderSummary = (text: string) => {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2);
+      return (
+        <strong key={index} className="font-semibold text-primary">
+          {boldText}
+        </strong>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+};

@@ -21,9 +21,11 @@ export default function Navbar() {
   const isLearningGoalPage = pathname === '/learning-goal';
   const isSessionPage = pathname.startsWith('/session/');
 
-  // Redux hooks
+  // Redux store hooks
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector((state) => state.ui.isLoading);
+
+  // API call hook
   const [deleteSession] = useDeleteSessionMutation();
   
   // Init & sync component state

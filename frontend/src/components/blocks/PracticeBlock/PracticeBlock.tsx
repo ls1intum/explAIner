@@ -23,8 +23,10 @@ export default function PracticeBlock({
   onContinue,
 }: PracticeBlockProps) {
 
-  // Redux hooks
+  // Redux store hook
   const dispatch = useAppDispatch();
+
+  // API call hook
   const [submitAnswer, { isLoading: isSubmittingAnswer }] = useSubmitAnswerMutation();
 
   // Extract block data

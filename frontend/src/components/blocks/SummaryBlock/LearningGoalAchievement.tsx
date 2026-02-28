@@ -5,21 +5,6 @@ interface LearningGoalAchievementProps {
 
 /** LearningGoalAchievement component - displays the learning goal that was successfully achieved by completing the session */
 export default function LearningGoalAchievement({ learningGoal, bloomsLevel }: LearningGoalAchievementProps) {
-  
-  // Helper function to parse learning goal to highlight Bloom's level
-  const renderLearningGoal = (goal: string, level: string) => {
-    const parts = goal.split(new RegExp(`(${level})`, 'gi'));
-    return parts.map((part, index) => {
-      if (part.toLowerCase() === level.toLowerCase()) {
-        return (
-          <span key={index} className="font-semibold text-[#10b981]">
-            {part}
-          </span>
-        );
-      }
-      return <span key={index}>{part}</span>;
-    });
-  };
 
   return (
     <div className="bg-[#10b981]/10 rounded-xl p-6 space-y-3">
@@ -52,3 +37,18 @@ export default function LearningGoalAchievement({ learningGoal, bloomsLevel }: L
     </div>
   );
 }
+
+// Helper function - parses learning goal to highlight Bloom's level
+const renderLearningGoal = (goal: string, level: string) => {
+  const parts = goal.split(new RegExp(`(${level})`, 'gi'));
+  return parts.map((part, index) => {
+    if (part.toLowerCase() === level.toLowerCase()) {
+      return (
+        <span key={index} className="font-semibold text-[#10b981]">
+          {part}
+        </span>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+};
