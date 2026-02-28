@@ -4,32 +4,21 @@ interface ChatMessageContentProps {
   message: string;
 }
 
-/** Renders inform block message with KEY FACTS / KEY MISCONCEPTIONS / SUMMARY sections and bold (**text**) highlighting */
+/** ChatMessageContent component - formats and displays inform block messages
+ * 
+ * for first inform block message of initial block sequence:      formats and displays KEY FACTS section
+ * for first inform block message of subsequent block sequence:   formats and displays KEY MISCONCEPTIONS section
+ * for first inform block message of any block sequence:          formats and displays SUMMARY section
+ * for all block messages:                                        adds bold (**text**) highlighting
+ */
 export default function ChatMessageContent({ message }: ChatMessageContentProps) {
   const sections = message.split(/(?=KEY FACTS|KEY MISCONCEPTIONS|SUMMARY)/);
 
   return (
     <>
       {sections.map((section, sectionIndex) => {
-        if (section.startsWith('KEY MISCONCEPTIONS')) {
-          return (
-            <div key={sectionIndex} className="mt-6">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                KEY MISCONCEPTIONS
-              </h3>
-              <div className="space-y-3">
-                {section
-                  .replace('KEY MISCONCEPTIONS', '')
-                  .trim()
-                  .split('\n')
-                  .filter((line) => line.trim())
-                  .map((line, lineIndex) => (
-                    <BulletLine key={lineIndex} line={line} />
-                  ))}
-              </div>
-            </div>
-          );
-        }
+
+        // KEY FACTS section - displays bullet points
         if (section.startsWith('KEY FACTS')) {
           return (
             <div key={sectionIndex} className="mt-6">
@@ -43,12 +32,35 @@ export default function ChatMessageContent({ message }: ChatMessageContentProps)
                   .split('\n')
                   .filter((line) => line.trim())
                   .map((line, lineIndex) => (
-                    <BulletLine key={lineIndex} line={line} />
+                    <BulletPoint key={lineIndex} line={line} />
                   ))}
               </div>
             </div>
           );
         }
+
+        // KEY MISCONCEPTIONS section - displays bullet points
+        if (section.startsWith('KEY MISCONCEPTIONS')) {
+          return (
+            <div key={sectionIndex} className="mt-6">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                KEY MISCONCEPTIONS
+              </h3>
+              <div className="space-y-3">
+                {section
+                  .replace('KEY MISCONCEPTIONS', '')
+                  .trim()
+                  .split('\n')
+                  .filter((line) => line.trim())
+                  .map((line, lineIndex) => (
+                    <BulletPoint key={lineIndex} line={line} />
+                  ))}
+              </div>
+            </div>
+          );
+        }
+
+        // SUMMARY section - displays text with bold formatting
         if (section.startsWith('SUMMARY')) {
           return (
             <div key={sectionIndex} className="mt-6">
@@ -61,6 +73,8 @@ export default function ChatMessageContent({ message }: ChatMessageContentProps)
             </div>
           );
         }
+
+        // Every other section (not KEY FACTS/MISCONCEPTIONS/SUMMARY) - displays text with bold formatting
         return (
           <div key={sectionIndex} className="text-base leading-relaxed">
             <BoldParts text={section} />
@@ -71,7 +85,8 @@ export default function ChatMessageContent({ message }: ChatMessageContentProps)
   );
 }
 
-function BulletLine({ line }: { line: string }) {
+/** Helper function - renders a single bullet point (one bullet + line of text) */
+function BulletPoint({ line }: { line: string }) {
   return (
     <div className="flex gap-2">
       <span className="text-primary">•</span>
@@ -82,6 +97,7 @@ function BulletLine({ line }: { line: string }) {
   );
 }
 
+/** Helper function - formats bold text */
 function BoldParts({ text }: { text: string }) {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return (

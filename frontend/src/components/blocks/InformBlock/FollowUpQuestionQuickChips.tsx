@@ -5,7 +5,14 @@ interface FollowUpQuestionQuickChipsProps {
   disabled?: boolean;
 }
 
-/** Preset follow-up prompts (e.g. simpler explanation, more details) */
+/** FollowUpQuestionQuickChips component - displays 3 pre-defined follow-up questions as quick action chips 
+ * 
+ * 'Try a simpler explanation'
+ * 'Give more details'
+ * 'Use (different) examples'
+ * 
+ * When clicked, the corresponding question is directly sent as new chat message in chat input field
+*/
 export default function FollowUpQuestionQuickChips({
   onQuestionClick,
   disabled = false,
@@ -24,7 +31,9 @@ export default function FollowUpQuestionQuickChips({
 
   return (
     <div className="flex flex-wrap gap-2">
+      {/* All quick action chips */}
       {quickActions.map((action) => (
+        // Quick action chip
         <button
           key={action.id}
           onClick={() => handleQuickAction(action.label)}

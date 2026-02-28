@@ -10,7 +10,7 @@ interface FollowUpQuestionTextInputFieldProps {
   disabled: boolean;
 }
 
-/** Follow-up input area: text input, send button, and quick action chips */
+/** FollowUpQuestionTextInputField component - displays the user chat window for follow-up questions (text input, send button, and quick action chips) */
 export default function FollowUpQuestionTextInputField({
   value,
   onChange,
@@ -28,6 +28,7 @@ export default function FollowUpQuestionTextInputField({
   return (
     <div className="p-6 pt-4 bg-background/50">
       <div className="flex gap-3 mb-3">
+        {/* Text input field */}
         <input
           type="text"
           value={value}
@@ -37,6 +38,7 @@ export default function FollowUpQuestionTextInputField({
           disabled={disabled}
           className="flex-1 px-4 py-3 rounded-full border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
         />
+        {/* Send button */}
         <button
           onClick={() => onSend()}
           disabled={!value.trim() || disabled}
@@ -53,6 +55,7 @@ export default function FollowUpQuestionTextInputField({
           </svg>
         </button>
       </div>
+      {/* 3 pre-defined follow-up questions as quick action chips */}
       <FollowUpQuestionQuickChips onQuestionClick={onQuickAction} disabled={disabled} />
     </div>
   );
