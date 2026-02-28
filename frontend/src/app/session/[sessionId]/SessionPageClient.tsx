@@ -35,24 +35,20 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     { skip: false }
   );
   const [continueSession] = useContinueSessionMutation();
+  const { data: blockResponse, isLoading: isBlockLoading } = useGetBlockQuery(
+    { sessionId, orderIndex: String(currentBlockIndex) },
+    { skip: !sessionData }
+  );
   const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
   const [generateBlockSequence, { isLoading: isGeneratingSequence }] = useGenerateBlockSequenceMutation();
   const [generateSummaryBlock, { isLoading: isGeneratingSummary }] = useGenerateSummaryBlockMutation();
   const [generateEasierLearningGoals, { isLoading: isGeneratingEasierGoals }] = useGenerateEasierLearningGoalsMutation();
 
-  // Init & sync component state
-  const [showHowToContinueSessionDialog, setShowHowToContinueSessionDialog] = useState(false);
-  const [summaryData, setSummaryData] = useState<{
-    block: Block;
-    sessionInfo: {
-      learningGoal: string;
-      bloomsLevel: string;
-      totalBlocks: number;
-      sessionDuration: number;
-    };
-  } | null>(null);
-
-  // Hydrate Redux from sessionData when it arrives (or when refetch returns after generate)
+  // Extract block data
+  const displayBlock = blockResponse?.data;
+  
+  // Init & sync component state for ...
+  // ... session data: (Re-)Hydrate redux store with sessionData when it arrives (after refetch OR generation)
   useEffect(() => {
     if (!sessionData || sessionData.id !== sessionId) return;
     dispatch(setSessionId(sessionData.id));
@@ -63,77 +59,35 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       dispatch(setCurrentBlockIndex(sessionData.currentBlockIndex));
     }
   }, [sessionData, sessionId, sessionIdFromState, dispatch]);
-
-  // Get block data for the current block index
-  const { data: blockResponse, isLoading: isBlockLoading } = useGetBlockQuery(
-    { sessionId, orderIndex: String(currentBlockIndex) },
-    { skip: !sessionData }
-  );
-  const displayBlock = blockResponse?.data;
-
-  // Get summary session info for the current block index
+  // ... summary data
+  const [summaryData, setSummaryData] = useState<{
+    block: Block;
+    sessionInfo: {
+      learningGoal: string;
+      bloomsLevel: string;
+      totalBlocks: number;
+      sessionDuration: number;
+    };
+  } | null>(null);
   const summarySessionInfo =
-    displayBlock?.type === BLOCK_TYPE.SUMMARY && sessionData
-      ? {
-          learningGoal: sessionData.learningGoal?.learningGoal ?? '',
-          bloomsLevel: sessionData.learningGoal?.bloomsLevel ?? '',
-          totalBlocks: sessionData.totalBlocks ?? 0,
-          sessionDuration: summaryData?.sessionInfo.sessionDuration ?? 0,
-        }
-      : null;
+  displayBlock?.type === BLOCK_TYPE.SUMMARY && sessionData
+    ? {
+        learningGoal: sessionData.learningGoal?.learningGoal ?? '',
+        bloomsLevel: sessionData.learningGoal?.bloomsLevel ?? '',
+        totalBlocks: sessionData.totalBlocks ?? 0,
+        sessionDuration: summaryData?.sessionInfo.sessionDuration ?? 0,
+      }
+    : null;
+  // ... dialog state
+  const [showHowToContinueSessionDialog, setShowHowToContinueSessionDialog] = useState(false);
 
   // Redirect to landing page if session data is not found
   useEffect(() => {
     if (isLoadingSession) return;
     if (!sessionData && sessionId) {
-      router.push('/');
+      router.replace('/');
     }
   }, [sessionData, sessionId, router, isLoadingSession]);
-
-  // Show loading screen while loading block data
-  useEffect(() => {
-    if (!displayBlock || isBlockLoading) {
-      dispatch(setLoading(true));
-    } else {
-      dispatch(setLoading(false));
-    }
-  }, [displayBlock, isBlockLoading, dispatch]);
-
-  // "Continue" button is clicked and action is "next-sequence"
-  const handleGenerateNextSequence = async () => {
-    try {
-      const result = await generateBlockSequence({ sessionId }).unwrap();
-      const newIndex = result.informBlock.orderIndex;
-      dispatch(setCurrentBlockIndex(newIndex));
-      await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
-    } catch (error) {
-      console.error('Failed to generate next sequence:', error);
-      dispatch(addToast({ message: 'Failed to generate next sequence. Please try again.', type: 'error' }));
-    }
-  };
-
-  // "Continue" button is clicked and action is "summary"
-  const handleGenerateSummary = async () => {
-    try {
-      const result = await generateSummaryBlock({ sessionId }).unwrap();
-      const block = result as Block;
-      const newIndex = result.orderIndex;
-      setSummaryData({
-        block,
-        sessionInfo: {
-          learningGoal: sessionData?.learningGoal?.learningGoal ?? '',
-          bloomsLevel: sessionData?.learningGoal?.bloomsLevel ?? '',
-          totalBlocks: result.totalBlocks,
-          sessionDuration: result.sessionDuration,
-        },
-      });
-      dispatch(setCurrentBlockIndex(newIndex));
-      await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
-    } catch (error) {
-      console.error('Failed to generate summary:', error);
-      dispatch(addToast({ message: 'Failed to generate summary. Please try again.', type: 'error' }));
-    }
-  };
 
   // "Continue" button is clicked and next action is determined (either "navigate", "next-sequence", "summary", or "prompt-user")
   const handleContinue = async () => {
@@ -165,10 +119,46 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     }
   };
 
+  // "Continue" button is clicked and determined action is "next-sequence"
+  const handleGenerateNextSequence = async () => {
+    try {
+      const result = await generateBlockSequence({ sessionId }).unwrap();
+      const newIndex = result.informBlock.orderIndex;
+      dispatch(setCurrentBlockIndex(newIndex));
+      await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
+    } catch (error) {
+      console.error('Failed to generate next sequence:', error);
+      dispatch(addToast({ message: 'Failed to generate next sequence. Please try again.', type: 'error' }));
+    }
+  };
 
-  /** How to Continue Session Dialog Handlers 
-   * (A) "Adjust Learning Goal" button 
-   * (B) "Continue with current Goal" button
+  // "Continue" button is clicked and determined action is "summary"
+  const handleGenerateSummary = async () => {
+    try {
+      const result = await generateSummaryBlock({ sessionId }).unwrap();
+      const block = result as Block;
+      const newIndex = result.orderIndex;
+      setSummaryData({
+        block,
+        sessionInfo: {
+          learningGoal: sessionData?.learningGoal?.learningGoal ?? '',
+          bloomsLevel: sessionData?.learningGoal?.bloomsLevel ?? '',
+          totalBlocks: result.totalBlocks,
+          sessionDuration: result.sessionDuration,
+        },
+      });
+      dispatch(setCurrentBlockIndex(newIndex));
+      await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
+    } catch (error) {
+      console.error('Failed to generate summary:', error);
+      dispatch(addToast({ message: 'Failed to generate summary. Please try again.', type: 'error' }));
+    }
+  };
+
+  /** 
+   * "How to Continue Session" Dialog Handlers:
+   *   (A) "Adjust Learning Goal" button 
+   *   (B) "Continue with current Goal" button
   */
   // (A) "Adjust Learning Goal" button is clicked (generates easier learning goals and navigates to learning goal page to start a new session)
   const handleStartNewSessionWithEasierLearningGoal = async () => {
@@ -192,6 +182,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     await handleGenerateNextSequence();
   };
 
+  // Loading: session, block, or generating sequence/summary/easier goals — sync to Redux (Navbar) and show full-page loading
   const showLoading =
     isLoadingSession ||
     !displayBlock ||
@@ -199,8 +190,9 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     isGeneratingSequence ||
     isGeneratingSummary ||
     isGeneratingEasierGoals;
-
-  // Show loading screen while loading session data, block data, or generating next sequence, summary, or easier learning goals
+  useEffect(() => {
+    dispatch(setLoading(showLoading));
+  }, [showLoading, dispatch]);
   if (showLoading) {
     return <LoadingScreen />;
   }
