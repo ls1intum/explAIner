@@ -43,8 +43,8 @@ export default function InformBlock({
   // Init & sync component state
   const [chatMessages, setChatMessages] = useState(informBlock?.messages ?? []);
   useEffect(() => {
-    setChatMessages(informBlock?.messages ?? []); 
-  }, [block]); // Sync local state (e.g. after block refetch or when navigating blocks)
+    setChatMessages(informBlock?.messages ?? []);
+  }, [block, informBlock?.messages]); // Sync local state (e.g. after block refetch or when navigating blocks)
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const [loadingMessage, setLoadingMessage] = useState(() =>
     getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES)
