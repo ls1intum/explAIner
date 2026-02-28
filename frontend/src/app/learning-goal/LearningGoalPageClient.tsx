@@ -29,8 +29,7 @@ export default function LearningGoalPageClient() {
 
   // Extract page data
   const pageData =
-    learningGoals === null ? null : { topic, priorKnowledge, learningGoals };
-  if (!pageData) return null;
+  learningGoals === null ? null : { topic, priorKnowledge, learningGoals };
 
   // Init & sync component state
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
@@ -44,6 +43,8 @@ export default function LearningGoalPageClient() {
       dispatch(setLoading(false));
     };
   }, [dispatch]);
+
+  if (!pageData) return null;
 
   // "Choose a learning goal..." button is clicked (shows predefined learning goals)
   const handleShowPredefined = () => {

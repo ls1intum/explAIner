@@ -31,8 +31,6 @@ export default function PracticeBlock({
 
   // Extract block data
   const practiceBlock = block.type === BLOCK_TYPE.PRACTICE ? block.practiceBlock : undefined;
-  if (!practiceBlock) return null; 
-  const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock; 
 
   // Init & sync component state
   const [selectedOptions, setSelectedOptions] = useState<number[]>(practiceBlock?.studentAnswerOptionIndices || []);
@@ -43,6 +41,9 @@ export default function PracticeBlock({
       setIsChecked(practiceBlock.studentAnswerIsCorrect !== null);
     }
   }, [block.id, practiceBlock]); // Sync local state (e.g. after block refetch post-submit or when navigating blocks)
+  
+  if (!practiceBlock) return null;
+  const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock;
 
   // Select/deselect single answer option
   const handleOptionToggle = (index: number) => {
