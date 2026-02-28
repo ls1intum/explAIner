@@ -7,6 +7,8 @@ import { CrossCircledIcon, CheckCircledIcon, InfoCircledIcon, ExclamationTriangl
 
 /** Toast component - displays pop-up notifications */
 export default function Toast() {
+
+  // Redux hooks
   const dispatch = useAppDispatch();
   const toasts = useAppSelector((state) => state.ui.toasts);
 
@@ -33,6 +35,8 @@ interface ToastItemProps {
 }
 
 function ToastItem({ id, message, type, onClose }: ToastItemProps) {
+
+  // Redux hook
   const dispatch = useAppDispatch();
 
   // Auto-dismiss after 3 seconds

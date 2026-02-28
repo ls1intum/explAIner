@@ -15,49 +15,77 @@ import type { LearningGoal } from '@/types/domain/learning-goals.types';
 import { BLOOMS_LEVELS, type BloomsLevel } from '@/types/domain/enums';
 
 export default function LearningGoalPageClient() {
+
+  // Navigation
   const router = useRouter();
+
+  // Redux hooks
   const dispatch = useAppDispatch();
   const { topic, priorKnowledge, learningGoals } = useAppSelector((state) => state.session);
+  const isLoading = useAppSelector((state) => state.ui.isLoading);
+  const [createSession, { isLoading: isCreatingSession }] = useCreateSessionMutation();
+
+  // Extract page data
   const pageData =
     learningGoals === null ? null : { topic, priorKnowledge, learningGoals };
+  if (!pageData) return null;
+  // Transform generated learning goals to display only the objective and Bloom's level
+  const transformedGoals = pageData.learningGoals.map((goal: LearningGoal, index: number) => {
+    const prefix = 'After this session, you will be able to ';
+    let objective = goal.learningGoal;
+    if (objective.startsWith(prefix)) objective = objective.substring(prefix.length);
+    const bloomsLevel = goal.bloomsLevel;
+    if (objective.startsWith(bloomsLevel + ' ')) objective = objective.substring(bloomsLevel.length + 1);
+    return { id: index.toString(), goal: objective, bloomsLevel };
+  });
 
+  // Init & sync component state
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [showPredefined, setShowPredefined] = useState(true);
   const [customObjective, setCustomObjective] = useState('');
-  const [customBloomsLevel, setCustomBloomsLevel] = useState<BloomsLevel>(BLOOMS_LEVELS[1]); // 'Understand'
-  const [createSession, { isLoading }] = useCreateSessionMutation();
-  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+  const [customBloomsLevel, setCustomBloomsLevel] = useState<BloomsLevel>(BLOOMS_LEVELS[1]);
 
+  // Cleanup function to reset loading state when component unmounts to avoid loading screen glitches
   useEffect(() => {
     return () => {
       dispatch(setLoading(false));
     };
   }, [dispatch]);
 
+  // "Choose a learning goal..." button is clicked (shows predefined learning goals)
   const handleShowPredefined = () => {
     if (!showPredefined) setShowPredefined(true);
   };
 
+  // "... or enter your own learning goal" button is clicked (shows custom learning goal input)
   const handleShowCustom = () => {
     if (showPredefined) setShowPredefined(false);
   };
 
+  // Single learning goal card is clicked (selects 1 of  predefined learning goal)
   const handleSelectGoal = (goalId: string) => {
     setSelectedGoalId(goalId);
     setCustomObjective('');
   };
 
+  // Custom learning goal objective input is changed (updates custom objective)
   const handleCustomObjectiveChange = (objective: string) => {
     setCustomObjective(objective);
     if (objective.trim()) setSelectedGoalId(null);
   };
 
+  // Check if "Let's Start!" button can be enabled (either predefined or custom learning goal is selected)
+  const canStart = showPredefined
+  ? selectedGoalId !== null
+  : customObjective.trim().length > 0;
+
+  // "Let's Start!" button is clicked (creates session and navigates to session page)
   const handleStartSession = async () => {
     if (!pageData) return;
 
+    // Derive learning goal and Bloom's level from selected learning goal or custom learning goal input
     let selectedGoal: string;
     let selectedBloomsLevel: BloomsLevel;
-
     if (!showPredefined && customObjective.trim()) {
       selectedGoal = `After this session, you will be able to ${customBloomsLevel} ${customObjective.trim()}.`;
       selectedBloomsLevel = customBloomsLevel;
@@ -68,44 +96,30 @@ export default function LearningGoalPageClient() {
       selectedBloomsLevel = predefinedGoal.bloomsLevel;
     }
 
+    // Create session
     try {
-      setShowLoadingScreen(true);
       dispatch(setLoading(true));
-
       const response = await createSession({
         topic: pageData.topic,
         learningGoal: { learningGoal: selectedGoal, bloomsLevel: selectedBloomsLevel },
         priorKnowledge: pageData.priorKnowledge?.trim() || undefined,
       }).unwrap();
-
       dispatch(clearSessionCreationData());
       router.push(`/session/${response.id}`);
     } catch (error) {
       console.error('Failed to create session:', error);
-      setShowLoadingScreen(false);
       dispatch(setLoading(false));
     }
   };
 
-  const canStart = showPredefined
-    ? selectedGoalId !== null
-    : customObjective.trim().length > 0;
-
-  if (!pageData) return null;
-  if (showLoadingScreen) return <LoadingScreen />;
-
-  const transformedGoals = pageData.learningGoals.map((goal: LearningGoal, index: number) => {
-    const prefix = 'After this session, you will be able to ';
-    let objective = goal.learningGoal;
-    if (objective.startsWith(prefix)) objective = objective.substring(prefix.length);
-    const bloomsLevel = goal.bloomsLevel;
-    if (objective.startsWith(bloomsLevel + ' ')) objective = objective.substring(bloomsLevel.length + 1);
-    return { id: index.toString(), goal: objective, bloomsLevel };
-  });
+  // Show loading screen while creating session
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-6">
+
+        {/* Owlbert avatar */}
         <div className="mb-6">
           <Image
             src="/images/owlbert/practice.png"
@@ -116,14 +130,20 @@ export default function LearningGoalPageClient() {
           />
         </div>
 
+        {/* Title */}
         <h1 className="text-4xl font-bold text-brand-gradient mb-3">
           Learning Goal
         </h1>
+
+        {/* Subtitle */}
         <p className="text-muted-foreground text-center mb-8 max-w-xl">
           Specify the learning goal for your ExplAIner session
         </p>
 
+        {/* Learning goal selection (predefined or custom) */}
         <div className="w-full max-w-2xl mb-6 space-y-4">
+
+          {/* Predefined 3 learning goals (shown by default) */}
           {showPredefined ? (
             <div className="w-full bg-muted rounded-3xl p-6 space-y-4">
               <div className="w-full text-center text-muted-foreground font-semibold text-base">
@@ -150,6 +170,7 @@ export default function LearningGoalPageClient() {
             </button>
           )}
 
+          {/* Custom learning goal input */}
           {!showPredefined ? (
             <CustomLearningGoalCard
               objective={customObjective}
@@ -167,13 +188,14 @@ export default function LearningGoalPageClient() {
           )}
         </div>
 
+        {/* "Let's Start!" button */}
         <button
           onClick={handleStartSession}
-          disabled={!canStart || isLoading}
+          disabled={!canStart || isCreatingSession}
           className="w-full max-w-2xl bg-success-gradient text-white font-semibold text-base py-3 px-5 rounded-3xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
         >
           <RocketIcon className="w-5 h-5" />
-          <span>{isLoading ? 'Creating session...' : "Let's Start!"}</span>
+          <span>{isCreatingSession ? 'Creating session...' : "Let's Start!"}</span>
         </button>
       </main>
     </div>

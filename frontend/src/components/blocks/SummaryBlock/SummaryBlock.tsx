@@ -19,6 +19,8 @@ interface SummaryBlockProps {
 
 /** SummaryBlock component */
 export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) {
+
+  // Navigation
   const router = useRouter();
 
   // Extract block data

@@ -31,6 +31,7 @@ export default function InformBlock({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousMessageCountRef = useRef(0);
 
+  // Redux hooks
   const dispatch = useAppDispatch();
   const [generateChatResponse, { isLoading }] = useGenerateChatResponseMutation();
 
