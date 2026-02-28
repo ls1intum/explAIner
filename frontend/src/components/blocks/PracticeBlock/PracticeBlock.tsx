@@ -27,23 +27,20 @@ export default function PracticeBlock({
   const dispatch = useAppDispatch();
   const [submitAnswer, { isLoading: isSubmittingAnswer }] = useSubmitAnswerMutation();
 
-  // Extract practice block data
+  // Extract block data
   const practiceBlock = block.type === BLOCK_TYPE.PRACTICE ? block.practiceBlock : undefined;
+  if (!practiceBlock) return null; 
+  const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock; 
+
+  // Init & sync component state
   const [selectedOptions, setSelectedOptions] = useState<number[]>(practiceBlock?.studentAnswerOptionIndices || []);
   const [isChecked, setIsChecked] = useState(practiceBlock?.studentAnswerIsCorrect !== null);
-
-  // Sync local state (e.g. after block refetch post-submit or when navigating blocks)
   useEffect(() => {
     if (practiceBlock) {
       setSelectedOptions(practiceBlock.studentAnswerOptionIndices || []);
       setIsChecked(practiceBlock.studentAnswerIsCorrect !== null);
     }
-  }, [block.id, practiceBlock]);
-
-  if (!practiceBlock) return null;
-
-  // Extract practice block data
-  const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock;
+  }, [block.id, practiceBlock]); // Sync local state (e.g. after block refetch post-submit or when navigating blocks)
 
   // Select/deselect single answer option
   const handleOptionToggle = (index: number) => {

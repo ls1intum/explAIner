@@ -10,6 +10,7 @@ interface ChatMessageBubbleProps {
 
 /** ChatMessageBubble component - displays a single chat message (from user or Owlbert) */
 export default function ChatMessageBubble({ sender, message }: ChatMessageBubbleProps) {
+
   const isUser = sender === 'User';
 
   return (

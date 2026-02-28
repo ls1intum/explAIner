@@ -7,8 +7,6 @@ interface FeedbackRatingProps {
 
 /** FeedbackRating component - allows the user to rate the session as helpful or unhelpful */
 export default function FeedbackRating({ sessionId }: FeedbackRatingProps) {
-  const [selectedFeedback, setSelectedFeedback] = useState<number | null>(null);
-  const [submitFeedback] = useSubmitFeedbackMutation();
 
   const feedbackOptions = [
     { emoji: '😞', label: 'Very unhelpful', value: 1 },
@@ -17,7 +15,14 @@ export default function FeedbackRating({ sessionId }: FeedbackRatingProps) {
     { emoji: '🙂', label: 'Helpful', value: 4 },
     { emoji: '😊', label: 'Very helpful', value: 5 },
   ];
+
+  // Redux hook
+  const [submitFeedback] = useSubmitFeedbackMutation();
+
+  // Init & sync component state
+  const [selectedFeedback, setSelectedFeedback] = useState<number | null>(null);
   
+  // Feedback emoji is clicked (submits feedback to server)
   const handleFeedbackClick = async (value: number) => {
     setSelectedFeedback(value);
     try {

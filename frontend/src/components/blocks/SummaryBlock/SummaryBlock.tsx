@@ -20,14 +20,14 @@ interface SummaryBlockProps {
 /** SummaryBlock component */
 export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) {
   const router = useRouter();
+
+  // Extract block data
   const summaryBlock = block.type === BLOCK_TYPE.SUMMARY ? block.summaryBlock : undefined;
-
   if (!summaryBlock) return null;
-
   const { sessionSummary } = summaryBlock;
   const { learningGoal, bloomsLevel, totalBlocks, sessionDuration } = sessionInfo;
 
-  // Parse summary content to render with markdown-style formatting
+  // Helper function to parse session summary text to render with markdown-style formatting
   const renderSummary = (text: string) => {
     const parts = text.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, index) => {
@@ -43,6 +43,7 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
     });
   };
 
+  // "Start New Session" button is clicked (navigates to home page)
   const handleStartNewSession = () => {
     router.push('/');
   };

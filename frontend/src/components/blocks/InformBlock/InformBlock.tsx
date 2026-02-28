@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
+import { useAppDispatch } from '@/store/hooks';
+import { addToast } from '@/store/slices/uiSlice';
 import { getRandomMessage } from '@/lib/loadingMessages';
 import { INFORM_BLOCK_CHAT_LOADING_MESSAGES } from '@/lib/loadingMessages';
 import ChatMessageBubble from './ChatMessageBubble';
@@ -23,44 +25,44 @@ export default function InformBlock({
   sessionId,
   onContinue,
 }: InformBlockProps) {
-  const [followUpQuestion, setFollowUpQuestion] = useState('');
+
+  // Refs used for auto-scroll behavior in chat window
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousMessageCountRef = useRef(0);
 
+  const dispatch = useAppDispatch();
   const [generateChatResponse, { isLoading }] = useGenerateChatResponseMutation();
-  const loadingMessage = useMemo(
-    () => getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES),
-    []
+
+  // Extract block data
+  const informBlock = block.type === BLOCK_TYPE.INFORM ? block.informBlock : undefined;
+
+  // Init & sync component state
+  const [chatMessages, setChatMessages] = useState(informBlock?.messages ?? []);
+  useEffect(() => {
+    setChatMessages(informBlock?.messages ?? []); 
+  }, [block]); // Sync local state (e.g. after block refetch or when navigating blocks)
+  const [followUpQuestion, setFollowUpQuestion] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState(() =>
+    getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES)
   );
 
-  const informMessages = useMemo(
-    () => (block.type === BLOCK_TYPE.INFORM ? block.informBlock.messages : []),
-    [block]
-  );
-  const [localMessages, setLocalMessages] = useState(informMessages);
-
-  // Sync local messages when block data changes (e.g. after refetch)
+  // Auto-scroll behavior of chat window 
   useEffect(() => {
-    setLocalMessages(informMessages);
-  }, [informMessages]);
-
-  // Scroll to top when switching to a different block
-  useEffect(() => {
+    // Scroll to top of chat window when navigating back to this block from a different block
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = 0;
     }
   }, [block.id]);
-
-  // Scroll to bottom when new messages are added or while loading
   useEffect(() => {
-    if (localMessages.length > previousMessageCountRef.current || isLoading) {
+    // Scroll to bottom of chat window when new messages are added or while loading
+    if (chatMessages.length > previousMessageCountRef.current || isLoading) {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-    previousMessageCountRef.current = localMessages.length;
-  }, [localMessages.length, isLoading]);
+    previousMessageCountRef.current = chatMessages.length;
+  }, [chatMessages.length, isLoading]);
 
-  // Send follow-up question (optimistic UI, then API)
+  // Follow-up question is sent (optimistic UI, then API)
   const handleSendQuestion = async (messageText?: string) => {
     const message = messageText ?? followUpQuestion.trim();
     if (!message) return;
@@ -72,8 +74,9 @@ export default function InformBlock({
       sender: 'User' as const,
       timestamp: new Date().toISOString(),
     };
-    setLocalMessages((prev) => [...prev, userMessage]);
+    setChatMessages((prev) => [...prev, userMessage]);
     if (!messageText) setFollowUpQuestion('');
+    setLoadingMessage(getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES));
 
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
 
@@ -83,21 +86,22 @@ export default function InformBlock({
         orderIndex: String(block.orderIndex),
         message,
       }).unwrap();
-      const aiMessage = {
+      const owlbertResponse = {
         id: `temp-ai-${Date.now()}`,
         informBlockId: block.id,
         message: data.response,
         sender: 'Owlbert' as const,
         timestamp: new Date().toISOString(),
       };
-      setLocalMessages((prev) => [...prev, aiMessage]);
+      setChatMessages((prev) => [...prev, owlbertResponse]);
     } catch (error) {
       console.error('Error sending message:', error);
-      setLocalMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
+      dispatch(addToast({ message: 'Could not send message. Please try again.', type: 'error' }));
+      setChatMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
     }
   };
 
-  // Quick action chip sends that label as the message
+  // Quick action chip is clicked (sends label as new message in chat input field)
   const handleQuickActionClick = (actionLabel: string) => {
     handleSendQuestion(actionLabel);
   };
@@ -107,23 +111,25 @@ export default function InformBlock({
       <div className="w-full max-w-[80%] space-y-4">
         {/* Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-          {/* Scrollable chat area */}
           <div
             ref={chatContainerRef}
             className="max-h-[500px] overflow-y-auto p-6 space-y-4"
           >
-            {localMessages.map((msg) => (
+            {/* All chat messages */}
+            {chatMessages.map((msg) => (
+              // Chat message
               <ChatMessageBubble
                 key={msg.id}
                 sender={msg.sender}
                 message={msg.message}
               />
             ))}
+            {/* Loading animation chat message while the answer is generated */}
             {isLoading && <ChatMessageLoadingBubble loadingMessage={loadingMessage} />}
             <div ref={chatEndRef} />
           </div>
 
-          {/* Follow-up input and quick actions */}
+          {/* Follow-up questions text input field and quick action chips */}
           <FollowUpQuestionTextInputField
             value={followUpQuestion}
             onChange={setFollowUpQuestion}

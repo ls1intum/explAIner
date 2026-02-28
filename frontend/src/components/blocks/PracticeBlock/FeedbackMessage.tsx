@@ -6,12 +6,14 @@ interface FeedbackMessageProps {
 
 /** FeedbackMessage component - shows feedback after user checks their answer */
 export default function FeedbackMessage({ isCorrect }: FeedbackMessageProps) {
-  const bgClass = isCorrect ? 'bg-success/10' : 'bg-destructive/10';
-  const borderClass = isCorrect ? 'border-success' : 'border-destructive';
-  const textClass = isCorrect ? 'text-success' : 'text-destructive';
+
+  // Feedback message text & color (based on correctness of answer)
   const message = isCorrect
     ? 'Correct! Well done.'
     : 'Not quite right. Check the correct answer above.';
+  const bgClass = isCorrect ? 'bg-success/10' : 'bg-destructive/10';
+  const borderClass = isCorrect ? 'border-success' : 'border-destructive';
+  const textClass = isCorrect ? 'text-success' : 'text-destructive';
 
   return (
     <div className={`p-4 rounded-xl flex items-center gap-3 ${bgClass}`}>

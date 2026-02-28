@@ -5,24 +5,19 @@ interface FollowUpQuestionQuickChipsProps {
   disabled?: boolean;
 }
 
-/** FollowUpQuestionQuickChips component - displays 3 pre-defined follow-up questions as quick action chips 
- * 
- * 'Try a simpler explanation'
- * 'Give more details'
- * 'Use (different) examples'
- * 
- * When clicked, the corresponding question is directly sent as new chat message in chat input field
-*/
+/** FollowUpQuestionQuickChips component - displays 3 pre-defined follow-up questions as quick action chips */
 export default function FollowUpQuestionQuickChips({
   onQuestionClick,
   disabled = false,
 }: FollowUpQuestionQuickChipsProps) {
-  const quickActions = [
+
+  const quickQuestionChips = [
     { id: 1, label: 'Try a simpler explanation' },
     { id: 2, label: 'Give more details' },
     { id: 3, label: 'Use (different) examples' },
   ];
 
+  // Quick question chip is clicked (sends label as new message in chat input field)
   const handleQuickAction = (label: string) => {
     if (!disabled) {
       onQuestionClick(label);
@@ -32,15 +27,15 @@ export default function FollowUpQuestionQuickChips({
   return (
     <div className="flex flex-wrap gap-2">
       {/* All quick action chips */}
-      {quickActions.map((action) => (
+      {quickQuestionChips.map((chip) => (
         // Quick action chip
         <button
-          key={action.id}
-          onClick={() => handleQuickAction(action.label)}
+          key={chip.id}
+          onClick={() => handleQuickAction(chip.label)}
           disabled={disabled}
           className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-full text-sm font-medium hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {action.label}
+          {chip.label}
         </button>
       ))}
     </div>

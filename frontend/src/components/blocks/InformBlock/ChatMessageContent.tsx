@@ -12,6 +12,8 @@ interface ChatMessageContentProps {
  * for all block messages:                                        adds bold (**text**) highlighting
  */
 export default function ChatMessageContent({ message }: ChatMessageContentProps) {
+
+  // Split message into sections based on KEY FACTS, KEY MISCONCEPTIONS, and SUMMARY
   const sections = message.split(/(?=KEY FACTS|KEY MISCONCEPTIONS|SUMMARY)/);
 
   return (

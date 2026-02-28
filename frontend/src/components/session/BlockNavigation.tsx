@@ -8,31 +8,37 @@ import { useGetSessionQuery, useUpdateCurrentBlockIndexMutation } from '@/store/
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 
-/** BlockNavigation component - displays block chips in the navbar to allow navigation between already-viewed blocks */
+/** BlockNavigation component - displays block chip list in the navbar to allow navigation between already-viewed blocks */
 export default function BlockNavigation() {
+
+  // Refs used for auto-scroll behavior in horizontal block navigation chip list
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeChipRef = useRef<HTMLButtonElement>(null);
+
+  // Redux hooks
   const dispatch = useAppDispatch();
+
   const { sessionId: sessionIdFromState, currentBlockIndex, highestAlreadyViewedBlockIndex } = useAppSelector((state) => state.session);
   const { data: sessionData } = useGetSessionQuery(
     { sessionId: sessionIdFromState! },
     { skip: !sessionIdFromState }
   );
-  const sessionId = sessionIdFromState ?? '';
   const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
-  const blocks = sessionData?.blocks ?? [];
 
-  // Include current block in "already viewed" even if server's alreadyViewed hasn't caught up yet
-  const effectiveMaxIndex = Math.max(currentBlockIndex, highestAlreadyViewedBlockIndex);
+  // Extract block data
+  const blocks = sessionData?.blocks ?? [];
+  const effectiveMaxIndex = Math.max(currentBlockIndex, highestAlreadyViewedBlockIndex); // Include current block in "already viewed" even if server's alreadyViewed hasn't caught up yet
   const alreadyViewedBlocks = blocks
     .filter((block: Block) => block.alreadyViewed || block.orderIndex <= effectiveMaxIndex)
     .sort((a: Block, b: Block) => a.orderIndex - b.orderIndex);
+  const sessionId = sessionIdFromState ?? '';
 
-  // Scroll so the currently viewed block chip is visible
+  // Auto-scroll behavior to make the currently viewed block chip visible
   useEffect(() => {
     activeChipRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }, [currentBlockIndex, alreadyViewedBlocks.length]);
 
+  // Block chip is clicked (navigates to block and updates currentBlockIndex)
   const handleBlockChipClick = (index: number) => {
     dispatch(setCurrentBlockIndex(index));
     void updateCurrentBlockIndex({ sessionId, currentBlockIndex: index }); // persist to server

@@ -12,21 +12,25 @@ import BlockNavigation from '@/components/session/BlockNavigation';
 
 /** Navbar component */
 export default function Navbar() {
-  const pathname = usePathname();
+
+  // Navigation
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const isLoading = useAppSelector((state) => state.ui.isLoading);
+  const pathname = usePathname();
   const isLandingPage = pathname === '/';
   const isImpressumPage = pathname === '/impressum';
   const isLearningGoalPage = pathname === '/learning-goal';
   const isSessionPage = pathname.startsWith('/session/');
-  const sessionIdFromPath = isSessionPage ? pathname.split('/')[2] : null;
+
+  // Redux hooks
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector((state) => state.ui.isLoading);
   const [deleteSession] = useDeleteSessionMutation();
   
-  // End session dialog state
+  // Init & sync component state
   const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
 
-  // Handle end session dialog confirmation
+  // "End Session" button is clicked (dialog)
+  const sessionIdFromPath = isSessionPage ? pathname.split('/')[2] : null;
   const handleEndSession = async () => {
     setShowEndSessionDialog(false);
     if (sessionIdFromPath) {
@@ -58,7 +62,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            {/* Back button on the left when on impressum page */}
+            {/* Back button when on impressum page */}
             {isImpressumPage && (
               <button
                 onClick={() => router.back()}
@@ -69,7 +73,7 @@ export default function Navbar() {
               </button>
             )}
             
-            {/* Session Start indicator on session page */}
+            {/* Session Start indicator when on session page */}
             {isSessionPage && (
               <>
                 <div className="text-white flex items-center gap-2 text-sm font-medium flex-shrink-0">
@@ -90,7 +94,7 @@ export default function Navbar() {
             {/* Spacer when not on impressum, learning goal, or session page */}
             {!isImpressumPage && !isLearningGoalPage && !isSessionPage && <div className="flex-1"></div>}
             
-            {/* Impressum link on the right when on landing page */}
+            {/* Impressum link when on landing page */}
             {isLandingPage && (
               <Link 
                 href="/impressum" 
@@ -100,7 +104,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Exit button on learning goal page and session page */}
+            {/* Exit button when on learning goal page or session page */}
             {(isLearningGoalPage || isSessionPage) && (
               <>
                 {isLearningGoalPage && <div className="flex-1"></div>}

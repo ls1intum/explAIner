@@ -6,7 +6,7 @@ interface LearningGoalAchievementProps {
 /** LearningGoalAchievement component - displays the learning goal that was successfully achieved by completing the session */
 export default function LearningGoalAchievement({ learningGoal, bloomsLevel }: LearningGoalAchievementProps) {
   
-  // Parse learning goal to highlight Bloom's level
+  // Helper function to parse learning goal to highlight Bloom's level
   const renderLearningGoal = (goal: string, level: string) => {
     const parts = goal.split(new RegExp(`(${level})`, 'gi'));
     return parts.map((part, index) => {

@@ -22,7 +22,8 @@ export default function AnswerOption({
   showMissed,
   onToggle,
 }: AnswerOptionProps) {
-  // Determine container styling based on the answer option's state
+
+  // Answer option container styling (based on correctness of answer option)
   let containerClasses = 'relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all';
   if (showCorrect) {
     containerClasses += ' bg-practice-correct/15 border-practice-correct'; // correct = green
@@ -36,9 +37,9 @@ export default function AnswerOption({
     containerClasses += ' bg-card border-border hover:border-primary cursor-pointer'; // unselected = default
   }
 
-  // Prevent clicks after checking
+  // Answer option is clicked (selects/deselects answer option)
   const handleClick = () => {
-    if (!isChecked) {
+    if (!isChecked) { // Prevent further clicks after checking
       onToggle();
     }
   };

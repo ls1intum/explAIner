@@ -10,7 +10,7 @@ interface FollowUpQuestionTextInputFieldProps {
   disabled: boolean;
 }
 
-/** FollowUpQuestionTextInputField component - displays the user chat window for follow-up questions (text input, send button, and quick action chips) */
+/** FollowUpQuestionTextInputField component - displays follow-up questions text input field incl. 3 quick action chips */
 export default function FollowUpQuestionTextInputField({
   value,
   onChange,
@@ -18,6 +18,8 @@ export default function FollowUpQuestionTextInputField({
   onQuickAction,
   disabled,
 }: FollowUpQuestionTextInputFieldProps) {
+
+  // "Enter" key is pressed (sends follow-up question)
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
