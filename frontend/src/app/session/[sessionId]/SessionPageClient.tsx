@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex, setSessionId, setHighestAlreadyViewedBlockIndex, setTopic, setPriorKnowledge, setLearningGoals } from '@/store/slices/sessionSlice';
-import { setLoading } from '@/store/slices/uiSlice';
+import { setLoading, addToast } from '@/store/slices/uiSlice';
 import { useGetSessionQuery, useContinueSessionMutation, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
 import { useGetBlockQuery, useGenerateBlockSequenceMutation, useGenerateSummaryBlockMutation } from '@/store/api/blocksApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
@@ -40,9 +40,8 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
   const [generateSummaryBlock, { isLoading: isGeneratingSummary }] = useGenerateSummaryBlockMutation();
   const [generateEasierLearningGoals, { isLoading: isGeneratingEasierGoals }] = useGenerateEasierLearningGoalsMutation();
 
-
   // Init & sync component state
-  const [showPromptDialog, setShowPromptDialog] = useState(false);
+  const [showHowToContinueSessionDialog, setShowHowToContinueSessionDialog] = useState(false);
   const [summaryData, setSummaryData] = useState<{
     block: Block;
     sessionInfo: {
@@ -52,8 +51,6 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       sessionDuration: number;
     };
   } | null>(null);
-
-
 
   // Hydrate Redux from sessionData when it arrives (or when refetch returns after generate)
   useEffect(() => {
@@ -67,12 +64,14 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     }
   }, [sessionData, sessionId, sessionIdFromState, dispatch]);
 
+  // Get block data for the current block index
   const { data: blockResponse, isLoading: isBlockLoading } = useGetBlockQuery(
     { sessionId, orderIndex: String(currentBlockIndex) },
     { skip: !sessionData }
   );
   const displayBlock = blockResponse?.data;
 
+  // Get summary session info for the current block index
   const summarySessionInfo =
     displayBlock?.type === BLOCK_TYPE.SUMMARY && sessionData
       ? {
@@ -83,6 +82,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
         }
       : null;
 
+  // Redirect to landing page if session data is not found
   useEffect(() => {
     if (isLoadingSession) return;
     if (!sessionData && sessionId) {
@@ -90,6 +90,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     }
   }, [sessionData, sessionId, router, isLoadingSession]);
 
+  // Show loading screen while loading block data
   useEffect(() => {
     if (!displayBlock || isBlockLoading) {
       dispatch(setLoading(true));
@@ -98,6 +99,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     }
   }, [displayBlock, isBlockLoading, dispatch]);
 
+  // "Continue" button is clicked and action is "next-sequence"
   const handleGenerateNextSequence = async () => {
     try {
       const result = await generateBlockSequence({ sessionId }).unwrap();
@@ -106,10 +108,11 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
     } catch (error) {
       console.error('Failed to generate next sequence:', error);
-      alert('Failed to generate next sequence. Please try again.');
+      dispatch(addToast({ message: 'Failed to generate next sequence. Please try again.', type: 'error' }));
     }
   };
 
+  // "Continue" button is clicked and action is "summary"
   const handleGenerateSummary = async () => {
     try {
       const result = await generateSummaryBlock({ sessionId }).unwrap();
@@ -128,10 +131,11 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
     } catch (error) {
       console.error('Failed to generate summary:', error);
-      alert('Failed to generate summary. Please try again.');
+      dispatch(addToast({ message: 'Failed to generate summary. Please try again.', type: 'error' }));
     }
   };
 
+  // "Continue" button is clicked and next action is determined (either "navigate", "next-sequence", "summary", or "prompt-user")
   const handleContinue = async () => {
     try {
       const response = await continueSession({ sessionId }).unwrap();
@@ -150,19 +154,25 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
           await handleGenerateSummary();
           break;
         case 'prompt-user':
-          setShowPromptDialog(true);
+          setShowHowToContinueSessionDialog(true);
           break;
         default:
           console.error('Unknown action:', response.action);
       }
     } catch (error) {
       console.error('Failed to continue session:', error);
-      alert('Failed to continue. Please try again.');
+      dispatch(addToast({ message: 'Failed to continue. Please try again.', type: 'error' }));
     }
   };
 
+
+  /** How to Continue Session Dialog Handlers 
+   * (A) "Adjust Learning Goal" button 
+   * (B) "Continue with current Goal" button
+  */
+  // (A) "Adjust Learning Goal" button is clicked (generates easier learning goals and navigates to learning goal page to start a new session)
   const handleStartNewSessionWithEasierLearningGoal = async () => {
-    setShowPromptDialog(false);
+    setShowHowToContinueSessionDialog(false);
     try {
       dispatch(setLoading(true));
       const result = await generateEasierLearningGoals({ sessionId }).unwrap();
@@ -173,12 +183,12 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     } catch (error) {
       console.error('Failed to generate easier learning goals:', error);
       dispatch(setLoading(false));
-      alert('Failed to generate easier learning goals. Please try again.');
+      dispatch(addToast({ message: 'Failed to generate easier learning goals. Please try again.', type: 'error' }));
     }
   };
-
+  // (B) "Continue with Current Goal" button is clicked (generates next sequence and navigates to next block)
   const handleContinueWithCurrentSession = async () => {
-    setShowPromptDialog(false);
+    setShowHowToContinueSessionDialog(false);
     await handleGenerateNextSequence();
   };
 
@@ -190,6 +200,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     isGeneratingSummary ||
     isGeneratingEasierGoals;
 
+  // Show loading screen while loading session data, block data, or generating next sequence, summary, or easier learning goals
   if (showLoading) {
     return <LoadingScreen />;
   }
@@ -197,8 +208,11 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-background">
       <main className="container mx-auto px-4 flex items-center justify-center min-h-[calc(100vh-4rem)]">
-        {/* Block */}
+
+        {/* Display Block based on block type */}
         <div className="w-full">
+
+          {/* INFORM block */}
           {displayBlock.type === BLOCK_TYPE.INFORM && (
             <InformBlock
               block={displayBlock}
@@ -206,6 +220,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
               onContinue={handleContinue}
             />
           )}
+          {/* PRACTICE block */}
           {displayBlock.type === BLOCK_TYPE.PRACTICE && (
             <PracticeBlock
               block={displayBlock}
@@ -213,6 +228,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
               onContinue={handleContinue}
             />
           )}
+          {/* SUMMARY block */}
           {displayBlock.type === BLOCK_TYPE.SUMMARY && summarySessionInfo && (
             <SummaryBlock
               block={displayBlock}
@@ -222,8 +238,9 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
         </div>
       </main>
 
+      {/* How to Continue Session Dialog */}
       <EasierLearningGoalDialog
-        isOpen={showPromptDialog}
+        isOpen={showHowToContinueSessionDialog}
         onContinueWithCurrentSession={handleContinueWithCurrentSession}
         onStartNewSessionWithEasierLearningGoal={handleStartNewSessionWithEasierLearningGoal}
       />
