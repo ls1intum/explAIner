@@ -15,6 +15,8 @@ export default function Navbar() {
 
   // Navigation
   const router = useRouter();
+
+  // Extract pathname and determine current page
   const pathname = usePathname();
   const isLandingPage = pathname === '/';
   const isImpressumPage = pathname === '/impressum';
