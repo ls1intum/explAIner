@@ -38,7 +38,7 @@ services:
     dockerContext: ./frontend
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        value: https://explainer-backend.onrender.com # Backend URL
+        value: https://explainer-backend-cbnx.onrender.com # Backend URL
       - key: NODE_ENV
         value: production
       - key: PORT
