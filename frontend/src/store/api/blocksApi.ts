@@ -1,51 +1,105 @@
 import { baseApi } from "./baseApi";
-import type { components } from "@/types/generated";
+import type {
+  GetBlockRequest,
+  GetBlockResponse,
+  GenerateChatResponseRequest,
+  GenerateChatResponseResponse,
+  SubmitAnswerRequest,
+  SubmitAnswerResponse,
+  GenerateBlockSequenceRequest,
+  GenerateBlockSequenceResponse,
+  GenerateSummaryBlockRequest,
+  GenerateSummaryBlockResponse,
+} from "@/types/domain/block.types";
 
-// Type aliases for generated API types
-type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
-type SendMessageResponse = components["schemas"]["GenerateChatResponseResponseDto_Output"];
-
-// getBlock, submitAnswer, sendMessage
-
+/** Blocks API endpoints */
 export const blocksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getBlock: builder.query<GetBlockResponse, string>({
-      query: (blockId: string) => `/api/blocks/${blockId}`,
-      providesTags: ["Block"],
-    }),
-    sendMessage: builder.mutation<
-      SendMessageResponse,
-      { sessionId: string; orderIndex: number; message: string }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: GET sessions/:sessionId/blocks/:orderIndex
+    ////////////////////////////////////////////////////////////////////////////
+    getBlock: builder.query<
+      GetBlockResponse,                                                     // API Response type
+      GetBlockRequest                                                       // API Request type
     >({
-      query: ({ sessionId, orderIndex, message }) => ({
+      query: ({ sessionId, orderIndex }) =>                                 // API call to server
+        `/api/sessions/${sessionId}/blocks/${orderIndex}`,
+      providesTags: (result, error, { sessionId, orderIndex }) => [         // Provide cache tags (for mutations below)
+        { type: "Block", id: `${sessionId}-${orderIndex}` },        
+      ],
+    }),
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: POST sessions/:sessionId/blocks/:orderIndex/messages
+    ////////////////////////////////////////////////////////////////////////////
+    generateChatResponse: builder.mutation<
+      GenerateChatResponseResponse,                                         // API Response type
+      GenerateChatResponseRequest                                           // API Request type
+    >({
+      query: ({ sessionId, orderIndex, message }) => ({                     // API call to server
         url: `/api/sessions/${sessionId}/blocks/${orderIndex}/messages`,
         method: "POST",
         body: { message },
       }),
-      // Invalidate the cache for this specific block so it refetches with new messages
-      invalidatesTags: (result, error, { sessionId, orderIndex }) => [
+      invalidatesTags: (result, error, { sessionId, orderIndex }) => [      // Invalidate cache tags (so inform block is refetched with new messages)
         { type: "Block", id: `${sessionId}-${orderIndex}` },
       ],
     }),
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: PUT sessions/:sessionId/blocks/:orderIndex/student-answer
+    ////////////////////////////////////////////////////////////////////////////
     submitAnswer: builder.mutation<
-      void,
-      {
-        sessionId: string;
-        orderIndex: number;
-        studentAnswerOptionIndices: number[];
-      }
+      SubmitAnswerResponse,                                                 // API Response type
+      SubmitAnswerRequest                                                   // API Request type
     >({
-      query: ({ sessionId, orderIndex, studentAnswerOptionIndices }) => ({
+      query: ({ sessionId, orderIndex, studentAnswerOptionIndices }) => ({  // API call to server
         url: `/api/sessions/${sessionId}/blocks/${orderIndex}/student-answer`,
         method: "PUT",
         body: { studentAnswerOptionIndices },
       }),
+      invalidatesTags: (result, error, { sessionId, orderIndex }) => [{ type: "Block", id: `${sessionId}-${orderIndex}` }], // Invalidate cache tags (so practice block is refetched with answer)
+    }),
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: POST /api/sessions/:sessionId/blocks/sequence
+    ////////////////////////////////////////////////////////////////////////////
+    generateBlockSequence: builder.mutation<
+      GenerateBlockSequenceResponse,                                        // API Response type
+      GenerateBlockSequenceRequest                                          // API Request type
+    >({
+      query: ({ sessionId }) => ({                                          // API call to server
+        url: `/api/sessions/${sessionId}/blocks/sequence`,
+        method: "POST",
+        body: {},
+      }),
+      invalidatesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }], // Invalidate cache tags (so session is refetched with new block sequence)
+    }),
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: POST /api/sessions/:sessionId/blocks/summary
+    ////////////////////////////////////////////////////////////////////////////
+    generateSummaryBlock: builder.mutation<
+      GenerateSummaryBlockResponse,                                         // API Response type
+      GenerateSummaryBlockRequest                                           // API Request type
+    >({
+      query: ({ sessionId }) => ({                                          // API call to server
+        url: `/api/sessions/${sessionId}/blocks/summary`,
+        method: "POST",
+        body: {},
+      }),
+      invalidatesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }], // Invalidate cache tags (so session is refetched with summary block)
     }),
   }),
 });
 
+/** Blocks API hooks to use in pages/components */
 export const {
   useGetBlockQuery,
-  useSendMessageMutation,
+  useGenerateChatResponseMutation,
   useSubmitAnswerMutation,
+  useGenerateBlockSequenceMutation,
+  useGenerateSummaryBlockMutation,
 } = blocksApi;

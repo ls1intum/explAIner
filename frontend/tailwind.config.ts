@@ -1,6 +1,12 @@
+/* =============================================================================================================
+   Define the Tailwind config for ExplAIner here :)
+   
+   This file maps the CSS variables defined in themes.css (src/styles/themes.css) 
+   to Tailwind classes (e.g. bg-primary, text-foreground, rounded-lg) used by UI elements.
+   ============================================================================================================= */
+
 import type { Config } from "tailwindcss";
 
-/* Map CSS variables to Tailwind classes (enabling use of classes like bg-primary, text-secondary, border-accent, etc.) */
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -27,6 +33,14 @@ const config: Config = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success-end))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
@@ -35,13 +49,14 @@ const config: Config = {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        practice: {
+          correct: "hsl(var(--practice-correct))",
+          incorrect: "hsl(var(--practice-incorrect))",
+          missed: "hsl(var(--practice-missed))",
         },
       },
       borderRadius: {

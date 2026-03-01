@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
-import Image from 'next/image';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
-import type { Block } from '@/types/domain';
-import { useSendMessageMutation } from '@/store/api/blocksApi';
+import type { Block } from '@/types/domain/block.types';
+import { BLOCK_TYPE } from '@/types/domain/enums';
+import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
 import { useAppDispatch } from '@/store/hooks';
-import { updateInformBlockMessages } from '@/store/slices/sessionSlice';
-import { getRandomMessage } from '@/lib/utils';
+import { addToast } from '@/store/slices/uiSlice';
+import { getRandomMessage } from '@/lib/loadingMessages';
 import { INFORM_BLOCK_CHAT_LOADING_MESSAGES } from '@/lib/loadingMessages';
-import QuickActionChips from './QuickActionChips';
+import ChatMessageBubble from './ChatMessageBubble';
+import ChatMessageLoadingBubble from './ChatMessageLoadingBubble';
+import FollowUpQuestionTextInputField from './FollowUpQuestionTextInputField';
 
 interface InformBlockProps {
   block: Block;
@@ -17,196 +19,57 @@ interface InformBlockProps {
   onContinue: () => void;
 }
 
+/** InformBlock component */
 export default function InformBlock({
   block,
   sessionId,
   onContinue,
 }: InformBlockProps) {
-  const dispatch = useAppDispatch();
-  const [followUpQuestion, setFollowUpQuestion] = useState('');
-  const informMessages = useMemo(
-    () => (block.type === 'Inform' ? block.informBlock.messages : []),
-    [block]
-  );
-  const [localMessages, setLocalMessages] = useState(informMessages);
+
+  // Refs used for auto-scroll behavior in chat window
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousMessageCountRef = useRef(0);
 
-  const [sendMessage, { isLoading }] = useSendMessageMutation();
-  const loadingMessage = useMemo(
-    () => getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES),
-    []
+  // Redux store hook
+  const dispatch = useAppDispatch();
+
+  // API call hook
+  const [generateChatResponse, { isLoading }] = useGenerateChatResponseMutation();
+
+  // Extract block data
+  const informBlock = block.type === BLOCK_TYPE.INFORM ? block.informBlock : undefined;
+
+  // Init & sync component state
+  const [chatMessages, setChatMessages] = useState(informBlock?.messages ?? []);
+  useEffect(() => {
+    setChatMessages(informBlock?.messages ?? []);
+  }, [block, informBlock?.messages]); // Sync local state (e.g. after block refetch or when navigating blocks)
+  const [followUpQuestion, setFollowUpQuestion] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState(() =>
+    getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES)
   );
 
+  // Auto-scroll behavior of chat window 
   useEffect(() => {
-    setLocalMessages(informMessages);
-  }, [informMessages]);
-
-  // Get inform block messages
-  const messages = localMessages;
-
-  // Scroll to top and sync ref when block or message count changes
-  useEffect(() => {
+    // Scroll to top of chat window when navigating back to this block from a different block
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = 0;
     }
-    previousMessageCountRef.current = messages.length;
-  }, [block.id, messages.length]);
-
-  // Auto-scroll to bottom when new messages are added (user sends message or AI responds)
+  }, [block.id]);
   useEffect(() => {
-    if (messages.length > previousMessageCountRef.current || isLoading) {
+    // Scroll to bottom of chat window when new messages are added or while loading
+    if (chatMessages.length > previousMessageCountRef.current || isLoading) {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-    previousMessageCountRef.current = messages.length;
-  }, [messages.length, isLoading]);
+    previousMessageCountRef.current = chatMessages.length;
+  }, [chatMessages.length, isLoading]);
 
-  // Parse message content to render with markdown-style formatting
-  const renderMessage = (message: string) => {
-    // Split by sections (KEY FACTS, KEY MISCONCEPTIONS, SUMMARY)
-    const sections = message.split(/(?=KEY FACTS|KEY MISCONCEPTIONS|SUMMARY)/);
-    
-    return sections.map((section, sectionIndex) => {
-      // Check if it's a KEY MISCONCEPTIONS, KEY FACTS, or SUMMARY section
-      if (section.startsWith('KEY MISCONCEPTIONS')) {
-        return (
-          <div key={sectionIndex} className="mt-6">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              KEY MISCONCEPTIONS
-            </h3>
-            <div className="space-y-3">
-              {section
-                .replace('KEY MISCONCEPTIONS', '')
-                .trim()
-                .split('\n')
-                .filter((line) => line.trim())
-                .map((line, lineIndex) => {
-                  // Render each line with bold highlighting
-                  const parts = line.split(/(\*\*.*?\*\*)/g);
-                  return (
-                    <div key={lineIndex} className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span className="flex-1">
-                        {parts.map((part, partIndex) => {
-                          if (part.startsWith('**') && part.endsWith('**')) {
-                            const boldText = part.slice(2, -2);
-                            return (
-                              <strong
-                                key={partIndex}
-                                className="font-semibold text-primary"
-                              >
-                                {boldText}
-                              </strong>
-                            );
-                          }
-                          return <span key={partIndex}>{part}</span>;
-                        })}
-                      </span>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        );
-      } else if (section.startsWith('KEY FACTS')) {
-        return (
-          <div key={sectionIndex} className="mt-6">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              KEY FACTS
-            </h3>
-            <div className="space-y-3">
-              {section
-                .replace('KEY FACTS', '')
-                .trim()
-                .split('\n')
-                .filter((line) => line.trim())
-                .map((line, lineIndex) => {
-                  // Render each line with bold highlighting
-                  const parts = line.split(/(\*\*.*?\*\*)/g);
-                  return (
-                    <div key={lineIndex} className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span className="flex-1">
-                        {parts.map((part, partIndex) => {
-                          if (part.startsWith('**') && part.endsWith('**')) {
-                            const boldText = part.slice(2, -2);
-                            return (
-                              <strong
-                                key={partIndex}
-                                className="font-semibold text-primary"
-                              >
-                                {boldText}
-                              </strong>
-                            );
-                          }
-                          return <span key={partIndex}>{part}</span>;
-                        })}
-                      </span>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        );
-      } else if (section.startsWith('SUMMARY')) {
-        return (
-          <div key={sectionIndex} className="mt-6">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              SUMMARY
-            </h3>
-            <div className="text-base leading-relaxed">
-              {section
-                .replace('SUMMARY', '')
-                .trim()
-                .split(/(\*\*.*?\*\*)/g)
-                .map((part, partIndex) => {
-                  if (part.startsWith('**') && part.endsWith('**')) {
-                    const boldText = part.slice(2, -2);
-                    return (
-                      <strong
-                        key={partIndex}
-                        className="font-semibold text-primary"
-                      >
-                        {boldText}
-                      </strong>
-                    );
-                  }
-                  return <span key={partIndex}>{part}</span>;
-                })}
-            </div>
-          </div>
-        );
-      } else {
-        // Regular paragraph with bold text highlighting
-        const parts = section.split(/(\*\*.*?\*\*)/g);
-        return (
-          <div key={sectionIndex} className="text-base leading-relaxed">
-            {parts.map((part, partIndex) => {
-              if (part.startsWith('**') && part.endsWith('**')) {
-                const boldText = part.slice(2, -2);
-                return (
-                  <strong
-                    key={partIndex}
-                    className="font-semibold text-primary"
-                  >
-                    {boldText}
-                  </strong>
-                );
-              }
-              return <span key={partIndex}>{part}</span>;
-            })}
-          </div>
-        );
-      }
-    });
-  };
-
-  // Handle sending follow-up question
+  // Follow-up question is sent (optimistic UI, then API)
   const handleSendQuestion = async (messageText?: string) => {
-    const message = messageText || followUpQuestion.trim();
+    const message = messageText ?? followUpQuestion.trim();
     if (!message) return;
-    
+
     const userMessage = {
       id: `temp-user-${Date.now()}`,
       informBlockId: block.id,
@@ -214,180 +77,82 @@ export default function InformBlock({
       sender: 'User' as const,
       timestamp: new Date().toISOString(),
     };
-    setLocalMessages((prev) => [...prev, userMessage]);
-    
-    // Clear input if it was typed (not from quick action)
-    if (!messageText) {
-      setFollowUpQuestion('');
-    }
-    
-    // Scroll to bottom immediately to see loading message
-    setTimeout(() => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-    
+    setChatMessages((prev) => [...prev, userMessage]);
+    if (!messageText) setFollowUpQuestion('');
+    setLoadingMessage(getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES));
+
+    setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+
     try {
-      // Send to API using RTK Query
-      const data = await sendMessage({
+      const data = await generateChatResponse({
         sessionId,
-        orderIndex: block.orderIndex,
+        orderIndex: String(block.orderIndex),
         message,
       }).unwrap();
-      
-      const aiMessage = {
+      const owlbertResponse = {
         id: `temp-ai-${Date.now()}`,
         informBlockId: block.id,
         message: data.response,
         sender: 'Owlbert' as const,
         timestamp: new Date().toISOString(),
       };
-      
-      setLocalMessages((prev) => {
-        const updatedMessages = [...prev, aiMessage];
-        
-        // Update Redux store with new messages
-        dispatch(updateInformBlockMessages({
-          blockId: block.id,
-          messages: updatedMessages,
-        }));
-        
-        return updatedMessages;
-      });
+      setChatMessages((prev) => [...prev, owlbertResponse]);
     } catch (error) {
       console.error('Error sending message:', error);
-      // Remove the user message on error
-      setLocalMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
+      dispatch(addToast({ message: 'Could not send message. Please try again.', type: 'error' }));
+      setChatMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
     }
   };
 
-  // Handle quick action click
+  // Quick action chip is clicked (sends label as new message in chat input field)
   const handleQuickActionClick = (actionLabel: string) => {
     handleSendQuestion(actionLabel);
-  };
-
-  // Handle Enter key press
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendQuestion();
-    }
   };
 
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-[80%] space-y-4">
-        {/* Card Container */}
+        {/* Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-          {/* Scrollable Chat Area */}
-          <div 
+          <div
             ref={chatContainerRef}
             className="max-h-[500px] overflow-y-auto p-6 space-y-4"
           >
-            {messages.map((msg, index) => (
-              <div
+            {/* All chat messages */}
+            {chatMessages.map((msg) => (
+              // Chat message
+              <ChatMessageBubble
                 key={msg.id}
-                className={`flex gap-3 items-start animate-fadeIn ${
-                  msg.sender === 'User' ? 'flex-row-reverse' : ''
-                }`}
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                {/* Avatar (only for Owlbert) */}
-                {msg.sender === 'Owlbert' && (
-                  <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center">
-                    <Image
-                      src="/images/owlbert/chat.png"
-                      alt="Owlbert"
-                      width={40}
-                      height={40}
-                      className="object-contain"
-                    />
-                  </div>
-                )}
-
-                {/* Message Content */}
-                <div
-                  className={`max-w-[85%] rounded-2xl p-5 ${
-                    msg.sender === 'User'
-                      ? 'bg-primary/50 text-foreground rounded-tr-sm'
-                      : 'bg-muted rounded-tl-sm'
-                  }`}
-                >
-                  {renderMessage(msg.message)}
-                </div>
-              </div>
-              ))}
-            {isLoading && (
-              <div className="flex gap-3 items-start animate-fadeIn">
-                <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center">
-                  <Image
-                    src="/images/owlbert/chat.png"
-                    alt="Owlbert"
-                    width={40}
-                    height={40}
-                    className="object-contain"
-                  />
-                </div>
-                <div className="max-w-[85%] rounded-2xl p-5 bg-muted rounded-tl-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground italic text-sm">
-                      {loadingMessage}
-                    </span>
-                    <div className="flex gap-1">
-                      <span className="animate-bounce">.</span>
-                      <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>.</span>
-                      <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>.</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+                sender={msg.sender}
+                message={msg.message}
+              />
+            ))}
+            {/* Loading animation chat message while the answer is generated */}
+            {isLoading && <ChatMessageLoadingBubble loadingMessage={loadingMessage} />}
             <div ref={chatEndRef} />
           </div>
 
-          {/* Input Area (Always Visible) */}
-          <div className="p-6 pt-4 bg-background/50">
-          {/* Text Input and Send Button */}
-          <div className="flex gap-3 mb-3">
-            <input
-              type="text"
-              value={followUpQuestion}
-              onChange={(e) => setFollowUpQuestion(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask a follow-up question..."
-              disabled={isLoading}
-              className="flex-1 px-4 py-3 rounded-full border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <button
-              onClick={() => handleSendQuestion()}
-              disabled={!followUpQuestion.trim() || isLoading}
-              className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity flex items-center justify-center"
-              aria-label="Send"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-5 h-5"
-              >
-                <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Quick Action Chips */}
-          <QuickActionChips onQuestionClick={handleQuickActionClick} disabled={isLoading} />
+          {/* Follow-up questions text input field and quick action chips */}
+          <FollowUpQuestionTextInputField
+            value={followUpQuestion}
+            onChange={setFollowUpQuestion}
+            onSend={() => handleSendQuestion()}
+            onQuickAction={handleQuickActionClick}
+            disabled={isLoading}
+          />
         </div>
-      </div>
 
-        {/* Continue Button (Outside Card) */}
+        {/* Continue button */}
         <div className="flex justify-end">
-          <button
-            onClick={onContinue}
-            className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity shadow-lg flex items-center gap-2"
-          >
-            <span>Continue</span>
-            <ChevronRightIcon className="w-5 h-5" />
-          </button>
+          <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+            <button
+              onClick={onContinue}
+              className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
+            >
+              <span>Continue</span>
+              <ChevronRightIcon className="w-5 h-5" />
+            </button>
+          </span>
         </div>
       </div>
     </div>

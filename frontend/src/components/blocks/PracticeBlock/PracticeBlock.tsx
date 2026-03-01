@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronRightIcon } from '@radix-ui/react-icons';
-import { useAppDispatch } from '@/store/hooks';
-import { updatePracticeBlockAnswer } from '@/store/slices/sessionSlice';
 import { useSubmitAnswerMutation } from '@/store/api/blocksApi';
-import type { Block } from '@/types/domain';
+import { useAppDispatch } from '@/store/hooks';
+import { addToast } from '@/store/slices/uiSlice';
+import type { Block } from '@/types/domain/block.types';
+import { BLOCK_TYPE } from '@/types/domain/enums';
 import AnswerOption from './AnswerOption';
+import FeedbackMessage from './FeedbackMessage';
 
 interface PracticeBlockProps {
   block: Block;
@@ -14,40 +16,38 @@ interface PracticeBlockProps {
   onContinue: () => void;
 }
 
+/** PracticeBlock component */
 export default function PracticeBlock({
   block,
   sessionId,
   onContinue,
 }: PracticeBlockProps) {
+
+  // Redux store hook
   const dispatch = useAppDispatch();
-  const practiceBlock = block.type === 'Practice' ? block.practiceBlock : undefined;
-  const [submitAnswer, { isLoading: isSubmittingAnswer }] =
-    useSubmitAnswerMutation();
 
-  // Initialize state from persisted data if available
-  const [selectedOptions, setSelectedOptions] = useState<number[]>(
-    practiceBlock?.studentAnswerOptionIndices || []
-  );
-  const [isChecked, setIsChecked] = useState(
-    practiceBlock?.studentAnswerIsCorrect !== null
-  );
+  // API call hook
+  const [submitAnswer, { isLoading: isSubmittingAnswer }] = useSubmitAnswerMutation();
 
-  // Sync local state when block or practiceBlock data changes
+  // Extract block data
+  const practiceBlock = block.type === BLOCK_TYPE.PRACTICE ? block.practiceBlock : undefined;
+
+  // Init & sync component state
+  const [selectedOptions, setSelectedOptions] = useState<number[]>(practiceBlock?.studentAnswerOptionIndices || []);
+  const [isChecked, setIsChecked] = useState(practiceBlock?.studentAnswerIsCorrect !== null);
   useEffect(() => {
     if (practiceBlock) {
       setSelectedOptions(practiceBlock.studentAnswerOptionIndices || []);
       setIsChecked(practiceBlock.studentAnswerIsCorrect !== null);
     }
-  }, [block.id, practiceBlock]);
-
+  }, [block.id, practiceBlock]); // Sync local state (e.g. after block refetch post-submit or when navigating blocks)
+  
   if (!practiceBlock) return null;
-
   const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock;
 
-  // Handle option selection
+  // Select/deselect single answer option
   const handleOptionToggle = (index: number) => {
     if (isChecked) return; // Prevent changes after checking
-
     setSelectedOptions((prev) =>
       prev.includes(index)
         ? prev.filter((i) => i !== index)
@@ -55,46 +55,23 @@ export default function PracticeBlock({
     );
   };
 
-  // Check answer
+  // "Check Answer" button is clicked
   const handleCheckAnswer = async () => {
     if (!practiceBlock) return;
-
     try {
-      // Calculate correctness client-side
-      const { correctAnswerOptionIndices } = practiceBlock;
-      const isCorrect =
-        selectedOptions.length === correctAnswerOptionIndices.length &&
-        selectedOptions.every((opt) => correctAnswerOptionIndices.includes(opt));
-
-      // Submit answer to backend (stores for analytics, returns 204)
       await submitAnswer({
         sessionId,
-        orderIndex: block.orderIndex,
+        orderIndex: String(block.orderIndex),
         studentAnswerOptionIndices: selectedOptions,
       });
-
       setIsChecked(true);
-
-      // Update Redux store with calculated correctness
-      dispatch(
-        updatePracticeBlockAnswer({
-          blockId: block.id,
-          studentAnswerOptionIndices: selectedOptions,
-          studentAnswerIsCorrect: isCorrect,
-        })
-      );
     } catch (error) {
-      console.error('Failed to submit answer:', error);
-      // Handle error (could show toast notification)
+      console.error(error);
+      dispatch(addToast({ message: 'Could not submit answer. Please try again.', type: 'error' }));
     }
   };
 
-  // Handle continue - just move to next block
-  const handleContinue = () => {
-    onContinue();
-  };
-
-  // Determine if answer is correct
+  // Determine if whole practice question is answered correctly (i.e. all selected answer options are correct)
   const isCorrect =
     isChecked &&
     selectedOptions.length === correctAnswerOptionIndices.length &&
@@ -103,9 +80,9 @@ export default function PracticeBlock({
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-[80%] space-y-4">
-        {/* Card Container */}
+        {/* Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border p-6 space-y-6">
-          {/* Question Section (no card wrapper) */}
+          {/* Question */}
           <div className="space-y-1">
             <h3 className="text-xl font-semibold text-foreground">
               {question}
@@ -115,16 +92,19 @@ export default function PracticeBlock({
             </p>
           </div>
 
-          {/* Answer Options */}
+          {/* All answer options */}
           <div className="space-y-3">
             {answerOptions.map((option, index) => {
-              const isSelected = selectedOptions.includes(index);
-              const isCorrectOption = correctAnswerOptionIndices.includes(index);
-              const showCorrect = isChecked && isSelected && isCorrectOption;
-              const showIncorrect = isChecked && isSelected && !isCorrectOption;
-              const showMissed = isChecked && !isSelected && isCorrectOption;
+
+              // Determine the state of the answer option
+              const isSelected = selectedOptions.includes(index); // whether the answer option is selected by the user
+              const isCorrectOption = correctAnswerOptionIndices.includes(index); // whether the answer option is correct 
+              const showCorrect = isChecked && isSelected && isCorrectOption; // derive correct answer option
+              const showIncorrect = isChecked && isSelected && !isCorrectOption; // derive incorrect answer option
+              const showMissed = isChecked && !isSelected && isCorrectOption; // derive missed answer option
 
               return (
+                /* Answer option */
                 <AnswerOption
                   key={index}
                   label={String.fromCharCode(65 + index)} // A, B, C, D
@@ -140,88 +120,37 @@ export default function PracticeBlock({
             })}
           </div>
 
-          {/* Feedback */}
-          {isChecked && (
-            <div
-              className={`p-4 rounded-xl flex items-center gap-3 ${
-                isCorrect
-                  ? 'bg-[#10b981]/10'
-                  : 'bg-[#ef4444]/10'
-              }`}
-            >
-              <div
-                className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                  isCorrect 
-                    ? 'bg-transparent border-[#10b981]' 
-                    : 'bg-transparent border-[#ef4444]'
-                }`}
-              >
-                {isCorrect ? (
-                  <svg
-                    className="w-4 h-4 text-[#10b981]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-4 h-4 text-[#ef4444]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                )}
-              </div>
-              <p
-                className={`font-medium ${
-                  isCorrect ? 'text-[#10b981]' : 'text-[#ef4444]'
-                }`}
-              >
-                {isCorrect
-                  ? 'Correct! Well done.'
-                  : 'Not quite right. Check the correct answer above.'}
-              </p>
-            </div>
-          )}
+          {/* Feedback message after checking the answer */}
+          {isChecked && <FeedbackMessage isCorrect={isCorrect} />}
         </div>
 
-        {/* Check Answer Button (outside card, blue-purple gradient) */}
+        {/* "Check Answer" button */}
         {!isChecked && (
           <div className="flex justify-end">
-            <button
-              onClick={handleCheckAnswer}
-              disabled={selectedOptions.length === 0 || isSubmittingAnswer}
-              className="bg-brand-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-            >
-              {isSubmittingAnswer ? 'Checking...' : 'Check Answer'}
-            </button>
+            <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+              <button
+                onClick={handleCheckAnswer}
+                disabled={selectedOptions.length === 0 || isSubmittingAnswer}
+                className="bg-brand-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed border-0 appearance-none"
+              >
+                {isSubmittingAnswer ? 'Checking...' : 'Check Answer'}
+              </button>
+            </span>
           </div>
         )}
 
-        {/* Continue Button (outside card, green gradient - same as inform block) */}
+        {/* "Continue" button */}
         {isChecked && (
           <div className="flex justify-end">
-            <button
-              onClick={handleContinue}
-              className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity shadow-lg flex items-center gap-2"
-            >
-              <span>Continue</span>
-              <ChevronRightIcon className="w-5 h-5" />
-            </button>
+            <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+              <button
+                onClick={onContinue}
+                className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
+              >
+                <span>Continue</span>
+                <ChevronRightIcon className="w-5 h-5" />
+              </button>
+            </span>
           </div>
         )}
       </div>

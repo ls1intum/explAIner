@@ -1,14 +1,21 @@
 'use client';
 
 interface LearningGoalCardProps {
-  goal: string;
+  learningGoal: string;
   bloomsLevel: string;
   isSelected: boolean;
   onClick: () => void;
 }
 
-export default function LearningGoalCard({ goal, bloomsLevel, isSelected, onClick }: LearningGoalCardProps) {
+/** LearningGoalCard component - displays a single selectable learning-goal card with the pre-defined structure:
+ * "After this session, you will be able to <Bloom's level> <objective>". */
+export default function LearningGoalCard({ learningGoal, bloomsLevel, isSelected, onClick }: LearningGoalCardProps) {
+
+  // Parse learning goal to display only the objective and Bloom's level
+  const { objective } = parseDisplayParts(learningGoal, bloomsLevel);
+
   return (
+    /* Clickable card */
     <button
       onClick={onClick}
       className={`
@@ -19,13 +26,23 @@ export default function LearningGoalCard({ goal, bloomsLevel, isSelected, onClic
         }
       `}
     >
+      {/* Learning goal */}
       <p className="text-sm text-muted-foreground leading-relaxed">
         After this session, you will be able to{' '}
         <span className="font-semibold text-primary">
           {bloomsLevel}
         </span>{' '}
-        {goal}
+        {objective}
       </p>
     </button>
   );
+}
+
+// Helper function - strips standard prefix and Bloom's level from full learning goal string for display
+const PREFIX = 'After this session, you will be able to ';
+function parseDisplayParts(learningGoal: string, bloomsLevel: string): { objective: string } {
+  let objective = learningGoal;
+  if (objective.startsWith(PREFIX)) objective = objective.substring(PREFIX.length);
+  if (objective.startsWith(bloomsLevel + ' ')) objective = objective.substring(bloomsLevel.length + 1);
+  return { objective };
 }

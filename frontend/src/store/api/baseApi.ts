@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Base API config (baseURL, cache tags)
-
+/** Base API config (baseURL, cache tags) */
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({

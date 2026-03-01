@@ -22,7 +22,7 @@ export default function ImpressumPage() {
           <section>
             <h2 className="text-2xl font-bold mb-4 text-foreground">Haftungsausschluss</h2>
             <p className="text-base text-muted-foreground">
-              Diese Plattform dient ausschließlich zu Forschungszwecken im Rahmen eines universitären Projekts.
+              Diese Plattform dient zu Forschungszwecken im Rahmen eines universitären Projekts.
             </p>
           </section>
         </div>

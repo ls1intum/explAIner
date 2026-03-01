@@ -1,4 +1,6 @@
-// Funny Owlbert (loading) messages
+/**
+ * Owlbert loading messages (funny & cute - as user feedback repeatedly verified! :)
+ */
 
 export const LOADING_SCREEN_MESSAGES = [
   "Uuu whooo, Uuu whoooooo... Oh wait, Owlbert is talking to Owlberta...",
@@ -22,3 +24,6 @@ export const INFORM_BLOCK_CHAT_LOADING_MESSAGES = [
   "Wait, where are my glassess...",
 ];
 
+/** Used to pick a random message from the respective messages list */
+export const getRandomMessage = (messages: string[]): string =>
+  messages[Math.floor(Math.random() * messages.length)];

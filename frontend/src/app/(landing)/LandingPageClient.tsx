@@ -1,51 +1,44 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
-import TopicOrQuestionInput from '@/components/learning-topic/TopicOrQuestionInput';
-import PriorKnowledgeKeywordsInput from '@/components/learning-topic/PriorKnowledgeKeywordsInput';
-import LoadingScreen from '@/components/layout/LoadingScreen';
+import TopicInput from '@/components/learning-topic/TopicInput';
+import PriorKnowledgeInput from '@/components/learning-topic/PriorKnowledgeInput';
+import LoadingScreen from '@/components/shared/ui/LoadingScreen';
 import { useGenerateLearningGoalsMutation } from '@/store/api/learningGoalsApi';
-import { useAppDispatch } from '@/store/hooks';
-import { setLoading } from '@/store/slices/uiSlice';
-import { setLearningGoalsPageData } from '@/store/slices/learningGoalsSlice';
-import { addToast } from '@/store/slices/toastSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setLoading, addToast } from '@/store/slices/uiSlice';
+import { setTopic, setPriorKnowledge, setLearningGoals } from '@/store/slices/sessionSlice';
 
-export default function Home() {
+export default function HomePageClient() {
+
+  // Navigation
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const [topic, setTopic] = useState('');
-  const [keywords, setKeywords] = useState('');
-  const hasStartedTyping = topic.length > 0;
 
+  // Redux store hooks
+  const dispatch = useAppDispatch();
+  const { topic, priorKnowledge } = useAppSelector((state) => state.session);
+
+  // API call hook
   const [generateLearningGoals, { isLoading }] =
     useGenerateLearningGoalsMutation();
 
-  // Update global loading state
+  // Init & sync component state
+  const hasStartedTyping = topic.length > 0;
   useEffect(() => {
     dispatch(setLoading(isLoading));
   }, [isLoading, dispatch]);
 
+  // "Start ExplAIner Session" button is clicked (generates learning goals and navigates to learning goal page)
   const handleStartSession = async () => {
     try {
-      // Call API to generate learning goals
       const result = await generateLearningGoals({
         topic,
-        priorKnowledge: keywords.trim() || undefined,
+        priorKnowledge: priorKnowledge.trim() || undefined,
       }).unwrap();
-
-      // Store learning goals data in Redux
-      dispatch(
-        setLearningGoalsPageData({
-          topic,
-          keywords,
-          goals: result.learningGoals,
-        })
-      );
-
-      // Navigate to learning goal page with clean URL
+      dispatch(setLearningGoals(result.learningGoals));
       router.push('/learning-goal');
     } catch (err) {
       console.error('Failed to generate learning goals:', err);
@@ -58,7 +51,7 @@ export default function Home() {
     }
   };
 
-  // Show loading screen while API call is in progress
+  // Show loading screen while generating learning goals
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -66,16 +59,15 @@ export default function Home() {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-6">
-        {/* Owlbert Character with Speech Bubble */}
+        
+        {/* Owlbert avatar with speech bubble */}
         <div className="relative mb-6 flex flex-col items-center mb-10">
           <div className="relative bg-card border-2 border-secondary rounded-2xl px-4 py-2 shadow-sm whitespace-nowrap mb-4">
             <div className="text-xs text-foreground">
               {hasStartedTyping ? 'I can teach you anything!' : 'Hi, I\'m Owlbert ... Owlbert Einstein'}
             </div>
-            {/* Arrow pointing down */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-secondary"></div>
           </div>
-          
           <div className="flex items-center justify-center">
             <Image
               src={hasStartedTyping ? '/images/owlbert/main.png' : '/images/owlbert/waving.png'}
@@ -87,7 +79,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ExplAIner Title - Hidden when typing */}
+        {/* Title and subtitle (hidden after user started typing) */}
         {!hasStartedTyping && (
           <div className="flex flex-col items-center mb-8">
             <h1 className="text-5xl font-bold mb-3">
@@ -95,25 +87,23 @@ export default function Home() {
               <span className="text-brand-gradient">AI</span>
               <span className="text-foreground">ner</span>
             </h1>
-
-            {/* Subtitle */}
             <p className="text-2xl font-semibold text-brand-gradient">
               Learn at Your Own Pace
             </p>
           </div>
         )}
 
-        {/* Form Container */}
         <div className="w-full max-w-2xl flex flex-col items-center space-y-6 mt-5">
-          {/* Topic Input with Badge Label */}
-          <TopicOrQuestionInput value={topic} onChange={setTopic} />
 
-          {/* Optional Keywords Input - Shown when typing */}
+          {/* Topic input field */}
+          <TopicInput value={topic} onChange={(v) => dispatch(setTopic(v))} />
+
+          {/* Prior knowledge input field (shown after user started typing) */}
           {hasStartedTyping && (
             <>
-              <PriorKnowledgeKeywordsInput value={keywords} onChange={setKeywords} />
+              <PriorKnowledgeInput value={priorKnowledge} onChange={(v) => dispatch(setPriorKnowledge(v))} />
 
-              {/* Start Button */}
+              {/* "Start ExplAIner Session" button */}
               <button
                 onClick={handleStartSession}
                 disabled={!topic.trim() || isLoading}

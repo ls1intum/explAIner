@@ -2,24 +2,24 @@
 
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { removeToast, type Toast } from "@/store/slices/toastSlice";
+import { removeToast, type Toast } from "@/store/slices/uiSlice";
 import { CrossCircledIcon, CheckCircledIcon, InfoCircledIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
-// Toast notification component
-
+/** Toast component - displays pop-up notifications */
 export default function Toast() {
+
+  // Redux store hooks
   const dispatch = useAppDispatch();
-  const toasts = useAppSelector((state) => state.toast.toasts);
+  const toasts = useAppSelector((state) => state.ui.toasts);
 
   return (
     <div className="fixed top-20 right-4 z-50 flex flex-col gap-3 max-w-sm">
       {toasts.map((toast: Toast) => (
         <ToastItem
           key={toast.id}
-          id={toast.id}
           message={toast.message}
           type={toast.type}
-          onClose={() => dispatch(removeToast(toast.id))}
+          onDismiss={() => dispatch(removeToast(toast.id))}
         />
       ))}
     </div>
@@ -27,53 +27,48 @@ export default function Toast() {
 }
 
 interface ToastItemProps {
-  id: string;
   message: string;
   type: "success" | "error" | "info" | "warning";
-  onClose: () => void;
+  onDismiss: () => void;
 }
 
-function ToastItem({ id, message, type, onClose }: ToastItemProps) {
-  const dispatch = useAppDispatch();
+function ToastItem({ message, type, onDismiss }: ToastItemProps) {
 
-  // Auto-dismiss after 3 seconds
+  // Auto-dismiss after 3 seconds (same callback as close button)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      dispatch(removeToast(id));
-    }, 3000);
-
+    const timer = setTimeout(onDismiss, 3000);
     return () => clearTimeout(timer);
-  }, [id, dispatch]);
+  }, [onDismiss]);
 
-  // Icon and color based on type
+  // Icon and colors from theme
   const config = {
     success: {
       icon: <CheckCircledIcon className="w-5 h-5" />,
-      bgColor: "bg-green-50",
-      borderColor: "border-green-500",
-      textColor: "text-green-800",
-      iconColor: "text-green-500",
+      bgColor: "bg-success/10",
+      borderColor: "border-success",
+      textColor: "text-success",
+      iconColor: "text-success",
     },
     error: {
       icon: <CrossCircledIcon className="w-5 h-5" />,
-      bgColor: "bg-red-50",
-      borderColor: "border-red-500",
-      textColor: "text-red-800",
-      iconColor: "text-red-500",
+      bgColor: "bg-destructive/10",
+      borderColor: "border-destructive",
+      textColor: "text-destructive",
+      iconColor: "text-destructive",
     },
     info: {
       icon: <InfoCircledIcon className="w-5 h-5" />,
-      bgColor: "bg-blue-50",
-      borderColor: "border-blue-500",
-      textColor: "text-blue-800",
-      iconColor: "text-blue-500",
+      bgColor: "bg-primary/10",
+      borderColor: "border-primary",
+      textColor: "text-primary",
+      iconColor: "text-primary",
     },
     warning: {
       icon: <ExclamationTriangleIcon className="w-5 h-5" />,
-      bgColor: "bg-yellow-50",
-      borderColor: "border-yellow-500",
-      textColor: "text-yellow-800",
-      iconColor: "text-yellow-500",
+      bgColor: "bg-warning/10",
+      borderColor: "border-warning",
+      textColor: "text-warning",
+      iconColor: "text-warning",
     },
   }[type];
 
@@ -84,7 +79,7 @@ function ToastItem({ id, message, type, onClose }: ToastItemProps) {
       <div className={config.iconColor}>{config.icon}</div>
       <p className={`${config.textColor} text-sm font-medium flex-1`}>{message}</p>
       <button
-        onClick={onClose}
+        onClick={onDismiss}
         className={`${config.iconColor} hover:opacity-70 transition-opacity`}
         aria-label="Close"
       >

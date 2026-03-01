@@ -1,18 +1,33 @@
 /**
- * Learning Goals Domain Types
- * 
- * Re-exports from generated API types for cleaner imports.
- * These types represent the API contract between frontend and backend.
- * 
- * Source: Generated from OpenAPI specification
- * To regenerate: npm run generate:api-types
+ * Learning-Goals Domain Types
+ *
+ * Generated from OpenAPI specification, re-exported here for client-side usage with cleaner imports
+ * For further details, see ../README.md (client/src/types/README.md)
  */
 
-import type { components } from '../generated';
+import type { components } from '../generated/api.types';
 
-type GenerateLearningGoalsOutput = components['schemas']['GenerateLearningGoalsResponseDto_Output'];
-export type LearningGoal = GenerateLearningGoalsOutput['learningGoals'][number];
-export type GenerateLearningGoalsRequest = components['schemas']['GenerateLearningGoalsRequestDto'];
-export type GenerateLearningGoalsResponse = GenerateLearningGoalsOutput;
-export type GenerateEasierLearningGoalsRequest = components['schemas']['GenerateEasierLearningGoalsRequestDto'];
+////////////////////////////////////////////////////////////////////////////
+// Learning-Goals API request types
+ // request type = request path params AND/OR request body {}
+////////////////////////////////////////////////////////////////////////////
+
+type GenerateLearningGoalsRequestBody = components['schemas']['GenerateLearningGoalsRequestDto'];
+export type GenerateLearningGoalsRequest = GenerateLearningGoalsRequestBody;
+
+type GenerateEasierLearningGoalsRequestBody = components['schemas']['GenerateEasierLearningGoalsRequestDto'];
+export type GenerateEasierLearningGoalsRequest = GenerateEasierLearningGoalsRequestBody;
+
+////////////////////////////////////////////////////////////////////////////
+// Learning-Goals API response types
+////////////////////////////////////////////////////////////////////////////
+
+export type GenerateLearningGoalsResponse = components['schemas']['GenerateLearningGoalsResponseDto_Output'];
+
 export type GenerateEasierLearningGoalsResponse = components['schemas']['GenerateEasierLearningGoalsResponseDto_Output'];
+
+////////////////////////////////////////////////////////////////////////////
+// Additional Learning-Goals types
+////////////////////////////////////////////////////////////////////////////
+
+export type LearningGoal = GenerateLearningGoalsResponse['learningGoals'][number];

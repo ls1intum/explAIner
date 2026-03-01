@@ -1,35 +1,49 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Global UI state
+export type ToastType = "success" | "error" | "info" | "warning";
+export interface Toast {
+  id: string;
+  message: string;
+  type: ToastType;
+}
 
 interface UiState {
   isLoading: boolean;
-  loadingMessage: string;
-  theme: "light" | "dark";
+  toasts: Toast[];
 }
-
 const initialState: UiState = {
   isLoading: false,
-  loadingMessage: "",
-  theme: "light",
+  toasts: [],
 };
 
+/** 
+ * Redux store "ui" slice (Loading Screen, Toasts)
+ */
 export const uiSlice = createSlice({
   name: "ui",
   initialState,
+  // reducers = update the ui state slice based on the given action
   reducers: {
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    setLoadingMessage: (state, action: PayloadAction<string>) => {
-      state.loadingMessage = action.payload;
+    addToast: (
+      state,
+      action: PayloadAction<{ message: string; type: ToastType }>
+    ) => {
+      const id = Date.now().toString();
+      state.toasts.push({
+        id,
+        message: action.payload.message,
+        type: action.payload.type,
+      });
     },
-    setTheme: (state, action: PayloadAction<"light" | "dark">) => {
-      state.theme = action.payload;
+    removeToast: (state, action: PayloadAction<string>) => {
+      state.toasts = state.toasts.filter((toast) => toast.id !== action.payload);
     },
   },
 });
 
-export const { setLoading, setLoadingMessage, setTheme } = uiSlice.actions;
-
+// export all possible actions that can be dispatched to update the ui state slice
+export const { setLoading, addToast, removeToast } = uiSlice.actions;
 export default uiSlice.reducer;

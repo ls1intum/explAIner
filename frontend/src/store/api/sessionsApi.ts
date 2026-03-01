@@ -1,128 +1,113 @@
 import { baseApi } from "./baseApi";
-import type { components } from "@/types/generated";
+import type {
+  CreateSessionRequest,
+  CreateSessionResponse,
+  GetSessionRequest,
+  GetSessionResponse,
+  ContinueSessionRequest,
+  ContinueSessionResponse,
+  SubmitFeedbackRequest,
+  SubmitFeedbackResponse,
+  UpdateCurrentBlockIndexRequest,
+  UpdateCurrentBlockIndexResponse,
+  DeleteSessionRequest,
+  DeleteSessionResponse,
+} from "@/types/domain/session.types";
 
-// Type aliases for generated API types
-type CreateSessionRequest = components["schemas"]["CreateSessionRequestDto"];
-type CreateSessionResponse = components["schemas"]["CreateSessionResponseDto"];
-type GetSessionResponse = components["schemas"]["GetSessionResponseDto"];
-type GetBlockResponse = components["schemas"]["GetBlockResponseDto"];
-type ContinueSessionResponse = components["schemas"]["ContinueSessionResponseDto_Output"];
-type GenerateBlockSequenceResponse = components["schemas"]["GenerateBlockSequenceResponseDto"];
-type GenerateSummaryResponse = components["schemas"]["GenerateSummaryBlockResponseDto"];
-type SubmitFeedbackResponse = components["schemas"]["SubmitFeedbackResponseDto_Output"];
-type UpdateCurrentBlockIndexResponse = components["schemas"]["UpdateCurrentBlockIndexResponseDto_Output"];
-type DeleteSessionResponse = components["schemas"]["DeleteSessionResponseDto_Output"];
-
-// Session CRUD + submitFeedback + block navigation
-
+/** Sessions API endpoints */
 export const sessionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createSession: builder.mutation<
-      CreateSessionResponse,
-      CreateSessionRequest
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: GET /api/sessions/:sessionId
+    ////////////////////////////////////////////////////////////////////////////
+    getSession: builder.query<
+      GetSessionResponse,                                                   // API Response type
+      GetSessionRequest                                                     // API Request type
     >({
-      query: (body) => ({
+      query: ({ sessionId }) =>                                             // API call to server
+        `/api/sessions/${sessionId}`,
+      providesTags: (result, error, { sessionId }) => [{ type: "Session", id: sessionId }], // Provide cache tag (for mutations below to invalidate)
+    }),
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: POST /api/sessions
+    ////////////////////////////////////////////////////////////////////////////
+    createSession: builder.mutation<
+      CreateSessionResponse,                                                // API Response type
+      CreateSessionRequest                                                  // API Request type
+    >({
+      query: (body) => ({                                                   // API call to server
         url: "/api/sessions",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Session"],
+      invalidatesTags: ["Session"],                                         // Invalidate cache tag so sessions is refetched
     }),
-    getSession: builder.query<GetSessionResponse, string>({
-      query: (sessionId: string) => `/api/sessions/${sessionId}`,
-      providesTags: ["Session"],
-    }),
-    // Fetch block by orderIndex with caching support
-    getBlock: builder.query<
-      GetBlockResponse,
-      { sessionId: string; orderIndex: number }
-    >({
-      query: ({ sessionId, orderIndex }) =>
-        `/api/sessions/${sessionId}/blocks/${orderIndex}`,
-      providesTags: (result, error, { sessionId, orderIndex }) => [
-        { type: "Block", id: `${sessionId}-${orderIndex}` },
-      ],
-    }),
-    // Continue session - determines next action
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: POST /api/sessions/:sessionId/continue
+    ////////////////////////////////////////////////////////////////////////////
     continueSession: builder.mutation<
-      ContinueSessionResponse,
-      { sessionId: string }
+      ContinueSessionResponse,                                              // API Response type
+      ContinueSessionRequest                                                // API Request type
     >({
-      query: ({ sessionId }) => ({
+      query: ({ sessionId }) => ({                                          // API call to server
         url: `/api/sessions/${sessionId}/continue`,
         method: "POST",
         body: {},
       }),
-      invalidatesTags: ["Session"],
     }),
-    // Generate next block sequence (mode auto-detected by backend)
-    generateNextSequence: builder.mutation<
-      GenerateBlockSequenceResponse,
-      { sessionId: string }
-    >({
-      query: ({ sessionId }) => ({
-        url: `/api/sessions/${sessionId}/blocks/sequence`,
-        method: "POST",
-        body: {},
-      }),
-      invalidatesTags: ["Session", "Block"],
-    }),
-    // Generate summary block
-    generateSummary: builder.mutation<
-      GenerateSummaryResponse,
-      { sessionId: string }
-    >({
-      query: ({ sessionId }) => ({
-        url: `/api/sessions/${sessionId}/blocks/summary`,
-        method: "POST",
-        body: {},
-      }),
-      invalidatesTags: ["Session", "Block"],
-    }),
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: PUT /api/sessions/:sessionId/feedback
+    ////////////////////////////////////////////////////////////////////////////
     submitFeedback: builder.mutation<
-      SubmitFeedbackResponse,
-      { sessionId: string; rating: number }
+      SubmitFeedbackResponse,                                               // API Response type
+      SubmitFeedbackRequest                                                 // API Request type
     >({
-      query: ({ sessionId, rating }) => ({
+      query: ({ sessionId, rating }) => ({                                  // API call to server
         url: `/api/sessions/${sessionId}/feedback`,
         method: "PUT",
         body: { rating },
       }),
-      invalidatesTags: ["Session"],
+      invalidatesTags: ["Session"],                                         // Invalidate cache tag so session is refetched
     }),
-    // Update current block index
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: PATCH /api/sessions/:sessionId/current-block-index
+    ////////////////////////////////////////////////////////////////////////////
     updateCurrentBlockIndex: builder.mutation<
-      UpdateCurrentBlockIndexResponse,
-      { sessionId: string; currentBlockIndex: number }
+      UpdateCurrentBlockIndexResponse,                                      // API Response type
+      UpdateCurrentBlockIndexRequest                                        // API Request type
     >({
-      query: ({ sessionId, currentBlockIndex }) => ({
+      query: ({ sessionId, currentBlockIndex }) => ({                       // API call to server
         url: `/api/sessions/${sessionId}/current-block-index`,
         method: "PATCH",
         body: { currentBlockIndex },
       }),
-      invalidatesTags: ["Session"],
     }),
-    // Delete session and all related data
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: DELETE /api/sessions/:sessionId
+    ////////////////////////////////////////////////////////////////////////////
     deleteSession: builder.mutation<
-      DeleteSessionResponse,
-      { sessionId: string }
+      DeleteSessionResponse,                                                // API Response type
+      DeleteSessionRequest                                                  // API Request type
     >({
-      query: ({ sessionId }) => ({
+      query: ({ sessionId }) => ({                                          // API call to server
         url: `/api/sessions/${sessionId}`,
         method: "DELETE",
       }),
-      // No invalidatesTags needed - we're navigating away and clearing state
     }),
   }),
 });
 
+/** Sessions API hooks to use in pages/components */
 export const {
   useCreateSessionMutation,
   useGetSessionQuery,
-  useGetBlockQuery,
   useContinueSessionMutation,
-  useGenerateNextSequenceMutation,
-  useGenerateSummaryMutation,
   useSubmitFeedbackMutation,
   useUpdateCurrentBlockIndexMutation,
   useDeleteSessionMutation,

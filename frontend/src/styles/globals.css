@@ -1,8 +1,17 @@
+/* =============================================================================================================
+   Define the global CSS stylesheet for ExplAIner here :)
+
+   Contents: gradients, animations, scrollbar, ...
+
+   This stylesheet is then imported once in ... 
+    ... layout.tsx (src/app/layout.tsx) which wraps all other pages & components
+   ============================================================================================================= */
+
+ /* This is how Tailwind injects its CSS into the app */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Import theme variables defined in themes.css */
 @import './themes.css';
 
 /* Allow natural scrolling behavior */
@@ -12,12 +21,12 @@ body {
   width: 100%;
 }
 
+/* Create custom utilities using theme variables */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
   
-  /* Create custom utilities using theme variables */
   /* Blue-to-purple gradient background */
   .bg-brand-gradient {
     background: linear-gradient(
@@ -48,11 +57,10 @@ body {
     );
   }
   
-  /* Border utilities using secondary color */
+  /* Border utilities */
   .border-secondary {
     border-color: hsl(var(--secondary));
   }
-  
   .border-t-secondary {
     border-top-color: hsl(var(--secondary));
   }
@@ -61,7 +69,6 @@ body {
   .animate-slideInRight {
     animation: slideInRight 0.3s ease-out;
   }
-
   @keyframes slideInRight {
     from {
       transform: translateX(100%);
@@ -73,29 +80,22 @@ body {
     }
   }
 
-  /* Fade in animation */
-  .animate-fadeIn {
-    animation: fadeIn 0.4s ease-in-out;
+  /* Thin horizontal scrollbar for block navigation in navbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
   }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
   }
-
-  /* Hide scrollbar for block navigation */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
   }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7);
   }
 }

@@ -3,6 +3,7 @@
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 
+/* Redux Provider - provides the redux store to all child components (<-> src/app/layout.tsx) */
 export default function ReduxProvider({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>

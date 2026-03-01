@@ -26,7 +26,7 @@ export class GetBlockService {
 
     // Return response
     try {
-      return BlockSchema.parse(mapToBlockResponseDto(block));
+      return { data: BlockSchema.parse(mapToBlockResponseDto(block)) };
     } catch {
       throw new NotFoundException('Invalid block type or missing block content');
     }

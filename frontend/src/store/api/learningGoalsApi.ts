@@ -1,42 +1,47 @@
 import { baseApi } from "./baseApi";
-import type { components } from "@/types/generated";
+import type {
+  GenerateLearningGoalsRequest,
+  GenerateLearningGoalsResponse,
+  GenerateEasierLearningGoalsRequest,
+  GenerateEasierLearningGoalsResponse,
+} from "@/types/domain/learning-goals.types";
 
-// Type aliases for generated API types
-type GenerateLearningGoalsRequest = components["schemas"]["GenerateLearningGoalsRequestDto"];
-type GenerateLearningGoalsResponse = components["schemas"]["GenerateLearningGoalsResponseDto_Output"];
-type GenerateEasierLearningGoalsRequest = components["schemas"]["GenerateEasierLearningGoalsRequestDto"];
-type GenerateEasierLearningGoalsResponse = components["schemas"]["GenerateEasierLearningGoalsResponseDto_Output"];
-
-// Learning Goals API endpoints
-
+/** Learning Goals API endpoints */
 export const learningGoalsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: POST /api/learning-goals
+    ////////////////////////////////////////////////////////////////////////////
     generateLearningGoals: builder.mutation<
-      GenerateLearningGoalsResponse,
-      GenerateLearningGoalsRequest
+      GenerateLearningGoalsResponse,                                        // API Response type
+      GenerateLearningGoalsRequest                                          // API Request type
     >({
-      query: (body) => ({
+      query: (body) => ({                                                   // API call to server
         url: "/api/learning-goals",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["LearningGoal"],
     }),
+
+    ////////////////////////////////////////////////////////////////////////////
+    // API endpoint: POST /api/learning-goals/easier
+    ////////////////////////////////////////////////////////////////////////////
     generateEasierLearningGoals: builder.mutation<
-      GenerateEasierLearningGoalsResponse,
-      GenerateEasierLearningGoalsRequest
+      GenerateEasierLearningGoalsResponse,                                   // API Response type
+      GenerateEasierLearningGoalsRequest                                     // API Request type
     >({
-      query: (body) => ({
+      query: (body) => ({                                                    // API call to server
         url: "/api/learning-goals/easier",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["LearningGoal"],
     }),
   }),
 });
 
-export const { 
+/** Learning Goals API hooks to use in pages/components */
+export const {
   useGenerateLearningGoalsMutation,
   useGenerateEasierLearningGoalsMutation,
 } = learningGoalsApi;

@@ -35,7 +35,7 @@ export class GenerateBlockSequenceService {
     if (!tx) {
       return this.atomicDbTx.run(
         (t) => this.generate(sessionId, t),
-        { timeout: 30_000 },
+        { timeout: 45_000 },
       );
     }
     const db = tx;
@@ -83,7 +83,7 @@ export class GenerateBlockSequenceService {
       sessionId,
       nextOrderIndexStart,
       formattedMessage,
-      mode === BlockSequenceMode.INITIAL,
+      true,
       db,
     );
 

@@ -7,52 +7,53 @@ import { ChevronLeftIcon, ChevronRightIcon, ExitIcon, RocketIcon } from '@radix-
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useDeleteSessionMutation } from '@/store/api/sessionsApi';
 import { resetSession } from '@/store/slices/sessionSlice';
-import EndSessionDialog from '@/components/session/EndSessionDialog';
-import BlockNavigation from '@/components/layout/BlockNavigation';
+import EndSessionDialog from '@/components/session/dialogs/EndSessionDialog';
+import BlockNavigation from '@/components/session/BlockNavigation';
 
+/** Navbar component */
 export default function Navbar() {
-  const pathname = usePathname();
+
+  // Navigation
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const isLoading = useAppSelector((state) => state.ui.isLoading);
-  const currentSessionId = useAppSelector((state) => state.session.currentSessionId);
+
+  // Extract pathname and determine current page
+  const pathname = usePathname();
   const isLandingPage = pathname === '/';
   const isImpressumPage = pathname === '/impressum';
   const isLearningGoalPage = pathname === '/learning-goal';
   const isSessionPage = pathname.startsWith('/session/');
-  
-  // Dialog state
-  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
-  
-  // Delete session mutation
+
+  // Redux store hooks
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector((state) => state.ui.isLoading);
+
+  // API call hook
   const [deleteSession] = useDeleteSessionMutation();
   
-  // Handle end session confirmation
+  // Init & sync component state
+  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
+
+  // "End Session" button is clicked (dialog)
+  const sessionIdFromPath = isSessionPage ? pathname.split('/')[2] : null;
   const handleEndSession = async () => {
     setShowEndSessionDialog(false);
-    
-    // Delete session from database if we have a sessionId
-    if (currentSessionId) {
+    if (sessionIdFromPath) {
       try {
-        await deleteSession({ sessionId: currentSessionId }).unwrap();
+        await deleteSession({ sessionId: sessionIdFromPath }).unwrap();
       } catch (error) {
         console.error('Failed to delete session:', error);
       }
     }
-    
-    // Clear frontend state
     dispatch(resetSession());
-    
-    // Navigate to home
     router.push('/');
   };
 
   return (
     <nav className="w-full bg-brand-gradient px-6 py-4">
       <div className="w-full flex items-center gap-4 min-h-[2rem]">
-        {/* Show invisible placeholder when loading to maintain height */}
         {isLoading ? (
           <>
+            {/* Show invisible placeholder when loading to maintain navbar height */}
             <div className="invisible flex items-center gap-2 text-sm font-medium">
               <span className="w-5 h-5"></span>
               <span>Placeholder</span>
@@ -65,7 +66,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            {/* Back button on the left when on impressum page */}
+            {/* Back button when on impressum page */}
             {isImpressumPage && (
               <button
                 onClick={() => router.back()}
@@ -76,7 +77,7 @@ export default function Navbar() {
               </button>
             )}
             
-            {/* Session Start indicator on session page */}
+            {/* Session Start indicator when on session page */}
             {isSessionPage && (
               <>
                 <div className="text-white flex items-center gap-2 text-sm font-medium flex-shrink-0">
@@ -87,8 +88,8 @@ export default function Navbar() {
                 {/* Separator arrow */}
                 <ChevronRightIcon className="w-5 h-5 text-white/60 flex-shrink-0" />
                 
-                {/* Block Navigation */}
-                <div className="flex-1 overflow-x-auto">
+                {/* Block Navigation (min-w-0 so flex child can shrink and scroll horizontally when many blocks) */}
+                <div className="flex-1 min-w-0">
                   <BlockNavigation />
                 </div>
               </>
@@ -97,7 +98,7 @@ export default function Navbar() {
             {/* Spacer when not on impressum, learning goal, or session page */}
             {!isImpressumPage && !isLearningGoalPage && !isSessionPage && <div className="flex-1"></div>}
             
-            {/* Impressum link on the right when on landing page */}
+            {/* Impressum link when on landing page */}
             {isLandingPage && (
               <Link 
                 href="/impressum" 
@@ -107,7 +108,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Exit button on learning goal page and session page */}
+            {/* Exit button when on learning goal page or session page */}
             {(isLearningGoalPage || isSessionPage) && (
               <>
                 {isLearningGoalPage && <div className="flex-1"></div>}
@@ -130,7 +131,7 @@ export default function Navbar() {
         )}
       </div>
       
-      {/* End Session Dialog */}
+      {/* "End Session" dialog */}
       <EndSessionDialog
         isOpen={showEndSessionDialog}
         onClose={() => setShowEndSessionDialog(false)}

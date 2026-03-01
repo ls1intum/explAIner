@@ -1,22 +1,15 @@
 'use client';
 
+import { BLOOMS_LEVELS, type BloomsLevel } from '@/types/domain/enums';
+
 interface CustomLearningGoalCardProps {
   objective: string;
-  bloomsLevel: string;
+  bloomsLevel: BloomsLevel;
   onObjectiveChange: (value: string) => void;
-  onBloomsLevelChange: (value: string) => void;
+  onBloomsLevelChange: (value: BloomsLevel) => void;
 }
 
-// All 6 Bloom's taxonomy levels
-const bloomsLevels = [
-  'Remember',
-  'Understand',
-  'Apply',
-  'Analyze',
-  'Evaluate',
-  'Create',
-];
-
+/** CustomLearningGoalCard component - allows the user to enter a custom learning goal within the pre-defined structure:"After this session, you will be able to <Bloom's level> <objective>". */
 export default function CustomLearningGoalCard({ 
   objective, 
   bloomsLevel,
@@ -30,16 +23,13 @@ export default function CustomLearningGoalCard({
         ... or enter your own learning goal
       </div>
       
-      {/* Input fields */}
+      {/* Horizontal buttons for selecting Bloom's levels */}
       <div className="w-full space-y-3">
-        {/* Label for Bloom's levels */}
         <label className="block text-sm text-muted-foreground px-1">
           Choose your complexity level:
         </label>
-        
-        {/* Horizontal buttons for Bloom's levels */}
         <div className="w-full flex gap-2">
-          {bloomsLevels.map((level) => (
+          {BLOOMS_LEVELS.map((level) => (
             <button
               key={level}
               onClick={() => onBloomsLevelChange(level)}
@@ -69,7 +59,7 @@ export default function CustomLearningGoalCard({
         />
       </div>
 
-      {/* Live Preview Card */}
+      {/* "Live Preview" card */}
       <div className="w-full">
         <label className="block text-sm text-muted-foreground mb-2 px-1">
           Preview

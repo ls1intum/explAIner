@@ -1,111 +1,76 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { Block, InformBlockMessage } from "@/types/domain";
-
-// Session + block navigation state
+import type { LearningGoal } from "@/types/domain/learning-goals.types";
 
 interface SessionState {
-  currentSessionId: string | null;
-  currentBlockIndex: number;
-  totalBlocks: number;
-  blockQueue: Block[];
+  topic: string;
+  priorKnowledge: string;
+  learningGoals: LearningGoal[] | null;
+  sessionId: string | null;
+  currentBlockIndex: number; // block index of block currently being viewed by the client (synced to server via updateCurrentBlockIndex, hydrated from getSession)
+  highestAlreadyViewedBlockIndex: number; // highest block index ever viewed by the client (necessary to show/hide the already viewed / not yet viewed block chips in the navbar which allow to navigate between blocks; hydrated from blocks.alreadyViewed)
 }
 
 const initialState: SessionState = {
-  currentSessionId: null,
+  topic: "",
+  priorKnowledge: "",
+  learningGoals: null,
+  sessionId: null,
   currentBlockIndex: 0,
-  totalBlocks: 0,
-  blockQueue: [],
+  highestAlreadyViewedBlockIndex: 0,
 };
 
+/** 
+ * Redux store "session" slice 
+ */
 export const sessionSlice = createSlice({
   name: "session",
   initialState,
+  // reducers: update the session state slice based on the given action
   reducers: {
-    setCurrentSession: (state, action: PayloadAction<string>) => {
-      state.currentSessionId = action.payload;
+    setTopic: (state, action: PayloadAction<string>) => {
+      state.topic = action.payload;
+    },
+    setPriorKnowledge: (state, action: PayloadAction<string>) => {
+      state.priorKnowledge = action.payload;
+    },
+    setLearningGoals: (state, action: PayloadAction<LearningGoal[] | null>) => {
+      state.learningGoals = action.payload;
+    },
+    setSessionId: (state, action: PayloadAction<string>) => {
+      state.sessionId = action.payload;
     },
     setCurrentBlockIndex: (state, action: PayloadAction<number>) => {
-      const newIndex = action.payload;
-      state.currentBlockIndex = newIndex;
-      // Ensure the block is marked as viewed when navigating to it
-      if (state.blockQueue[newIndex]) {
-        state.blockQueue[newIndex].alreadyViewed = true;
-      }
+      state.currentBlockIndex = action.payload;
+      state.highestAlreadyViewedBlockIndex = Math.max(state.highestAlreadyViewedBlockIndex, action.payload);
     },
-    setTotalBlocks: (state, action: PayloadAction<number>) => {
-      state.totalBlocks = action.payload;
-    },
-    setBlockQueue: (state, action: PayloadAction<Block[]>) => {
-      state.blockQueue = action.payload;
-    },
-    addBlockToQueue: (state, action: PayloadAction<Block>) => {
-      state.blockQueue.push(action.payload);
-    },
-    // Update practice block answer
-    updatePracticeBlockAnswer: (
-      state,
-      action: PayloadAction<{
-        blockId: string;
-        studentAnswerOptionIndices: number[];
-        studentAnswerIsCorrect: boolean;
-      }>
-    ) => {
-      const block = state.blockQueue.find((b) => b.id === action.payload.blockId);
-      if (block?.type === 'Practice' && block.practiceBlock) {
-        block.practiceBlock.studentAnswerOptionIndices = action.payload.studentAnswerOptionIndices;
-        block.practiceBlock.studentAnswerIsCorrect = action.payload.studentAnswerIsCorrect;
-      }
-    },
-    // Update inform block messages
-    updateInformBlockMessages: (
-      state,
-      action: PayloadAction<{
-        blockId: string;
-        messages: InformBlockMessage[];
-      }>
-    ) => {
-      const block = state.blockQueue.find((b) => b.id === action.payload.blockId);
-      if (block?.type === 'Inform' && block.informBlock) {
-        block.informBlock.messages = action.payload.messages;
-      }
-    },
-    // Mark block as viewed
-    markBlockAsViewed: (state, action: PayloadAction<number>) => {
-      const blockIndex = action.payload;
-      if (state.blockQueue[blockIndex]) {
-        state.blockQueue[blockIndex].alreadyViewed = true;
-      }
-    },
-    nextBlock: (state) => {
-      if (state.currentBlockIndex < state.totalBlocks - 1) {
-        // Mark next block as viewed when navigating to it
-        const nextIndex = state.currentBlockIndex + 1;
-        if (state.blockQueue[nextIndex]) {
-          state.blockQueue[nextIndex].alreadyViewed = true;
-        }
-        state.currentBlockIndex = nextIndex;
-      }
+    setHighestAlreadyViewedBlockIndex: (state, action: PayloadAction<number>) => {
+      state.highestAlreadyViewedBlockIndex = action.payload;
     },
     resetSession: (state) => {
-      state.currentSessionId = null;
+      state.topic = "";
+      state.priorKnowledge = "";
+      state.learningGoals = null;
+      state.sessionId = null;
       state.currentBlockIndex = 0;
-      state.totalBlocks = 0;
-      state.blockQueue = [];
+      state.highestAlreadyViewedBlockIndex = 0;
+    },
+    clearSessionCreationData: (state) => {
+      state.topic = "";
+      state.priorKnowledge = "";
+      state.learningGoals = null;
     },
   },
 });
 
+// export all possible actions that can be dispatched to update the session state slice
 export const {
-  setCurrentSession,
+  setTopic,
+  setPriorKnowledge,
+  setLearningGoals,
+  setSessionId,
   setCurrentBlockIndex,
-  setTotalBlocks,
-  setBlockQueue,
-  addBlockToQueue,
-  updatePracticeBlockAnswer,
-  updateInformBlockMessages,
-  markBlockAsViewed,
-  nextBlock,
+  setHighestAlreadyViewedBlockIndex,
   resetSession,
+  clearSessionCreationData,
 } = sessionSlice.actions;
-
 export default sessionSlice.reducer;

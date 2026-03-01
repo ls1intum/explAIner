@@ -25,7 +25,7 @@ export class LlmService {
     try {
       const rawResponseMessage = await this.anthropic.messages.create({
         model: this.model,
-        max_tokens: 1024,
+        max_tokens: 4096,
         messages: [
           {
             role: 'user',
