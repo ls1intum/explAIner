@@ -17,10 +17,9 @@ export default function Toast() {
       {toasts.map((toast: Toast) => (
         <ToastItem
           key={toast.id}
-          id={toast.id}
           message={toast.message}
           type={toast.type}
-          onClose={() => dispatch(removeToast(toast.id))}
+          onDismiss={() => dispatch(removeToast(toast.id))}
         />
       ))}
     </div>
@@ -28,24 +27,18 @@ export default function Toast() {
 }
 
 interface ToastItemProps {
-  id: string;
   message: string;
   type: "success" | "error" | "info" | "warning";
-  onClose: () => void;
+  onDismiss: () => void;
 }
 
-function ToastItem({ id, message, type, onClose }: ToastItemProps) {
+function ToastItem({ message, type, onDismiss }: ToastItemProps) {
 
-  // Redux store hook
-  const dispatch = useAppDispatch();
-
-  // Auto-dismiss after 3 seconds
+  // Auto-dismiss after 3 seconds (same callback as close button)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      dispatch(removeToast(id));
-    }, 3000);
+    const timer = setTimeout(onDismiss, 3000);
     return () => clearTimeout(timer);
-  }, [id, dispatch]);
+  }, [onDismiss]);
 
   // Icon and colors from theme
   const config = {
@@ -86,7 +79,7 @@ function ToastItem({ id, message, type, onClose }: ToastItemProps) {
       <div className={config.iconColor}>{config.icon}</div>
       <p className={`${config.textColor} text-sm font-medium flex-1`}>{message}</p>
       <button
-        onClick={onClose}
+        onClick={onDismiss}
         className={`${config.iconColor} hover:opacity-70 transition-opacity`}
         aria-label="Close"
       >
