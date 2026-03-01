@@ -71,11 +71,6 @@ export default function PracticeBlock({
     }
   };
 
-  // "Continue" button is clicked
-  const handleContinue = () => {
-    onContinue();
-  };
-
   // Determine if whole practice question is answered correctly (i.e. all selected answer options are correct)
   const isCorrect =
     isChecked &&
@@ -149,7 +144,7 @@ export default function PracticeBlock({
           <div className="flex justify-end">
             <span className="inline-block rounded-xl shadow-lg overflow-hidden">
               <button
-                onClick={handleContinue}
+                onClick={onContinue}
                 className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
               >
                 <span>Continue</span>
