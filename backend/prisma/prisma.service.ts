@@ -11,15 +11,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     });
     
     const adapter = new PrismaPg(pool);
-    
-    super({
-      adapter,
-    });
+    super({ adapter });
   }
 
   async onModuleInit() {
     await this.$connect();
-    console.log('📦 Database connected');
   }
 
   async onModuleDestroy() {

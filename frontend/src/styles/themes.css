@@ -1,0 +1,88 @@
+/* =============================================================================================================
+   Define the CSS variables for ExplAIner here :)
+   
+   These variables are then imported in...
+    ... tailwind.config.ts (src/tailwind.config.ts) which maps them to Tailwind classes (e.g. bg-primary, text-foreground) used by UI elements
+    ... globals.css (src/styles/globals.css) which simply uses them in the global CSS stylesheet
+   ============================================================================================================= */
+
+
+ /* root = light theme colors */
+:root {
+  --background: 210 20% 99%;
+  --foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --primary: 250 83% 53%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 250 80% 88%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 273 81% 56%;
+  --accent-foreground: 0 0% 100%;
+
+  --success-start: 142 76% 36%;
+  --success-end: 158 64% 52%;
+  --success-foreground: 0 0% 100%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 100%;
+
+  --border: 270 30% 90%;
+  --input: 220 30% 92%;
+  --ring: 271 81% 56%;
+
+  --practice-correct: 160 84% 39%;
+  --practice-incorrect: 0 84% 60%;
+  --practice-missed: 160 84% 39%;
+
+  --radius: 1rem;
+}
+
+/* dark = dark theme colors */
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+
+  --card: 224 71% 8%;
+  --card-foreground: 210 40% 98%;
+
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 271 50% 45%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 271 91% 75%;
+  --accent-foreground: 224 71% 8%;
+
+  --success-start: 142 70% 45%;
+  --success-end: 158 60% 60%;
+  --success-foreground: 0 0% 100%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 100%;
+
+  --warning: 38 92% 55%;
+  --warning-foreground: 0 0% 100%;
+
+  --border: 270 20% 20%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 271 91% 75%;
+
+  --practice-correct: 160 84% 39%;
+  --practice-incorrect: 0 84% 60%;
+  --practice-missed: 160 84% 39%;
+}

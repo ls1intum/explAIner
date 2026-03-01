@@ -1,0 +1,159 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { ChevronRightIcon } from '@radix-ui/react-icons';
+import { useSubmitAnswerMutation } from '@/store/api/blocksApi';
+import { useAppDispatch } from '@/store/hooks';
+import { addToast } from '@/store/slices/uiSlice';
+import type { Block } from '@/types/domain/block.types';
+import { BLOCK_TYPE } from '@/types/domain/enums';
+import AnswerOption from './AnswerOption';
+import FeedbackMessage from './FeedbackMessage';
+
+interface PracticeBlockProps {
+  block: Block;
+  sessionId: string;
+  onContinue: () => void;
+}
+
+/** PracticeBlock component */
+export default function PracticeBlock({
+  block,
+  sessionId,
+  onContinue,
+}: PracticeBlockProps) {
+
+  // Redux store hook
+  const dispatch = useAppDispatch();
+
+  // API call hook
+  const [submitAnswer, { isLoading: isSubmittingAnswer }] = useSubmitAnswerMutation();
+
+  // Extract block data
+  const practiceBlock = block.type === BLOCK_TYPE.PRACTICE ? block.practiceBlock : undefined;
+
+  // Init & sync component state
+  const [selectedOptions, setSelectedOptions] = useState<number[]>(practiceBlock?.studentAnswerOptionIndices || []);
+  const [isChecked, setIsChecked] = useState(practiceBlock?.studentAnswerIsCorrect !== null);
+  useEffect(() => {
+    if (practiceBlock) {
+      setSelectedOptions(practiceBlock.studentAnswerOptionIndices || []);
+      setIsChecked(practiceBlock.studentAnswerIsCorrect !== null);
+    }
+  }, [block.id, practiceBlock]); // Sync local state (e.g. after block refetch post-submit or when navigating blocks)
+  
+  if (!practiceBlock) return null;
+  const { question, answerOptions, correctAnswerOptionIndices } = practiceBlock;
+
+  // Select/deselect single answer option
+  const handleOptionToggle = (index: number) => {
+    if (isChecked) return; // Prevent changes after checking
+    setSelectedOptions((prev) =>
+      prev.includes(index)
+        ? prev.filter((i) => i !== index)
+        : [...prev, index]
+    );
+  };
+
+  // "Check Answer" button is clicked
+  const handleCheckAnswer = async () => {
+    if (!practiceBlock) return;
+    try {
+      await submitAnswer({
+        sessionId,
+        orderIndex: String(block.orderIndex),
+        studentAnswerOptionIndices: selectedOptions,
+      });
+      setIsChecked(true);
+    } catch (error) {
+      console.error(error);
+      dispatch(addToast({ message: 'Could not submit answer. Please try again.', type: 'error' }));
+    }
+  };
+
+  // Determine if whole practice question is answered correctly (i.e. all selected answer options are correct)
+  const isCorrect =
+    isChecked &&
+    selectedOptions.length === correctAnswerOptionIndices.length &&
+    selectedOptions.every((opt) => correctAnswerOptionIndices.includes(opt));
+
+  return (
+    <div className="flex justify-center">
+      <div className="w-full max-w-[80%] space-y-4">
+        {/* Card */}
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6 space-y-6">
+          {/* Question */}
+          <div className="space-y-1">
+            <h3 className="text-xl font-semibold text-foreground">
+              {question}
+            </h3>
+            <p className="text-sm text-muted-foreground italic">
+              Select all that apply
+            </p>
+          </div>
+
+          {/* All answer options */}
+          <div className="space-y-3">
+            {answerOptions.map((option, index) => {
+
+              // Determine the state of the answer option
+              const isSelected = selectedOptions.includes(index); // whether the answer option is selected by the user
+              const isCorrectOption = correctAnswerOptionIndices.includes(index); // whether the answer option is correct 
+              const showCorrect = isChecked && isSelected && isCorrectOption; // derive correct answer option
+              const showIncorrect = isChecked && isSelected && !isCorrectOption; // derive incorrect answer option
+              const showMissed = isChecked && !isSelected && isCorrectOption; // derive missed answer option
+
+              return (
+                /* Answer option */
+                <AnswerOption
+                  key={index}
+                  label={String.fromCharCode(65 + index)} // A, B, C, D
+                  text={option}
+                  isSelected={isSelected}
+                  isChecked={isChecked}
+                  showCorrect={showCorrect}
+                  showIncorrect={showIncorrect}
+                  showMissed={showMissed}
+                  onToggle={() => handleOptionToggle(index)}
+                />
+              );
+            })}
+          </div>
+
+          {/* Feedback message after checking the answer */}
+          {isChecked && <FeedbackMessage isCorrect={isCorrect} />}
+        </div>
+
+        {/* "Check Answer" button */}
+        {!isChecked && (
+          <div className="flex justify-end">
+            <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+              <button
+                onClick={handleCheckAnswer}
+                disabled={selectedOptions.length === 0 || isSubmittingAnswer}
+                className="bg-brand-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed border-0 appearance-none"
+              >
+                {isSubmittingAnswer ? 'Checking...' : 'Check Answer'}
+              </button>
+            </span>
+          </div>
+        )}
+
+        {/* "Continue" button */}
+        {isChecked && (
+          <div className="flex justify-end">
+            <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+              <button
+                onClick={onContinue}
+                className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
+              >
+                <span>Continue</span>
+                <ChevronRightIcon className="w-5 h-5" />
+              </button>
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

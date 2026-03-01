@@ -5,8 +5,114 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Prisma 7.x: 'url' moved from schema to prisma.config.ts for migrations
 datasource db {
   provider = "postgresql"
 }
 
-// Add models here
+// Enums
+enum BloomsLevel {
+  Remember
+  Understand
+  Apply
+  Analyze
+  Evaluate
+  Create
+}
+
+enum BlockType {
+  Inform
+  Practice
+  Summary
+}
+
+enum MessageSender {
+  User
+  Owlbert
+}
+
+enum SoloLevel {
+  Unistructural
+  Multistructural
+  Relational
+  ExtendedAbstract
+}
+
+// Models
+model Session {
+  id                      String      @id @default(uuid()) @db.Uuid
+  topic                   String      @db.Text
+  learningGoal            String      @map("learning_goal") @db.Text
+  learningGoalBloomsLevel BloomsLevel @map("learning_goal_blooms_level")
+  priorKnowledge          String?     @map("prior_knowledge") @db.Text
+  totalBlocks             Int         @default(1) @map("total_blocks")
+  currentBlockIndex       Int         @default(0) @map("current_block_index")
+  userFeedback            Int?        @map("user_feedback") @db.SmallInt
+  startedAt               DateTime    @default(now()) @map("started_at") @db.Timestamptz(3)
+  completedAt             DateTime?   @map("completed_at") @db.Timestamptz(3)
+
+  blocks Block[]
+
+  @@map("sessions")
+}
+
+model Block {
+  id            String    @id @default(uuid()) @db.Uuid
+  sessionId     String    @map("session_id") @db.Uuid
+  orderIndex    Int       @map("order_index")
+  alreadyViewed Boolean   @default(false) @map("already_viewed")
+  type          BlockType
+
+  session       Session        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  informBlock   InformBlock?
+  practiceBlock PracticeBlock?
+  summaryBlock  SummaryBlock?
+
+  @@unique([sessionId, orderIndex])
+  @@index([sessionId, orderIndex])
+  @@map("blocks")
+}
+
+model InformBlock {
+  blockId   String   @id @map("block_id") @db.Uuid
+  block     Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  messages  InformBlockMessage[]
+
+  @@map("inform_blocks")
+}
+
+model InformBlockMessage {
+  id             String      @id @default(uuid()) @db.Uuid
+  informBlockId  String      @map("inform_block_id") @db.Uuid
+  message        String      @db.Text
+  sender         MessageSender
+  timestamp      DateTime    @default(now()) @db.Timestamptz(3)
+
+  informBlock InformBlock @relation(fields: [informBlockId], references: [blockId], onDelete: Cascade)
+
+  @@index([informBlockId, timestamp])
+  @@map("inform_block_messages")
+}
+
+model PracticeBlock {
+  blockId                    String    @id @map("block_id") @db.Uuid
+  soloLevel                  SoloLevel @map("solo_level")
+  question                   String    @db.Text
+  answerOptions              String[]  @map("answer_options")
+  correctAnswerOptionIndices Int[]     @map("correct_answer_option_indices")
+  studentAnswerOptionIndices Int[]     @default([]) @map("student_answer_option_indices")
+  studentAnswerIsCorrect     Boolean?  @map("student_answer_is_correct")
+
+  block Block @relation(fields: [blockId], references: [id], onDelete: Cascade)
+
+  @@map("practice_blocks")
+}
+
+model SummaryBlock {
+  blockId        String @id @map("block_id") @db.Uuid
+  sessionSummary String @map("session_summary") @db.Text
+
+  block Block @relation(fields: [blockId], references: [id], onDelete: Cascade)
+
+  @@map("summary_blocks")
+}

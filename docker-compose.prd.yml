@@ -31,6 +31,8 @@ services:
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       NODE_ENV: production
       PORT: ${BACKEND_PORT}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL}
     ports:
       # Different port to avoid conflicts with dev environment
       - "4001:${BACKEND_PORT}"

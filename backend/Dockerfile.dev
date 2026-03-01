@@ -19,5 +19,5 @@ RUN npx prisma generate
 # Expose port 3001 so it can be accessed from outside the container
 EXPOSE 3001
 
-# Default command to run when container starts (NestJS development mode with hot-reload)
-CMD ["npm", "run", "start:dev"]
+# Run database migrations and start the application in development mode
+CMD ["sh", "-c", "npx prisma migrate dev && npm run start:dev"]

@@ -1,0 +1,101 @@
+/* =============================================================================================================
+   Define the global CSS stylesheet for ExplAIner here :)
+
+   Contents: gradients, animations, scrollbar, ...
+
+   This stylesheet is then imported once in ... 
+    ... layout.tsx (src/app/layout.tsx) which wraps all other pages & components
+   ============================================================================================================= */
+
+ /* This is how Tailwind injects its CSS into the app */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './themes.css';
+
+/* Allow natural scrolling behavior */
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+/* Create custom utilities using theme variables */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Blue-to-purple gradient background */
+  .bg-brand-gradient {
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary)),
+      hsl(var(--accent))
+    );
+  }
+  
+  /* Blue-to-purple gradient text */
+  .text-brand-gradient {
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary)),
+      hsl(var(--accent))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Green gradient background */
+  .bg-success-gradient {
+    background: linear-gradient(
+      to right,
+      hsl(var(--success-start)),
+      hsl(var(--success-end))
+    );
+  }
+  
+  /* Border utilities */
+  .border-secondary {
+    border-color: hsl(var(--secondary));
+  }
+  .border-t-secondary {
+    border-top-color: hsl(var(--secondary));
+  }
+
+  /* Toast slide-in animation */
+  .animate-slideInRight {
+    animation: slideInRight 0.3s ease-out;
+  }
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Thin horizontal scrollbar for block navigation in navbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7);
+  }
+}
