@@ -22,7 +22,7 @@ services:
       - key: PORT
         value: 3001
       - key: FRONTEND_URL
-        value: https://explainer-frontend.onrender.com
+        value: https://www.explainer-app.de
       - key: ANTHROPIC_MODEL
         value: claude-sonnet-4-5-20250929
       # Note: ANTHROPIC_API_KEY must be added via Render Dashboard (sensitive)
