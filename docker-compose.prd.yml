@@ -31,6 +31,7 @@ services:
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       NODE_ENV: production
       PORT: ${BACKEND_PORT}
+      FRONTEND_URL: ${FRONTEND_URL}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL}
     ports:
@@ -44,13 +45,14 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prd
+      args:
+        # NEXT_PUBLIC_* vars are baked into the bundle at build time, so must be passed as build args
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     container_name: explainer-frontend-prd
     restart: unless-stopped
     depends_on:
       - backend
     environment:
-      # Use host port 4001 where backend is exposed
-      NEXT_PUBLIC_API_URL: http://localhost:4001
       NODE_ENV: production
     ports:
       # Different port to avoid conflicts with dev environment
