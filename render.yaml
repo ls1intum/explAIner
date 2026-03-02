@@ -47,7 +47,7 @@ services:
 databases:
   # PostgreSQL (Production)
   - name: explainer-postgres
-    plan: free # Free tier with 1GB storage, 1GB RAM, expires after 90 days
+    plan: basic-256mb
     region: frankfurt
     databaseName: explainer
     user: explainer_user
