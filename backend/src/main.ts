@@ -15,6 +15,8 @@ async function bootstrap() {
   // Get configuration values
   const port = configService.get<number>('port')!;
   const frontendUrl = configService.get<string>('frontendUrl')!;
+  const nodeEnv = configService.get<string>('nodeEnv')!;
+  const isProd = nodeEnv === 'production';
   
   // Set global API prefix
   app.setGlobalPrefix('api');
@@ -39,7 +41,7 @@ async function bootstrap() {
     .setTitle('ExplAIner API')
     .setDescription('API documentation for ExplAIner')
     .setVersion('0.0.1')
-    .addServer(`http://localhost:${port}`, 'Local development server')
+    .addServer(`http://localhost:${port}`, isProd ? 'Local production server' : 'Local development server')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   // Clean up OpenAPI doc for proper nestjs-zod integration
@@ -49,9 +51,10 @@ async function bootstrap() {
   await app.listen(port);
   logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   logger.log('🚀 Backend server started successfully');
-  logger.log(`📡 API: http://localhost:${port}/api`);
-  logger.log(`📚 Swagger docs: http://localhost:${port}/api/docs`);
-  logger.log(`🌐 CORS enabled for: ${frontendUrl}`);
+  logger.log('');
+  logger.log(`💚 Health check:                http://localhost:${port}/api/health`);
+  logger.log(`📄 OpenAPI/Swagger docs:        http://localhost:${port}/api/docs`);
+  logger.log(`🌐 Frontend URL (CORS enabled): ${frontendUrl}`);
   logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 bootstrap();

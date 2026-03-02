@@ -35,8 +35,7 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL}
     ports:
-      # Different port to avoid conflicts with dev environment
-      - "4001:${BACKEND_PORT}"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     # No volumes - production build is self-contained
     networks:
       - explainer-network-prd
@@ -54,9 +53,9 @@ services:
       - backend
     environment:
       NODE_ENV: production
+      PORT: ${FRONTEND_PORT}
     ports:
-      # Different port to avoid conflicts with dev environment
-      - "4000:${FRONTEND_PORT}"
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     # No volumes - production build is self-contained
     networks:
       - explainer-network-prd
