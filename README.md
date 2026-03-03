@@ -21,8 +21,8 @@ docker compose -f docker-compose.prd.yml down
 ```
 
 **Access:**
-| Environment | Frontend | Backend | Database |
-|-------------|----------|---------|----------|
+| Environment | Client | Server | Database |
+|-------------|--------|--------|----------|
 | Development | http://localhost:3000 | http://localhost:3001 | localhost:5432 |
 | Production | http://localhost:4000 | http://localhost:4001 | localhost:5433 |
 
@@ -52,13 +52,13 @@ dc-prd logs -f     # View logs
 
 ## Tech Stack
 
-**Backend**
+**Server**
 - **NestJS** - TypeScript framework for scalable server-side applications
 - **Prisma** - Type-safe ORM for PostgreSQL database access
 - **LangChain** - Framework for building LLM-powered applications
 - **PostgreSQL** - Relational database
 
-**Frontend**
+**Client**
 - **Next.js 14** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS + Radix UI** - Styling and accessible component primitives

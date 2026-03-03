@@ -3,7 +3,7 @@
 export interface AppConfiguration {
   nodeEnv: string;
   port: number;
-  frontendUrl: string;
+  clientUrl: string;
   database: {
     url: string;
   };
@@ -16,7 +16,7 @@ export interface AppConfiguration {
 export default (): AppConfiguration => ({
   nodeEnv: process.env.NODE_ENV!,
   port: parseInt(process.env.PORT!, 10),
-  frontendUrl: process.env.FRONTEND_URL!,
+  clientUrl: process.env.CLIENT_URL!,
   database: {
     url: process.env.DATABASE_URL!,
   },

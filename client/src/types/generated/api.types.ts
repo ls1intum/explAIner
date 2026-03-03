@@ -93,7 +93,7 @@ export interface paths {
         };
         /**
          * Get session by ID
-         * @description Retrieves session details with all blocks for rehydrating frontend state
+         * @description Retrieves session details with all blocks for rehydrating client state
          */
         get: operations["SessionsController_findOne"];
         put?: never;

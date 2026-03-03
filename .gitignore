@@ -15,11 +15,11 @@ node_modules/
 
 # Build outputs
 # NestJS build output
-backend/dist/
+server/dist/
 
 # Next.js build output
-frontend/.next/
-frontend/out/
+client/.next/
+client/out/
 
 # Logs
 # npm debug logs
