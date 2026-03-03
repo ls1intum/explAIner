@@ -18,11 +18,11 @@ services:
     networks:
       - explainer-network-prd
 
-  backend:
+  server:
     build:
-      context: ./backend
+      context: ./server
       dockerfile: Dockerfile.prd
-    container_name: explainer-backend-prd
+    container_name: explainer-server-prd
     restart: unless-stopped
     depends_on:
       - db
@@ -30,32 +30,32 @@ services:
       # 'db' hostname works because of Docker networking
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       NODE_ENV: production
-      PORT: ${BACKEND_PORT}
-      FRONTEND_URL: ${FRONTEND_URL}
+      PORT: ${SERVER_PORT}
+      CLIENT_URL: ${CLIENT_URL}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL}
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - "${SERVER_PORT}:${SERVER_PORT}"
     # No volumes - production build is self-contained
     networks:
       - explainer-network-prd
 
-  frontend:
+  client:
     build:
-      context: ./frontend
+      context: ./client
       dockerfile: Dockerfile.prd
       args:
         # NEXT_PUBLIC_* vars are baked into the bundle at build time, so must be passed as build args
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    container_name: explainer-frontend-prd
+    container_name: explainer-client-prd
     restart: unless-stopped
     depends_on:
-      - backend
+      - server
     environment:
       NODE_ENV: production
-      PORT: ${FRONTEND_PORT}
+      PORT: ${CLIENT_PORT}
     ports:
-      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
     # No volumes - production build is self-contained
     networks:
       - explainer-network-prd

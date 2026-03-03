@@ -39,7 +39,7 @@ export class SessionsController {
   }
 
   @Get(':sessionId')
-  @ApiOperation({ summary: 'Get session by ID', description: 'Retrieves session details with all blocks for rehydrating frontend state' })
+  @ApiOperation({ summary: 'Get session by ID', description: 'Retrieves session details with all blocks for rehydrating client state' })
   @ApiParam({ name: 'sessionId', description: 'Unique session identifier' })
   @ZodResponse({ status: 200, description: 'Session found', type: GetSessionResponseDto })
   @ApiResponse({ status: 404, description: 'Session not found' })

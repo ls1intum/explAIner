@@ -14,7 +14,7 @@ async function bootstrap() {
   
   // Get configuration values
   const port = configService.get<number>('port')!;
-  const frontendUrl = configService.get<string>('frontendUrl')!;
+  const clientUrl = configService.get<string>('clientUrl')!;
   const nodeEnv = configService.get<string>('nodeEnv')!;
   const isProd = nodeEnv === 'production';
   
@@ -30,9 +30,9 @@ async function bootstrap() {
   // Enable Zod validation pipe for DTOs
   app.useGlobalPipes(new ZodValidationPipe());
   
-  // Enable CORS for frontend
+  // Enable CORS for client
   app.enableCors({
-    origin: frontendUrl,
+    origin: clientUrl,
     credentials: true,
   });
   
@@ -50,11 +50,11 @@ async function bootstrap() {
   
   await app.listen(port);
   logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  logger.log('🚀 Backend server started successfully');
+  logger.log('🚀 Server started successfully');
   logger.log('');
-  logger.log(`💚 Health check:                http://localhost:${port}/api/health`);
-  logger.log(`📄 OpenAPI/Swagger docs:        http://localhost:${port}/api/docs`);
-  logger.log(`🌐 Frontend URL (CORS enabled): ${frontendUrl}`);
+  logger.log(`💚 Health check:               http://localhost:${port}/api/health`);
+  logger.log(`📄 OpenAPI/Swagger docs:       http://localhost:${port}/api/docs`);
+  logger.log(`🌐 Client URL (CORS enabled):  ${clientUrl}`);
   logger.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 bootstrap();

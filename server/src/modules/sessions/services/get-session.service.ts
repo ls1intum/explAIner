@@ -4,7 +4,7 @@ import { GetSessionResponseDto } from '../dto/response/get-session.response.dto'
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { mapToGetSessionResponseDto } from '../sessions.utils';
 
-/** Service fetching entire session data incl. all blocks (e.g. for frontend rehydration on page reload) */
+/** Service fetching entire session data incl. all blocks (e.g. for client rehydration on page reload) */
 @Injectable()
 export class GetSessionService {
   constructor(private sessionsRepository: SessionsRepository) {}

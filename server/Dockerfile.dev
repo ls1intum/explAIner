@@ -4,13 +4,13 @@ FROM node:20-alpine
 # Set the working directory inside the container to /app
 WORKDIR /app
 
-# Copy package.json and package-lock.json from local backend/ to container's /app/
+# Copy package.json and package-lock.json from local server/ to container's /app/
 COPY package*.json ./
 
 # Install all npm dependencies defined in package.json
 RUN npm install
 
-# Copy all remaining files from local backend/ directory to container's /app/
+# Copy all remaining files from local server/ directory to container's /app/
 COPY . .
 
 # Generate Prisma Client after copying files
