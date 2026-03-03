@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
 import LearningGoalCard from '@/components/learning-goals/LearningGoalCard';
@@ -9,7 +9,6 @@ import CustomLearningGoalCard from '@/components/learning-goals/CustomLearningGo
 import LoadingScreen from '@/components/shared/ui/LoadingScreen';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useCreateSessionMutation } from '@/store/api/sessionsApi';
-import { setLoading } from '@/store/slices/uiSlice';
 import { clearSessionCreationData } from '@/store/slices/sessionSlice';
 import type { LearningGoal } from '@/types/domain/learning-goals.types';
 import { BLOOMS_LEVELS, type BloomsLevel } from '@/types/domain/enums';
@@ -22,7 +21,6 @@ export default function LearningGoalPageClient() {
   // Redux store hooks
   const dispatch = useAppDispatch();
   const { topic, priorKnowledge, learningGoals } = useAppSelector((state) => state.session);
-  const isLoading = useAppSelector((state) => state.ui.isLoading);
 
   // API call hook
   const [createSession, { isLoading: isCreatingSession }] = useCreateSessionMutation();
@@ -36,13 +34,6 @@ export default function LearningGoalPageClient() {
   const [showPredefined, setShowPredefined] = useState(true);
   const [customObjective, setCustomObjective] = useState('');
   const [customBloomsLevel, setCustomBloomsLevel] = useState<BloomsLevel>(BLOOMS_LEVELS[1]);
-
-  // Cleanup function to reset loading state when component unmounts to avoid loading screen glitches
-  useEffect(() => {
-    return () => {
-      dispatch(setLoading(false));
-    };
-  }, [dispatch]);
 
   if (!pageData) return null;
 
@@ -92,7 +83,6 @@ export default function LearningGoalPageClient() {
 
     // Create session
     try {
-      dispatch(setLoading(true));
       const response = await createSession({
         topic: pageData.topic,
         learningGoal: { learningGoal: selectedGoal, bloomsLevel: selectedBloomsLevel },
@@ -102,12 +92,10 @@ export default function LearningGoalPageClient() {
       router.push(`/session/${response.id}`);
     } catch (error) {
       console.error('Failed to create session:', error);
-      dispatch(setLoading(false));
     }
   };
 
-  // Show loading screen while creating session
-  if (isLoading) return <LoadingScreen />;
+  if (isCreatingSession) return <LoadingScreen />;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-background">

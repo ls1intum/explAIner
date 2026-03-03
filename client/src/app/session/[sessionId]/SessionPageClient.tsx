@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setCurrentBlockIndex, setSessionId, setHighestAlreadyViewedBlockIndex, setTopic, setPriorKnowledge, setLearningGoals } from '@/store/slices/sessionSlice';
-import { setLoading, addToast } from '@/store/slices/uiSlice';
+import { addToast } from '@/store/slices/uiSlice';
 import { useGetSessionQuery, useContinueSessionMutation, useUpdateCurrentBlockIndexMutation } from '@/store/api/sessionsApi';
 import { useGetBlockQuery, useGenerateBlockSequenceMutation, useGenerateSummaryBlockMutation } from '@/store/api/blocksApi';
 import { useGenerateEasierLearningGoalsMutation } from '@/store/api/learningGoalsApi';
@@ -164,7 +164,6 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
   const handleStartNewSessionWithEasierLearningGoal = async () => {
     setShowHowToContinueSessionDialog(false);
     try {
-      dispatch(setLoading(true));
       const result = await generateEasierLearningGoals({ sessionId }).unwrap();
       dispatch(setTopic(result.topic));
       dispatch(setPriorKnowledge(result.priorKnowledge ?? ''));
@@ -172,7 +171,6 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       router.push('/learning-goal');
     } catch (error) {
       console.error('Failed to generate easier learning goals:', error);
-      dispatch(setLoading(false));
       dispatch(addToast({ message: 'Failed to generate easier learning goals. Please try again.', type: 'error' }));
     }
   };
@@ -182,18 +180,15 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
     await handleGenerateNextSequence();
   };
 
-  // Loading: session, block, or generating sequence/summary/easier goals — sync to Redux (Navbar) and show full-page loading
-  const showLoading =
+  // Show loading screen if any of the following conditions are met:
+  const isLoading =
     isLoadingSession ||
     !displayBlock ||
     isBlockLoading ||
     isGeneratingSequence ||
     isGeneratingSummary ||
     isGeneratingEasierGoals;
-  useEffect(() => {
-    dispatch(setLoading(showLoading));
-  }, [showLoading, dispatch]);
-  if (showLoading) {
+  if (isLoading) {
     return <LoadingScreen />;
   }
 

@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { RocketIcon } from '@radix-ui/react-icons';
 import TopicInput from '@/components/learning-topic/TopicInput';
@@ -9,7 +8,7 @@ import PriorKnowledgeInput from '@/components/learning-topic/PriorKnowledgeInput
 import LoadingScreen from '@/components/shared/ui/LoadingScreen';
 import { useGenerateLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setLoading, addToast } from '@/store/slices/uiSlice';
+import { addToast } from '@/store/slices/uiSlice';
 import { setTopic, setPriorKnowledge, setLearningGoals } from '@/store/slices/sessionSlice';
 
 export default function HomePageClient() {
@@ -22,14 +21,11 @@ export default function HomePageClient() {
   const { topic, priorKnowledge } = useAppSelector((state) => state.session);
 
   // API call hook
-  const [generateLearningGoals, { isLoading }] =
+  const [generateLearningGoals, { isLoading: isGeneratingLearningGoals }] =
     useGenerateLearningGoalsMutation();
 
-  // Init & sync component state
+    // Init & sync component state
   const hasStartedTyping = topic.length > 0;
-  useEffect(() => {
-    dispatch(setLoading(isLoading));
-  }, [isLoading, dispatch]);
 
   // "Start ExplAIner Session" button is clicked (generates learning goals and navigates to learning goal page)
   const handleStartSession = async () => {
@@ -52,7 +48,7 @@ export default function HomePageClient() {
   };
 
   // Show loading screen while generating learning goals
-  if (isLoading) {
+  if (isGeneratingLearningGoals) {
     return <LoadingScreen />;
   }
 
@@ -106,7 +102,7 @@ export default function HomePageClient() {
               {/* "Start ExplAIner Session" button */}
               <button
                 onClick={handleStartSession}
-                disabled={!topic.trim() || isLoading}
+                disabled={!topic.trim() || isGeneratingLearningGoals}
                 className="w-full bg-success-gradient text-white font-semibold text-base py-3 px-5 rounded-3xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
               >
                 <RocketIcon className="w-5 h-5" />

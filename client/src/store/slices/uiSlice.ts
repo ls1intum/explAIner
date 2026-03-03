@@ -8,25 +8,19 @@ export interface Toast {
 }
 
 interface UiState {
-  isLoading: boolean;
   toasts: Toast[];
 }
 const initialState: UiState = {
-  isLoading: false,
   toasts: [],
 };
 
 /** 
- * Redux store "ui" slice (Loading Screen, Toasts)
+ * Redux store "ui" slice (Toasts)
  */
 export const uiSlice = createSlice({
   name: "ui",
   initialState,
-  // reducers = update the ui state slice based on the given action
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
-    },
     addToast: (
       state,
       action: PayloadAction<{ message: string; type: ToastType }>
@@ -45,5 +39,5 @@ export const uiSlice = createSlice({
 });
 
 // export all possible actions that can be dispatched to update the ui state slice
-export const { setLoading, addToast, removeToast } = uiSlice.actions;
+export const { addToast, removeToast } = uiSlice.actions;
 export default uiSlice.reducer;
