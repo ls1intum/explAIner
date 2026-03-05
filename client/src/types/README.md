@@ -1,45 +1,31 @@
-# Generated API Types
+# About Types
 
-**Single source of truth (server):** `server/src/domain/schemas/`. The DTOs that define request/response for every API endpoint are based on these schemas. Swagger is generated from those DTOs, and this folder is generated from the Swagger spec.
+> **Server = single source of truth for all types**
 
-**Flow:** Server schemas → DTOs (per endpoint) → Swagger doc → `openapi-typescript` → this folder. Do not edit `api.types.ts` by hand.
+Have a look here: `server/src/domain/schemas/`. Here you will find the definition of all schemas used anywhere in ExplAIner (base schemas, DTO schemas, LLM-Parser schemas). 
 
-**In the client:** Prefer the `../domain/` types; they re-export and rename these for cleaner use in the app.
+> **But what is** `client/src/types/domain` **then?** 
 
-**Regenerate:** Server running (e.g. port 3001), then from the client directory:
+Good question! It defines all client types, but with a simply re-export of this `client/src/types/generated/api.types.ts`, which again is auto-generated based on the API documentation using `openapi-typescript`. And the API documentation is based on the server schemas as mentioned above => single source of truth. 
 
+> **Here is how it works, explained step by step:** 
+1. Define / Change schemas here `server/src/domain/schemas/` (single source of truth)
+
+2. If schema changes are relevant for the client, the DTO schemas will have to be changed on the server, which will reflect in the API documentation (every API endpoint must define 2 DTOs - one request DTO and 1 response DTO).
+
+3. If the API documentation changed, you need to re-generated the `client/src/types/generated/api.types.ts` file:
 ```bash
+cd client/
 npm run generate:api-types
 ```
+For this to work, the server must be running.
+Run after any change to server DTO schemas. 
+Do never edit `api.types.ts` by hand.
 
-Run after any change to server schemas or DTOs.
+4. You now have access to the defined / changed types in the client. Optional: To simplify their usage, add a re-export here if you like: `client/src/types/domain`
 
 
+# Additional Infos
+> **For additional infos, refer to the official [ExplAIner WIKI ](https://github.com/martin-stierlen/ExplAIner/wiki)!**
 
-## Workflow
-
-1. **Server developer changes DTO:**
-   ```typescript
-   // server/src/modules/sessions/dto/...
-   export class SessionDto {
-     @ApiProperty()
-     newField: string; // Added new field
-   }
-   ```
-
-2. **Client developer regenerates types:**
-   ```bash
-   cd client
-   npm run generate:api-types
-   ```
-
-3. **TypeScript shows errors where updates needed:**
-   ```typescript
-   // TypeScript error: Property 'newField' is missing
-   const session: Session = { ... };
-   ```
-
-4. **Fix errors and commit both changes:**
-   - Server DTO changes
-   - Generated types (if committed)
-   - Client code using new field
+Owlbert even created a sub-section in the **Contributor Guide**, which will guide you step by step through the workflow of how to add / change / ... schemas! 🦉 Simply **[click here](https://github.com/martin-stierlen/ExplAIner/wiki/4.2%20-%20How-To-Work-with-Types-and-Schemas)**! :)
