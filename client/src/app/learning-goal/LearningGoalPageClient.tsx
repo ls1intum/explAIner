@@ -72,7 +72,7 @@ export default function LearningGoalPageClient() {
     let selectedGoal: string;
     let selectedBloomsLevel: BloomsLevel;
     if (!showPredefined && customObjective.trim()) {
-      selectedGoal = `After this session, you will be able to ${customBloomsLevel} ${customObjective.trim()}.`;
+      selectedGoal = `After this session, I can ${customBloomsLevel} ${customObjective.trim()}.`;
       selectedBloomsLevel = customBloomsLevel;
     } else {
       const predefinedGoal = pageData.learningGoals.find((_goal: LearningGoal, index: number) => selectedGoalId === index.toString());
