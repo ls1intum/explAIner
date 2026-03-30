@@ -19,10 +19,10 @@ Topic: ${topic}${priorKnowledgeContext}
 Write all learning goals in English.
 
 CRITICAL REQUIREMENTS:
-1. Each goal MUST follow this EXACT format: "After this session, you will be able to <BloomsLevel> <objective>."
+1. Each goal MUST follow this EXACT format: "After this session, I can <BloomsLevel> <objective>."
    - BloomsLevel must be one of: Remember, Understand, Apply, Analyze, Evaluate, Create
-   - The BloomsLevel should appear as a single word directly after "you will be able to"
-   - Example: "After this session, you will be able to Remember the three main components of..."
+   - The BloomsLevel should appear as a single word directly after "I can"
+   - Example: "After this session, I can Remember the three main components of..."
 2. Each goal MUST be UNIQUE and cover a DIFFERENT aspect of the topic
 3. Goals MUST increase in cognitive complexity:
    - Goal 1: Remember level (basic recall, identification)
@@ -42,10 +42,10 @@ Your response should start with [ and end with ]
 
 Expected format - exactly 3 objects:
 [
-  { "learningGoal": "After this session, you will be able to Remember the three main components of...", "bloomsLevel": "Remember" },
-  { "learningGoal": "After this session, you will be able to Understand how these components work together...", "bloomsLevel": "Understand" },
-  { "learningGoal": "After this session, you will be able to Apply this knowledge to solve...", "bloomsLevel": "Apply" }
+  { "learningGoal": "After this session, I can Remember the three main components of...", "bloomsLevel": "Remember" },
+  { "learningGoal": "After this session, I can Understand how these components work together...", "bloomsLevel": "Understand" },
+  { "learningGoal": "After this session, I can Apply this knowledge to solve...", "bloomsLevel": "Apply" }
 ]
 
-IMPORTANT: The learningGoal text must include the BloomsLevel word (e.g., "Remember", "Understand") right after "you will be able to".`;
+IMPORTANT: The learningGoal text must include the BloomsLevel word (e.g., "Remember", "Understand") right after "I can".`;
 };
