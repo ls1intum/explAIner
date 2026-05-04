@@ -31,8 +31,9 @@ services:
       NODE_ENV: development
       PORT: ${SERVER_PORT}
       CLIENT_URL: ${CLIENT_URL}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL}
+      LLM_API_KEY: ${LLM_API_KEY}
+      LLM_BASE_URL: ${LLM_BASE_URL}
+      LLM_MODEL: ${LLM_MODEL}
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     volumes:

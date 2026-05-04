@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { z } from 'zod';
 import { Parser } from './llm.parser';
 
 @Injectable()
 export class LlmService {
-  private anthropic: Anthropic;
+  private client: OpenAI;
   private readonly model: string;
 
   /** Parser with retry wired to this service; pass only the schema. */
@@ -15,36 +15,29 @@ export class LlmService {
   }
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('anthropic.apiKey');
-    this.model = this.configService.get<string>('anthropic.model')!;
-    this.anthropic = new Anthropic({ apiKey });
+    const apiKey = this.configService.get<string>('llm.apiKey');
+    const baseURL = this.configService.get<string>('llm.baseUrl');
+    this.model = this.configService.get<string>('llm.model')!;
+    this.client = new OpenAI({ apiKey, baseURL });
   }
 
-  /** Call Claude with a prompt and return raw text response */
+  /** Call LLM with a prompt and return raw text response */
   async callClaude(prompt: string): Promise<string> {
     try {
-      const rawResponseMessage = await this.anthropic.messages.create({
+      const response = await this.client.chat.completions.create({
         model: this.model,
         max_tokens: 4096,
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
+        messages: [{ role: 'user', content: prompt }],
       });
 
-      // Extract text content from response
-      const content = rawResponseMessage.content.find(
-        (block) => block.type === 'text',
-      );
-      if (!content || content.type !== 'text') {
-        throw new Error('No text content in Claude response');
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No text content in LLM response');
       }
 
-      return content.text;
+      return content;
     } catch (error) {
-      throw new Error(`Failed to call Claude: ${error.message}`);
+      throw new Error(`Failed to call LLM: ${error.message}`);
     }
   }
 }

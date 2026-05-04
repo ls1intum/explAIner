@@ -7,8 +7,9 @@ export interface AppConfiguration {
   database: {
     url: string;
   };
-  anthropic: {
+  llm: {
     apiKey: string;
+    baseUrl: string;
     model: string;
   };
 }
@@ -20,8 +21,9 @@ export default (): AppConfiguration => ({
   database: {
     url: process.env.DATABASE_URL!,
   },
-  anthropic: {
-    apiKey: process.env.ANTHROPIC_API_KEY!,
-    model: process.env.ANTHROPIC_MODEL!,
+  llm: {
+    apiKey: process.env.LLM_API_KEY!,
+    baseUrl: process.env.LLM_BASE_URL!,
+    model: process.env.LLM_MODEL!,
   },
 });

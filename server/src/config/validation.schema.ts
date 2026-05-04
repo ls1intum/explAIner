@@ -12,6 +12,7 @@ export default Joi.object({
   PORT: Joi.number().default(3001),
   CLIENT_URL: Joi.string().default('http://localhost:3000'),
   DATABASE_URL: Joi.string().required(),
-  ANTHROPIC_API_KEY: Joi.string().required(),
-  ANTHROPIC_MODEL: Joi.string().default('claude-sonnet-4-5-20250929'),
+  LLM_API_KEY: Joi.string().required(),
+  LLM_BASE_URL: Joi.string().default('https://chat-ai.academiccloud.de/v1'),
+  LLM_MODEL: Joi.string().default('llama-3.3-70b-instruct'),
 });
