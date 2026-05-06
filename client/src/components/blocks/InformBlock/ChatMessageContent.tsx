@@ -1,17 +1,30 @@
 'use client';
 
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 interface ChatMessageContentProps {
   message: string;
 }
 
 /** ChatMessageContent component - formats and displays inform block messages
- * 
+ *
  * for first inform block message of initial block sequence:      formats and displays KEY FACTS section
  * for first inform block message of subsequent block sequence:   formats and displays KEY MISCONCEPTIONS section
  * for first inform block message of any block sequence:          formats and displays SUMMARY section
  * for all block messages:                                        adds bold (**text**) highlighting
+ * for sigil inform blocks (markdown with headers):               full markdown rendering
  */
 export default function ChatMessageContent({ message }: ChatMessageContentProps) {
+
+  // Sigil inform blocks contain full markdown with headers — render with react-markdown
+  if (/^#\s/m.test(message)) {
+    return (
+      <div className="sigil-markdown text-base leading-relaxed">
+        <Markdown remarkPlugins={[remarkGfm]}>{message}</Markdown>
+      </div>
+    );
+  }
 
   // Split message into sections based on KEY FACTS, KEY MISCONCEPTIONS, and SUMMARY
   const sections = message.split(/(?=KEY FACTS|KEY MISCONCEPTIONS|SUMMARY)/);

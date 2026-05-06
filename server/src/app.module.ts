@@ -6,6 +6,7 @@ import { LearningGoalsModule } from './modules/learning-goals/learning-goals.mod
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { BlocksModule } from './modules/blocks/blocks.module';
 import { LlmModule } from './modules/shared/llm/llm.module';
+import { SigilModule } from './modules/sigil/sigil.module';
 import { ZodSerializerInterceptor } from 'nestjs-zod';
 import { HealthController } from './common/health/health.controller';
 
@@ -18,6 +19,7 @@ import { HealthController } from './common/health/health.controller';
     SessionsModule,
     BlocksModule,
     LlmModule,
+    SigilModule,
   ],
   controllers: [HealthController],
   providers: [

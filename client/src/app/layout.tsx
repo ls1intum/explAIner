@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import { selectedFont } from "../styles/fonts";
-import Navbar from "@/components/shared/layout/Navbar";
 import ReduxProvider from "@/providers/ReduxProvider";
 import ToastProvider from "@/providers/ToastProvider";
 
@@ -20,7 +19,6 @@ export default function RootLayout({
       <body className={`${selectedFont} antialiased`}>
         <ReduxProvider>
           <ToastProvider>
-            <Navbar />
             {children}
           </ToastProvider>
         </ReduxProvider>

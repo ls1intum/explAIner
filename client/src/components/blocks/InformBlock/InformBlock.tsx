@@ -17,6 +17,7 @@ interface InformBlockProps {
   block: Block;
   sessionId: string;
   onContinue: () => void;
+  hideContinueButton?: boolean;
 }
 
 /** InformBlock component */
@@ -24,6 +25,7 @@ export default function InformBlock({
   block,
   sessionId,
   onContinue,
+  hideContinueButton = false,
 }: InformBlockProps) {
 
   // Refs used for auto-scroll behavior in chat window
@@ -143,17 +145,19 @@ export default function InformBlock({
         </div>
 
         {/* Continue button */}
-        <div className="flex justify-end">
-          <span className="inline-block rounded-xl shadow-lg overflow-hidden">
-            <button
-              onClick={onContinue}
-              className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
-            >
-              <span>Continue</span>
-              <ChevronRightIcon className="w-5 h-5" />
-            </button>
-          </span>
-        </div>
+        {!hideContinueButton && (
+          <div className="flex justify-end">
+            <span className="inline-block rounded-xl shadow-lg overflow-hidden">
+              <button
+                onClick={onContinue}
+                className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
+              >
+                <span>Continue</span>
+                <ChevronRightIcon className="w-5 h-5" />
+              </button>
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ export interface AppConfiguration {
   nodeEnv: string;
   port: number;
   clientUrl: string;
+  allowedOrigins?: string;
   database: {
     url: string;
   };
@@ -18,6 +19,7 @@ export default (): AppConfiguration => ({
   nodeEnv: process.env.NODE_ENV!,
   port: parseInt(process.env.PORT!, 10),
   clientUrl: process.env.CLIENT_URL!,
+  allowedOrigins: process.env.ALLOWED_ORIGINS,
   database: {
     url: process.env.DATABASE_URL!,
   },

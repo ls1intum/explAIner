@@ -15,4 +15,5 @@ export default Joi.object({
   LLM_API_KEY: Joi.string().required(),
   LLM_BASE_URL: Joi.string().default('https://chat-ai.academiccloud.de/v1'),
   LLM_MODEL: Joi.string().default('llama-3.3-70b-instruct'),
+  ALLOWED_ORIGINS: Joi.string().optional(),
 });

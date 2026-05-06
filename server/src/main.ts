@@ -30,9 +30,11 @@ async function bootstrap() {
   // Enable Zod validation pipe for DTOs
   app.useGlobalPipes(new ZodValidationPipe());
   
-  // Enable CORS for client
+  // Enable CORS for client and additional origins (e.g. iframe embedding)
+  const allowedOrigins = configService.get<string>('allowedOrigins');
+  const origins = [clientUrl, ...(allowedOrigins ? allowedOrigins.split(',').map(o => o.trim()) : [])];
   app.enableCors({
-    origin: clientUrl,
+    origin: origins,
     credentials: true,
   });
   
