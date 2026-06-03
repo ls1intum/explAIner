@@ -6,8 +6,9 @@ name: explainer-prd
 # workflow from the GitHub "Production" environment secrets/variables + IMAGE_TAG.
 #
 # The VM firewall only exposes ports 22/80/443, so the single public entrypoint
-# is the nginx proxy on port 80: it serves the client at / and proxies /api to
-# the server. client/server are only reachable on the internal docker network.
+# is the nginx proxy: it terminates TLS on 443 (RBG certificate), redirects 80,
+# serves the client at / and proxies /api to the server. client/server are only
+# reachable on the internal docker network.
 
 services:
 
@@ -65,6 +66,12 @@ services:
       - server
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      # RBG TLS certificates live on the VM. Mounted at the SAME path so the
+      # absolute symlinks in live/ (-> /var/lib/rbg-cert/<timestamp>/) resolve
+      # inside the container too.
+      - /var/lib/rbg-cert:/var/lib/rbg-cert:ro
     configs:
       - source: nginx_conf
         target: /etc/nginx/conf.d/default.conf
@@ -72,14 +79,26 @@ services:
       - explainer-network-prd
 
 # nginx config shipped inline so the deploy workflow (which only copies this
-# compose file + the .env) needs no extra files on the VM. Server ports match
-# SERVER_PORT/CLIENT_PORT (3001/3000).
+# compose file + the .env) needs no extra files on the VM. nginx variables are
+# escaped as $$ so docker compose does not interpolate them. Upstream ports
+# match SERVER_PORT/CLIENT_PORT (3001/3000).
 configs:
   nginx_conf:
     content: |
+      # Redirect all plain HTTP to HTTPS
       server {
         listen 80;
         server_name _;
+        return 301 https://$$host$$request_uri;
+      }
+
+      server {
+        listen 443 ssl;
+        server_name explainer.aet.cit.tum.de;
+
+        ssl_certificate     "/var/lib/rbg-cert/live/host:f:aetvm80.cit.tum.de.fullchain.pem";
+        ssl_certificate_key "/var/lib/rbg-cert/live/host:f:aetvm80.cit.tum.de.privkey.pem";
+
         client_max_body_size 25m;
 
         # API -> NestJS server (global prefix /api is preserved)
