@@ -1,7 +1,12 @@
 name: explainer-prd
 
+# Production deployment compose for the ls1intum CI/CD workflow.
+# Images are pulled from ghcr.io (built by .github/workflows/build-and-push.yml).
+# The .env file next to this compose file is generated on the VM by the deploy
+# workflow from the GitHub "Production" environment secrets/variables + IMAGE_TAG.
+
 services:
-  
+
   db:
     image: postgres:16-alpine
     container_name: explainer-db-prd
@@ -10,18 +15,13 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      # Different port to avoid conflicts with dev environment
-      - "5433:5432"
     volumes:
       - postgres_data_prd:/var/lib/postgresql/data
     networks:
       - explainer-network-prd
 
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile.prd
+    image: "ghcr.io/ls1intum/explainer/server:${IMAGE_TAG}"
     container_name: explainer-server-prd
     restart: unless-stopped
     depends_on:
@@ -37,17 +37,11 @@ services:
       LLM_MODEL: ${LLM_MODEL}
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    # No volumes - production build is self-contained
     networks:
       - explainer-network-prd
 
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile.prd
-      args:
-        # NEXT_PUBLIC_* vars are baked into the bundle at build time, so must be passed as build args
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    image: "ghcr.io/ls1intum/explainer/client:${IMAGE_TAG}"
     container_name: explainer-client-prd
     restart: unless-stopped
     depends_on:
@@ -57,7 +51,6 @@ services:
       PORT: ${CLIENT_PORT}
     ports:
       - "${CLIENT_PORT}:${CLIENT_PORT}"
-    # No volumes - production build is self-contained
     networks:
       - explainer-network-prd
 

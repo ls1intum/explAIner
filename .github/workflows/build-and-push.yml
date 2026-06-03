@@ -1,0 +1,27 @@
+name: Build and Push Docker Images
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build-server:
+    uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
+    with:
+      image-name: ls1intum/explainer/server
+      docker-file: server/Dockerfile.prd
+      docker-context: server
+    secrets: inherit
+
+  build-client:
+    uses: ls1intum/.github/.github/workflows/build-and-push-docker-image.yml@main
+    with:
+      image-name: ls1intum/explainer/client
+      docker-file: client/Dockerfile.prd
+      docker-context: client
+      # NEXT_PUBLIC_* is baked into the Next.js bundle at build time,
+      # so the production API URL must be passed here, not via the deploy .env.
+      build-args: |
+        NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+    secrets: inherit
