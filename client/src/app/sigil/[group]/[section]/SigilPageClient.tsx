@@ -42,7 +42,6 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
   const creatingRef = useRef(false);
 
   const hasPractice = group === 'explainer';
-  const hasChat = group !== 'text';
 
   const [createSigilSession] = useCreateSigilSessionMutation();
   const [continueSigilSession] = useContinueSigilSessionMutation();

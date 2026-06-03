@@ -1,6 +1,5 @@
 import { baseApi } from "./baseApi";
 import type {
-  GetSessionResponse,
   ContinueSessionResponse,
 } from "@/types/domain/session.types";
 import type {
