@@ -1,0 +1,21 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        type: string
+        description: "Image tag to deploy (e.g. latest, pr-42)"
+        default: latest
+
+jobs:
+  deploy:
+    uses: ls1intum/.github/.github/workflows/deploy-docker-compose.yml@main
+    with:
+      environment: Production
+      docker-compose-file: ./compose.prod.yaml
+      main-image-name: ls1intum/explainer/server
+      image-tag: ${{ inputs.image-tag }}
+      # Project directory created on the VM (chown github_deployment).
+      deployment-base-path: /opt/explainer
+    secrets: inherit
