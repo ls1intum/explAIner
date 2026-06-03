@@ -4,6 +4,10 @@ name: explainer-prd
 # Images are pulled from ghcr.io (built by .github/workflows/build-and-push.yml).
 # The .env file next to this compose file is generated on the VM by the deploy
 # workflow from the GitHub "Production" environment secrets/variables + IMAGE_TAG.
+#
+# The VM firewall only exposes ports 22/80/443, so the single public entrypoint
+# is the nginx proxy on port 80: it serves the client at / and proxies /api to
+# the server. client/server are only reachable on the internal docker network.
 
 services:
 
@@ -35,8 +39,7 @@ services:
       LLM_API_KEY: ${LLM_API_KEY}
       LLM_BASE_URL: ${LLM_BASE_URL}
       LLM_MODEL: ${LLM_MODEL}
-    ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+    # No published ports - reached via the proxy on the internal network.
     networks:
       - explainer-network-prd
 
@@ -49,10 +52,59 @@ services:
     environment:
       NODE_ENV: production
       PORT: ${CLIENT_PORT}
-    ports:
-      - "${CLIENT_PORT}:${CLIENT_PORT}"
+    # No published ports - reached via the proxy on the internal network.
     networks:
       - explainer-network-prd
+
+  proxy:
+    image: nginx:alpine
+    container_name: explainer-proxy-prd
+    restart: unless-stopped
+    depends_on:
+      - client
+      - server
+    ports:
+      - "80:80"
+    configs:
+      - source: nginx_conf
+        target: /etc/nginx/conf.d/default.conf
+    networks:
+      - explainer-network-prd
+
+# nginx config shipped inline so the deploy workflow (which only copies this
+# compose file + the .env) needs no extra files on the VM. Server ports match
+# SERVER_PORT/CLIENT_PORT (3001/3000).
+configs:
+  nginx_conf:
+    content: |
+      server {
+        listen 80;
+        server_name _;
+        client_max_body_size 25m;
+
+        # API -> NestJS server (global prefix /api is preserved)
+        location /api/ {
+          proxy_pass http://server:3001;
+          proxy_http_version 1.1;
+          proxy_set_header Host $$host;
+          proxy_set_header X-Real-IP $$remote_addr;
+          proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $$scheme;
+          proxy_read_timeout 300s;
+        }
+
+        # Everything else -> Next.js client
+        location / {
+          proxy_pass http://client:3000;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $$http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header Host $$host;
+          proxy_set_header X-Real-IP $$remote_addr;
+          proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $$scheme;
+        }
+      }
 
 volumes:
   postgres_data_prd:
