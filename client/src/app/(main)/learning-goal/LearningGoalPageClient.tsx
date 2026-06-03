@@ -12,11 +12,15 @@ import { useCreateSessionMutation } from '@/store/api/sessionsApi';
 import { clearSessionCreationData } from '@/store/slices/sessionSlice';
 import type { LearningGoal } from '@/types/domain/learning-goals.types';
 import { BLOOMS_LEVELS, type BloomsLevel } from '@/types/domain/enums';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function LearningGoalPageClient() {
 
   // Navigation
   const router = useRouter();
+
+  // i18n
+  const { t } = useTranslation();
 
   // Redux store hooks
   const dispatch = useAppDispatch();
@@ -114,12 +118,12 @@ export default function LearningGoalPageClient() {
 
         {/* Title */}
         <h1 className="text-4xl font-bold text-brand-gradient mb-3">
-          Learning Goal
+          {t('learningGoal.title') as string}
         </h1>
 
         {/* Subtitle */}
         <p className="text-muted-foreground text-center mb-8 max-w-xl">
-          Specify the learning goal for your ExplAIner session
+          {t('learningGoal.subtitle') as string}
         </p>
 
         {/* Learning goal selection (predefined or custom) */}
@@ -129,7 +133,7 @@ export default function LearningGoalPageClient() {
           {showPredefined ? (
             <div className="w-full bg-muted rounded-3xl p-6 space-y-4">
               <div className="w-full text-center text-muted-foreground font-semibold text-base">
-                Choose a learning goal...
+                {t('learningGoal.choosePredefined') as string}
               </div>
               <div className="space-y-3">
                 {pageData.learningGoals.map((goal: LearningGoal, index: number) => (
@@ -148,7 +152,7 @@ export default function LearningGoalPageClient() {
               onClick={handleShowPredefined}
               className="w-full bg-muted text-muted-foreground font-semibold text-base py-3 px-5 rounded-3xl hover:bg-muted/80 transition-all text-center"
             >
-              Choose a learning goal...
+              {t('learningGoal.choosePredefined') as string}
             </button>
           )}
 
@@ -165,7 +169,7 @@ export default function LearningGoalPageClient() {
               onClick={handleShowCustom}
               className="w-full bg-muted text-muted-foreground font-semibold text-base py-3 px-5 rounded-3xl hover:bg-muted/80 transition-all text-center"
             >
-              ... or enter your own learning goal
+              {t('learningGoal.enterOwn') as string}
             </button>
           )}
         </div>
@@ -177,7 +181,7 @@ export default function LearningGoalPageClient() {
           className="w-full max-w-2xl bg-success-gradient text-white font-semibold text-base py-3 px-5 rounded-3xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
         >
           <RocketIcon className="w-5 h-5" />
-          <span>{isCreatingSession ? 'Creating session...' : "Let's Start!"}</span>
+          <span>{isCreatingSession ? t('learningGoal.creatingSession') as string : t('learningGoal.startButton') as string}</span>
         </button>
       </main>
     </div>

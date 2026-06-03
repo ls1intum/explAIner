@@ -8,15 +8,18 @@ import type {
 } from "@/types/domain/block.types";
 
 interface CreateSigilSessionRequest {
-  mode: "elements" | "details" | "analysis" | "chat";
+  group: "explainer" | "chat" | "text";
+  section: "elements" | "details" | "all";
   lang?: "de" | "en";
 }
 
 interface CreateSigilSessionResponse {
   sessionId: string;
-  mode: string;
+  group: string;
+  section: string;
   lang: string;
   hasPractice: boolean;
+  hasChat: boolean;
   informBlock: {
     id: string;
     orderIndex: number;

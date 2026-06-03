@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "../styles/globals.css";
 import { selectedFont } from "../styles/fonts";
 import ReduxProvider from "@/providers/ReduxProvider";
 import ToastProvider from "@/providers/ToastProvider";
+import LanguageProvider from "@/providers/LanguageProvider";
 
 export const metadata: Metadata = {
   title: "ExplAIner - Learn at Your Own Pace",
@@ -15,12 +17,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="de">
       <body className={`${selectedFont} antialiased`}>
         <ReduxProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
+          <Suspense>
+            <LanguageProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </LanguageProvider>
+          </Suspense>
         </ReduxProvider>
       </body>
     </html>

@@ -9,12 +9,16 @@ import { useDeleteSessionMutation } from '@/store/api/sessionsApi';
 import { resetSession } from '@/store/slices/sessionSlice';
 import EndSessionDialog from '@/components/session/dialogs/EndSessionDialog';
 import BlockNavigation from '@/components/session/BlockNavigation';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 /** Navbar component */
 export default function Navbar() {
 
   // Navigation
   const router = useRouter();
+
+  // i18n
+  const { t, locale, setLocale } = useTranslation();
 
   // Extract pathname and determine current page
   const pathname = usePathname();
@@ -58,7 +62,7 @@ export default function Navbar() {
             className="text-white hover:text-gray-200 transition-colors flex items-center gap-2 text-sm font-medium"
           >
             <ChevronLeftIcon className="w-5 h-5" />
-            <span>Back</span>
+            <span>{t('navbar.back') as string}</span>
           </button>
         )}
 
@@ -67,7 +71,7 @@ export default function Navbar() {
           <>
             <div className="text-white flex items-center gap-2 text-sm font-medium flex-shrink-0">
               <RocketIcon className="w-5 h-5" />
-              <span>Session Start</span>
+              <span>{t('navbar.sessionStart') as string}</span>
             </div>
             <ChevronRightIcon className="w-5 h-5 text-white/60 flex-shrink-0" />
             {/* Block Navigation (min-w-0 so flex child can shrink and scroll horizontally when many blocks) */}
@@ -86,7 +90,7 @@ export default function Navbar() {
             href="/impressum"
             className="text-gray-300 hover:text-white transition-colors text-sm pr-0"
           >
-            Impressum
+            {t('navbar.impressum') as string}
           </Link>
         )}
 
@@ -105,11 +109,19 @@ export default function Navbar() {
               className="text-white hover:text-gray-200 transition-colors flex items-center gap-2 text-sm font-medium flex-shrink-0"
             >
               <ExitIcon className="w-5 h-5" />
-              <span>End Session</span>
+              <span>{t('navbar.endSession') as string}</span>
             </button>
           </>
         )}
 
+        {/* Language toggle */}
+        <button
+          onClick={() => setLocale(locale === 'de' ? 'en' : 'de')}
+          className="ml-auto flex-shrink-0 px-3 py-1 rounded-full border border-white/40 text-white text-xs font-bold hover:bg-white/20 transition-colors uppercase"
+          aria-label="Toggle language"
+        >
+          {locale === 'de' ? 'EN' : 'DE'}
+        </button>
       </div>
       
       {/* "End Session" dialog */}

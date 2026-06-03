@@ -18,24 +18,31 @@ import PracticeBlock from '@/components/blocks/PracticeBlock/PracticeBlock';
 import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
-type SigilMode = 'elements' | 'details' | 'analysis' | 'chat';
+type SigilGroup = 'explainer' | 'chat' | 'text';
+type SigilSection = 'elements' | 'details' | 'all';
 
 interface SigilPageClientProps {
-  mode: SigilMode;
+  group: SigilGroup;
+  section: SigilSection;
   lang: 'de' | 'en';
   existingSessionId: string | null;
 }
 
-export default function SigilPageClient({ mode, lang, existingSessionId }: SigilPageClientProps) {
+export default function SigilPageClient({ group, section, lang, existingSessionId }: SigilPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const { sessionId: sessionIdFromState, currentBlockIndex } = useAppSelector((state) => state.session);
 
   const [activeSessionId, setActiveSessionId] = useState<string | null>(existingSessionId);
   const [practiceReady, setPracticeReady] = useState(false);
   const creatingRef = useRef(false);
+
+  const hasPractice = group === 'explainer';
+  const hasChat = group !== 'text';
 
   const [createSigilSession] = useCreateSigilSessionMutation();
   const [continueSigilSession] = useContinueSigilSessionMutation();
@@ -45,7 +52,7 @@ export default function SigilPageClient({ mode, lang, existingSessionId }: Sigil
 
   const { data: sessionData, isLoading: isLoadingSession } = useGetSessionQuery(
     { sessionId: activeSessionId! },
-    { skip: !activeSessionId, pollingInterval: !practiceReady && mode !== 'chat' ? 3000 : 0 }
+    { skip: !activeSessionId, pollingInterval: !practiceReady && hasPractice ? 3000 : 0 }
   );
 
   const { data: blockResponse, isLoading: isBlockLoading } = useGetBlockQuery(
@@ -55,10 +62,10 @@ export default function SigilPageClient({ mode, lang, existingSessionId }: Sigil
 
   // Detect when practice blocks are ready (totalBlocks > 1 means async generation completed)
   useEffect(() => {
-    if (sessionData && (sessionData.totalBlocks > 1 || mode === 'chat')) {
+    if (sessionData && (sessionData.totalBlocks > 1 || !hasPractice)) {
       setPracticeReady(true);
     }
-  }, [sessionData, mode]);
+  }, [sessionData, hasPractice]);
 
   // Create session on mount if no existing session
   useEffect(() => {
@@ -67,7 +74,7 @@ export default function SigilPageClient({ mode, lang, existingSessionId }: Sigil
 
     const create = async () => {
       try {
-        const result = await createSigilSession({ mode, lang }).unwrap();
+        const result = await createSigilSession({ group, section, lang }).unwrap();
         const newSessionId = result.sessionId;
         setActiveSessionId(newSessionId);
         dispatch(setSessionId(newSessionId));
@@ -76,16 +83,16 @@ export default function SigilPageClient({ mode, lang, existingSessionId }: Sigil
 
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.set('session', newSessionId);
-        router.replace(`/sigil/${mode}?${newParams.toString()}`);
+        router.replace(`/sigil/${group}/${section}?${newParams.toString()}`);
       } catch (error) {
         console.error('Failed to create sigil session:', error);
-        dispatch(addToast({ message: 'Failed to create session. Please reload.', type: 'error' }));
+        dispatch(addToast({ message: t('session.error.createSession') as string, type: 'error' }));
         creatingRef.current = false;
       }
     };
 
     create();
-  }, [activeSessionId, mode, lang, createSigilSession, dispatch, router, searchParams]);
+  }, [activeSessionId, group, section, lang, createSigilSession, dispatch, router, searchParams]);
 
   // Hydrate Redux from session data
   useEffect(() => {
@@ -134,7 +141,7 @@ export default function SigilPageClient({ mode, lang, existingSessionId }: Sigil
       await updateCurrentBlockIndex({ sessionId: activeSessionId, currentBlockIndex: newIndex }).unwrap();
     } catch (error) {
       console.error('Failed to generate next sequence:', error);
-      dispatch(addToast({ message: 'Failed to generate next sequence. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('session.error.generateSequence') as string, type: 'error' }));
     }
   }, [activeSessionId, lang, generateSigilBlockSequence, dispatch, updateCurrentBlockIndex]);
 
@@ -157,7 +164,7 @@ export default function SigilPageClient({ mode, lang, existingSessionId }: Sigil
       await updateCurrentBlockIndex({ sessionId: activeSessionId, currentBlockIndex: newIndex }).unwrap();
     } catch (error) {
       console.error('Failed to generate summary:', error);
-      dispatch(addToast({ message: 'Failed to generate summary. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('session.error.generateSummary') as string, type: 'error' }));
     }
   }, [activeSessionId, generateSummaryBlock, sessionData, dispatch, updateCurrentBlockIndex]);
 
@@ -188,12 +195,11 @@ export default function SigilPageClient({ mode, lang, existingSessionId }: Sigil
       }
     } catch (error) {
       console.error('Failed to continue session:', error);
-      dispatch(addToast({ message: 'Failed to continue. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('session.error.continue') as string, type: 'error' }));
     }
   }, [activeSessionId, continueSigilSession, dispatch, updateCurrentBlockIndex, handleGenerateNextSequence, handleGenerateSummary]);
 
-  const isChatMode = mode === 'chat';
-  const showContinueButton = !isChatMode && practiceReady;
+  const showContinueButton = hasPractice && practiceReady;
 
   const isLoading =
     !activeSessionId ||

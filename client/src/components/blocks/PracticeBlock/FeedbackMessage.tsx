@@ -1,16 +1,19 @@
 'use client';
 
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
 interface FeedbackMessageProps {
   isCorrect: boolean;
 }
 
 /** FeedbackMessage component - shows feedback after user checks their answer */
 export default function FeedbackMessage({ isCorrect }: FeedbackMessageProps) {
+  const { t } = useTranslation();
 
   // Feedback message text & color (based on correctness of answer)
   const message = isCorrect
-    ? 'Correct! Well done.'
-    : 'Not quite right. Check the correct answer above.';
+    ? t('practiceBlock.feedback.correct') as string
+    : t('practiceBlock.feedback.incorrect') as string;
   const bgClass = isCorrect ? 'bg-success/10' : 'bg-destructive/10';
   const borderClass = isCorrect ? 'border-success' : 'border-destructive';
   const textClass = isCorrect ? 'text-success' : 'text-destructive';

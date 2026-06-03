@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import LearningGoalAchievement from './LearningGoalAchievement';
 import SessionStats from './SessionStats';
 import FeedbackRating from './FeedbackRating';
@@ -22,6 +23,9 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
 
   // Navigation
   const router = useRouter();
+
+  // i18n
+  const { t } = useTranslation();
 
   // Extract block data
   const summaryBlock = block.type === BLOCK_TYPE.SUMMARY ? block.summaryBlock : undefined;
@@ -48,7 +52,7 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
           {/* Session summary text */}
           <div className="space-y-3">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              SUMMARY
+              {t('summaryBlock.heading') as string}
             </h3>
             <div className="text-base text-foreground leading-relaxed">
               {renderSummary(sessionSummary)}
@@ -64,7 +68,7 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
           onClick={handleStartNewSession}
           className="w-full bg-brand-gradient text-white font-semibold text-lg py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg"
         >
-          Start New Session
+          {t('summaryBlock.startNewSession') as string}
         </button>
       </div>
     </div>

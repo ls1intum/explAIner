@@ -7,6 +7,7 @@ import { useAppDispatch } from '@/store/hooks';
 import { addToast } from '@/store/slices/uiSlice';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import AnswerOption from './AnswerOption';
 import FeedbackMessage from './FeedbackMessage';
 
@@ -22,6 +23,9 @@ export default function PracticeBlock({
   sessionId,
   onContinue,
 }: PracticeBlockProps) {
+
+  // i18n
+  const { t } = useTranslation();
 
   // Redux store hook
   const dispatch = useAppDispatch();
@@ -67,7 +71,7 @@ export default function PracticeBlock({
       setIsChecked(true);
     } catch (error) {
       console.error(error);
-      dispatch(addToast({ message: 'Could not submit answer. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('practiceBlock.error.submitAnswer') as string, type: 'error' }));
     }
   };
 
@@ -88,7 +92,7 @@ export default function PracticeBlock({
               {question}
             </h3>
             <p className="text-sm text-muted-foreground italic">
-              Select all that apply
+              {t('practiceBlock.selectAll') as string}
             </p>
           </div>
 
@@ -133,7 +137,7 @@ export default function PracticeBlock({
                 disabled={selectedOptions.length === 0 || isSubmittingAnswer}
                 className="bg-brand-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed border-0 appearance-none"
               >
-                {isSubmittingAnswer ? 'Checking...' : 'Check Answer'}
+                {isSubmittingAnswer ? t('practiceBlock.checking') as string : t('practiceBlock.checkAnswer') as string}
               </button>
             </span>
           </div>
@@ -147,7 +151,7 @@ export default function PracticeBlock({
                 onClick={onContinue}
                 className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
               >
-                <span>Continue</span>
+                <span>{t('practiceBlock.continue') as string}</span>
                 <ChevronRightIcon className="w-5 h-5" />
               </button>
             </span>

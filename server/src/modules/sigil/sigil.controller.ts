@@ -16,9 +16,9 @@ export class SigilController {
   ) {}
 
   @Post('sessions')
-  @ApiOperation({ summary: 'Create a sigil session', description: 'Creates a hardcoded sigil learning session with verbatim markdown content' })
+  @ApiOperation({ summary: 'Create a sigil session', description: 'Creates a sigil learning session with group (explainer/chat/text) and section (elements/details/all)' })
   create(@Body() dto: CreateSigilSessionRequestDto) {
-    return this.createSigilSessionService.create(dto.mode, dto.lang);
+    return this.createSigilSessionService.create(dto.group, dto.section, dto.lang);
   }
 
   @Post('sessions/:sessionId/continue')

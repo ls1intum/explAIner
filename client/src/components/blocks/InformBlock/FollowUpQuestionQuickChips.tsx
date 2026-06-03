@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
 interface FollowUpQuestionQuickChipsProps {
   onQuestionClick: (label: string) => void;
   disabled?: boolean;
@@ -11,10 +13,12 @@ export default function FollowUpQuestionQuickChips({
   disabled = false,
 }: FollowUpQuestionQuickChipsProps) {
 
+  const { t } = useTranslation();
+
   const quickQuestionChips = [
-    { id: 1, label: 'Try a simpler explanation' },
-    { id: 2, label: 'Give more details' },
-    { id: 3, label: 'Use (different) examples' },
+    { id: 1, label: t('quickChip.simplerExplanation') as string },
+    { id: 2, label: t('quickChip.moreDetails') as string },
+    { id: 3, label: t('quickChip.examples') as string },
   ];
 
   // Quick question chip is clicked (sends label as new message in chat input field)

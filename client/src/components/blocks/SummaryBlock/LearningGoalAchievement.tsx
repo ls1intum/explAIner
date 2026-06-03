@@ -1,3 +1,7 @@
+'use client';
+
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
 interface LearningGoalAchievementProps {
   learningGoal: string;
   bloomsLevel: string;
@@ -5,6 +9,7 @@ interface LearningGoalAchievementProps {
 
 /** LearningGoalAchievement component - displays the learning goal that was successfully achieved by completing the session */
 export default function LearningGoalAchievement({ learningGoal, bloomsLevel }: LearningGoalAchievementProps) {
+  const { t } = useTranslation();
 
   return (
     <div className="bg-[#10b981]/10 rounded-xl p-6 space-y-3">
@@ -27,7 +32,7 @@ export default function LearningGoalAchievement({ learningGoal, bloomsLevel }: L
         </div>
         {/* Title */}
         <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          LEARNING GOAL ACHIEVED
+          {t('summaryBlock.learningGoalAchieved') as string}
         </span>
       </div>
       {/* Learning goal */}

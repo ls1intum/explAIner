@@ -15,6 +15,7 @@ import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import EasierLearningGoalDialog from '@/components/session/dialogs/EasierLearningGoalDialog';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface SessionPageClientProps {
   sessionId: string;
@@ -24,6 +25,9 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
 
   // Navigation
   const router = useRouter();
+
+  // i18n
+  const { t } = useTranslation();
 
   // Redux store hooks
   const dispatch = useAppDispatch();
@@ -115,7 +119,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       }
     } catch (error) {
       console.error('Failed to continue session:', error);
-      dispatch(addToast({ message: 'Failed to continue. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('session.error.continue') as string, type: 'error' }));
     }
   };
 
@@ -128,7 +132,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
     } catch (error) {
       console.error('Failed to generate next sequence:', error);
-      dispatch(addToast({ message: 'Failed to generate next sequence. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('session.error.generateSequence') as string, type: 'error' }));
     }
   };
 
@@ -151,7 +155,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       await updateCurrentBlockIndex({ sessionId, currentBlockIndex: newIndex }).unwrap();
     } catch (error) {
       console.error('Failed to generate summary:', error);
-      dispatch(addToast({ message: 'Failed to generate summary. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('session.error.generateSummary') as string, type: 'error' }));
     }
   };
 
@@ -171,7 +175,7 @@ export default function SessionPageClient({ sessionId }: SessionPageClientProps)
       router.push('/learning-goal');
     } catch (error) {
       console.error('Failed to generate easier learning goals:', error);
-      dispatch(addToast({ message: 'Failed to generate easier learning goals. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('session.error.generateEasierGoals') as string, type: 'error' }));
     }
   };
   // (B) "Continue with Current Goal" button is clicked (generates next sequence and navigates to next block)

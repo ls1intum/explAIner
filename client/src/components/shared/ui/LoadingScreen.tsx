@@ -2,16 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { LOADING_SCREEN_MESSAGES, getRandomMessage } from '@/lib/loadingMessages';
+import { getRandomMessage } from '@/lib/i18n';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 /** LoadingScreen component - displays funny & cute Owlbert messages that are selected randomly each time :) */
 export default function LoadingScreen() {
 
+  const { t } = useTranslation();
+
   // Selects the message after mount to avoid server-client hydration mismatch
   const [message, setMessage] = useState('...');
   useEffect(() => {
-    setMessage(getRandomMessage(LOADING_SCREEN_MESSAGES));
-  }, []);
+    setMessage(getRandomMessage(t('loading.messages') as string[]));
+  }, [t]);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-6 bg-background">

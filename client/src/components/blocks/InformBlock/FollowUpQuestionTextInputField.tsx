@@ -1,6 +1,7 @@
 'use client';
 
 import FollowUpQuestionQuickChips from './FollowUpQuestionQuickChips';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface FollowUpQuestionTextInputFieldProps {
   value: string;
@@ -19,6 +20,8 @@ export default function FollowUpQuestionTextInputField({
   disabled,
 }: FollowUpQuestionTextInputFieldProps) {
 
+  const { t } = useTranslation();
+
   // "Enter" key is pressed (sends follow-up question)
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -36,7 +39,7 @@ export default function FollowUpQuestionTextInputField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Ask a follow-up question..."
+          placeholder={t('informBlock.inputPlaceholder') as string}
           disabled={disabled}
           className="flex-1 px-4 py-3 rounded-full border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
         />

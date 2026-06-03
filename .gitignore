@@ -39,3 +39,6 @@ postgres_data/
 # IDE / Editor directories
 # VS Code settings
 .vscode/
+
+# Claude Code (local agent working directory, worktrees, session data)
+.claude/

@@ -21,8 +21,8 @@ export class ContinueSigilSessionService {
     await this.sessionsRepository.requireSessionExists(sessionId);
     const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId);
 
-    // Chat-only mode: no practice blocks, nothing to continue to
-    if (session.sigilMode === 'Chat') {
+    // Chat or Text mode: no practice blocks, nothing to continue to
+    if (session.sigilMode === 'Chat' || session.sigilMode === 'Text') {
       return mapToContinueSessionResponseDto('navigate', 0);
     }
 

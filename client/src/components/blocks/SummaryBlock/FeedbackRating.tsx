@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { useSubmitFeedbackMutation } from '@/store/api/sessionsApi';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface FeedbackRatingProps {
   sessionId: string;
@@ -8,12 +11,14 @@ interface FeedbackRatingProps {
 /** FeedbackRating component - allows the user to rate the session as helpful or unhelpful */
 export default function FeedbackRating({ sessionId }: FeedbackRatingProps) {
 
+  const { t } = useTranslation();
+
   const feedbackOptions = [
-    { emoji: '😞', label: 'Very unhelpful', value: 1 },
-    { emoji: '😕', label: 'Somewhat unhelpful', value: 2 },
-    { emoji: '😐', label: 'Neutral', value: 3 },
-    { emoji: '🙂', label: 'Helpful', value: 4 },
-    { emoji: '😊', label: 'Very helpful', value: 5 },
+    { emoji: '😞', label: t('feedbackRating.veryUnhelpful') as string, value: 1 },
+    { emoji: '😕', label: t('feedbackRating.somewhatUnhelpful') as string, value: 2 },
+    { emoji: '😐', label: t('feedbackRating.neutral') as string, value: 3 },
+    { emoji: '🙂', label: t('feedbackRating.helpful') as string, value: 4 },
+    { emoji: '😊', label: t('feedbackRating.veryHelpful') as string, value: 5 },
   ];
 
   // API call hook
@@ -39,7 +44,7 @@ export default function FeedbackRating({ sessionId }: FeedbackRatingProps) {
     <div className="border-t border-border pt-6 space-y-3">
       {/* Question */}
       <p className="text-center text-sm text-muted-foreground italic">
-        Was this explanation session helpful?
+        {t('feedbackRating.question') as string}
       </p>
       {/* All feedback options */}
       <div className="flex justify-center gap-4">

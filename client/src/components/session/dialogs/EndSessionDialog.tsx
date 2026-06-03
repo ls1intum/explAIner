@@ -2,6 +2,7 @@
 
 import { createPortal } from 'react-dom';
 import { ExitIcon } from '@radix-ui/react-icons';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface EndSessionDialogProps {
   isOpen: boolean;
@@ -15,6 +16,8 @@ export default function EndSessionDialog({
   onClose,
   onConfirm,
 }: EndSessionDialogProps) {
+  const { t } = useTranslation();
+
   if (!isOpen || typeof document === 'undefined') return null;
 
   // Rendered via portal to fix bug where it would not appear above page content on practice blocks
@@ -41,12 +44,12 @@ export default function EndSessionDialog({
 
           {/* Title */}
           <h2 id="end-session-title" className="text-3xl font-bold text-center mb-3 text-foreground">
-            End session?
+            {t('endSessionDialog.title') as string}
           </h2>
 
           {/* Subtitle */}
           <p className="text-center text-muted-foreground mb-8">
-            Your progress won&apos;t be saved.
+            {t('endSessionDialog.subtitle') as string}
           </p>
 
           {/* Buttons */}
@@ -55,13 +58,13 @@ export default function EndSessionDialog({
               onClick={onClose}
               className="flex-1 py-3 px-6 rounded-xl border border-border bg-transparent text-foreground font-semibold hover:bg-muted transition-colors"
             >
-              Cancel
+              {t('endSessionDialog.cancel') as string}
             </button>
             <button
               onClick={onConfirm}
               className="flex-1 py-3 px-6 rounded-xl bg-brand-gradient text-white font-semibold hover:opacity-90 transition-opacity"
             >
-              End Session
+              {t('endSessionDialog.confirm') as string}
             </button>
           </div>
         </div>

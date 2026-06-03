@@ -1,3 +1,7 @@
+'use client';
+
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
 interface SessionStatsProps {
   totalBlocks: number;
   sessionDuration: number;
@@ -5,6 +9,7 @@ interface SessionStatsProps {
 
 /** SessionStats component - displays the total number of session blocks and the session duration */
 export default function SessionStats({ totalBlocks, sessionDuration }: SessionStatsProps) {
+  const { t } = useTranslation();
   return (
     <div className={`grid gap-6 ${sessionDuration > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
 
@@ -27,7 +32,7 @@ export default function SessionStats({ totalBlocks, sessionDuration }: SessionSt
         </div>
         <div>
           <div className="text-3xl font-bold text-foreground">{totalBlocks}</div>
-          <div className="text-sm text-muted-foreground">Blocks Completed</div>
+          <div className="text-sm text-muted-foreground">{t('summaryBlock.blocksCompleted') as string}</div>
         </div>
       </div>
 
@@ -51,9 +56,9 @@ export default function SessionStats({ totalBlocks, sessionDuration }: SessionSt
           </div>
           <div>
             <div className="text-3xl font-bold text-foreground">
-              {sessionDuration} {sessionDuration === 1 ? 'minute' : 'minutes'}
+              {sessionDuration} {sessionDuration === 1 ? t('summaryBlock.minute') as string : t('summaryBlock.minutes') as string}
             </div>
-            <div className="text-sm text-muted-foreground">Session Duration</div>
+            <div className="text-sm text-muted-foreground">{t('summaryBlock.sessionDuration') as string}</div>
           </div>
         </div>
       )}

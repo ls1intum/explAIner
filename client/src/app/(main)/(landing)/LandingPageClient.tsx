@@ -10,11 +10,15 @@ import { useGenerateLearningGoalsMutation } from '@/store/api/learningGoalsApi';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addToast } from '@/store/slices/uiSlice';
 import { setTopic, setPriorKnowledge, setLearningGoals } from '@/store/slices/sessionSlice';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function HomePageClient() {
 
   // Navigation
   const router = useRouter();
+
+  // i18n
+  const { t } = useTranslation();
 
   // Redux store hooks
   const dispatch = useAppDispatch();
@@ -40,7 +44,7 @@ export default function HomePageClient() {
       console.error('Failed to generate learning goals:', err);
       dispatch(
         addToast({
-          message: 'Failed to generate learning goals. Please try again.',
+          message: t('landing.error.generateGoals') as string,
           type: 'error',
         })
       );
@@ -60,7 +64,7 @@ export default function HomePageClient() {
         <div className="relative mb-6 flex flex-col items-center mb-10">
           <div className="relative bg-card border-2 border-secondary rounded-2xl px-4 py-2 shadow-sm whitespace-nowrap mb-4">
             <div className="text-xs text-foreground">
-              {hasStartedTyping ? 'I can teach you anything!' : 'Hi, I\'m Owlbert ... Owlbert Einstein'}
+              {hasStartedTyping ? t('landing.speechBubble.typing') as string : t('landing.speechBubble.idle') as string}
             </div>
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-secondary"></div>
           </div>
@@ -84,7 +88,7 @@ export default function HomePageClient() {
               <span className="text-foreground">ner</span>
             </h1>
             <p className="text-2xl font-semibold text-brand-gradient">
-              Learn at Your Own Pace
+              {t('landing.subtitle') as string}
             </p>
           </div>
         )}
@@ -106,7 +110,7 @@ export default function HomePageClient() {
                 className="w-full bg-success-gradient text-white font-semibold text-base py-3 px-5 rounded-3xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
               >
                 <RocketIcon className="w-5 h-5" />
-                <span>Start ExplAIner Session</span>
+                <span>{t('landing.startButton') as string}</span>
               </button>
             </>
           )}

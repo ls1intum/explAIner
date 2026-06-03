@@ -6,11 +6,14 @@ import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.
 import { SigilContentLoader } from '../content/sigil-content.loader';
 import { GenerateSigilInitialPracticeService } from './generate-sigil-initial-practice.service';
 import {
-  SIGIL_MODE_CONFIG,
+  SIGIL_GROUP_CONFIG,
+  SIGIL_SECTION_CONFIG,
   SIGIL_TOPICS,
   SIGIL_LEARNING_GOALS,
   SIGIL_OWLBERT_GREETING,
-  type SigilModeKey,
+  toSigilModeEnum,
+  type SigilGroupKey,
+  type SigilSectionKey,
   type SigilLang,
 } from '../sigil.config';
 import { mapToBlockResponseDto } from '../../shared/shared.utils';
@@ -28,27 +31,30 @@ export class CreateSigilSessionService {
   ) {}
 
   @LogService()
-  async create(mode: SigilModeKey, lang: SigilLang) {
-    const config = SIGIL_MODE_CONFIG[mode];
+  async create(group: SigilGroupKey, section: SigilSectionKey, lang: SigilLang) {
+    const groupConfig = SIGIL_GROUP_CONFIG[group];
+    const sectionConfig = SIGIL_SECTION_CONFIG[section];
     const topic = SIGIL_TOPICS[lang];
-    const learningGoal = SIGIL_LEARNING_GOALS[mode][lang];
-    const [from, to] = config.sections;
+    const learningGoal = SIGIL_LEARNING_GOALS[section][lang];
+    const [from, to] = sectionConfig.sections;
     const markdownContent = this.contentLoader.getSections(lang, from, to);
 
-    const sigilModeEnum = mode.charAt(0).toUpperCase() + mode.slice(1);
+    const sigilModeEnum = toSigilModeEnum(group, section);
 
     // Phase A: Create session + verbatim inform block (no LLM, instant)
     const result = await this.atomicDbTx.run(async (tx) => {
       const session = await this.sessionsRepository.create({
         topic,
         learningGoal,
-        learningGoalBloomsLevel: config.bloomsLevel ?? 'Understand',
+        learningGoalBloomsLevel: sectionConfig.bloomsLevel,
         sigilMode: sigilModeEnum as any,
       }, tx);
 
       // Build inform block message: greeting + markdown content
       const greeting = SIGIL_OWLBERT_GREETING[lang];
-      const informMessage = `${greeting}\n\n---\n\n${markdownContent}`;
+      const informMessage = groupConfig.hasChat
+        ? `${greeting}\n\n---\n\n${markdownContent}`
+        : markdownContent;
 
       const informBlock = await this.blocksRepository.createInformBlock(
         session.id,
@@ -61,13 +67,13 @@ export class CreateSigilSessionService {
       return { session, informBlock };
     }, { timeout: 10_000 });
 
-    // Phase B: Async practice generation (modes a/b/c only, fire-and-forget)
-    if (config.hasPractice && config.bloomsLevel) {
+    // Phase B: Async practice generation (explainer group only, fire-and-forget)
+    if (groupConfig.hasPractice) {
       this.generatePractice.generateAsync(
         result.session.id,
         markdownContent,
         learningGoal,
-        config.bloomsLevel,
+        sectionConfig.bloomsLevel,
         lang,
       ).catch((err) => {
         this.logger.error(`Async practice generation failed for session ${result.session.id}: ${err.message}`);
@@ -76,9 +82,11 @@ export class CreateSigilSessionService {
 
     return {
       sessionId: result.session.id,
-      mode,
+      group,
+      section,
       lang,
-      hasPractice: config.hasPractice,
+      hasPractice: groupConfig.hasPractice,
+      hasChat: groupConfig.hasChat,
       informBlock: mapToBlockResponseDto(result.informBlock),
     };
   }

@@ -7,8 +7,8 @@ import { BLOCK_TYPE } from '@/types/domain/enums';
 import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
 import { useAppDispatch } from '@/store/hooks';
 import { addToast } from '@/store/slices/uiSlice';
-import { getRandomMessage } from '@/lib/loadingMessages';
-import { INFORM_BLOCK_CHAT_LOADING_MESSAGES } from '@/lib/loadingMessages';
+import { getRandomMessage } from '@/lib/i18n';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import ChatMessageBubble from './ChatMessageBubble';
 import ChatMessageLoadingBubble from './ChatMessageLoadingBubble';
 import FollowUpQuestionTextInputField from './FollowUpQuestionTextInputField';
@@ -33,6 +33,9 @@ export default function InformBlock({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousMessageCountRef = useRef(0);
 
+  // i18n
+  const { t } = useTranslation();
+
   // Redux store hook
   const dispatch = useAppDispatch();
 
@@ -49,7 +52,7 @@ export default function InformBlock({
   }, [block, informBlock?.messages]); // Sync local state (e.g. after block refetch or when navigating blocks)
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const [loadingMessage, setLoadingMessage] = useState(() =>
-    getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES)
+    getRandomMessage(t('loading.chatMessages') as string[])
   );
 
   // Auto-scroll behavior of chat window 
@@ -81,7 +84,7 @@ export default function InformBlock({
     };
     setChatMessages((prev) => [...prev, userMessage]);
     if (!messageText) setFollowUpQuestion('');
-    setLoadingMessage(getRandomMessage(INFORM_BLOCK_CHAT_LOADING_MESSAGES));
+    setLoadingMessage(getRandomMessage(t('loading.chatMessages') as string[]));
 
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
 
@@ -101,7 +104,7 @@ export default function InformBlock({
       setChatMessages((prev) => [...prev, owlbertResponse]);
     } catch (error) {
       console.error('Error sending message:', error);
-      dispatch(addToast({ message: 'Could not send message. Please try again.', type: 'error' }));
+      dispatch(addToast({ message: t('informBlock.error.sendMessage') as string, type: 'error' }));
       setChatMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
     }
   };
@@ -152,7 +155,7 @@ export default function InformBlock({
                 onClick={onContinue}
                 className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
               >
-                <span>Continue</span>
+                <span>{t('informBlock.continue') as string}</span>
                 <ChevronRightIcon className="w-5 h-5" />
               </button>
             </span>
