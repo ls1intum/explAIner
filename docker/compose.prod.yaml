@@ -53,6 +53,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: ${CLIENT_PORT}
+      # Soft access gate: when set, the whole site is hidden behind this token
+      # (passed via ?token=... in embed URLs or typed on the access page).
+      # Read at runtime by client/src/middleware.ts. Leave unset to disable.
+      SITE_ACCESS_TOKEN: ${SITE_ACCESS_TOKEN:-}
     # No published ports - reached via the proxy on the internal network.
     networks:
       - explainer-network-prd
