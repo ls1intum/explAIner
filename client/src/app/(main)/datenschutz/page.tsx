@@ -45,14 +45,19 @@ export default function DatenschutzPage() {
             </p>
 
             <h3 className="text-xl font-bold mb-3">Verantwortlich für das Projekt ExplAIner</h3>
-            {/* TODO: verantwortliche Person / Lehrstuhl bestätigen (Titel, Name, Lehrstuhl, Anschrift, E-Mail) */}
-            <p className="text-base mb-1">[Titel Vorname Nachname, Lehrstuhl / Einrichtung]</p>
-            <p className="text-base mb-6">
+            <p className="text-base mb-1">Prof. Dr. Stephan Krusche</p>
+            <p className="text-base mb-1">
+              Professur für Applied Education Technologies, TUM School of Computation, Information
+              and Technology
+            </p>
+            <p className="text-base mb-1">Boltzmannstraße 3, 85748 Garching b. München</p>
+            <p className="text-base mb-1">
               E-Mail:{' '}
-              <a href="mailto:ben.lenk-ostendorf@tum.de" className="text-primary hover:underline">
-                ben.lenk-ostendorf@tum.de
+              <a href="mailto:krusche@tum.de" className="text-primary hover:underline">
+                krusche@tum.de
               </a>
             </p>
+            <p className="text-base mb-6">Telefon: +49 89 289 18233</p>
 
             <h3 className="text-xl font-bold mb-3">
               Kontaktdaten des/der Datenschutzbeauftragten
@@ -100,9 +105,9 @@ export default function DatenschutzPage() {
             <ul className="list-disc pl-6 text-base mb-4 space-y-2">
               <li>
                 <span className="font-semibold">Technischer Betrieb / Hosting:</span> Die Anwendung
-                wird auf einem Server der Technischen Universität München betrieben{' '}
-                {/* TODO: Betreiber bestätigen, z. B. Rechnerbetriebsgruppe (RBG) der TUM School of CIT */}
-                <span className="text-muted-foreground">[Betreiber bestätigen]</span>.
+                wird auf einem Server der Technischen Universität München (Professur für Applied
+                Education Technologies, TUM School of Computation, Information and Technology,
+                Garching) betrieben.
               </li>
               <li>
                 <span className="font-semibold">KI-gestützte Inhaltsgenerierung:</span> Die von
@@ -121,15 +126,14 @@ export default function DatenschutzPage() {
           {/* Speicherdauer */}
           <section className="mb-10">
             <h2 className="text-3xl font-bold mb-6">Dauer der Speicherung</h2>
-            {/* TODO: konkrete Löschfrist für Forschungsdaten festlegen/bestätigen */}
             <p className="text-base">
-              Die im Rahmen einer Lernsitzung erzeugten Daten werden für die Dauer des
-              Forschungsprojekts gespeichert und spätestens{' '}
-              <span className="text-muted-foreground">[Frist, z. B. 24 Monate nach Projektende]</span>{' '}
-              gelöscht oder vollständig anonymisiert. Anonymisierte, aggregierte Auswertungsergebnisse
-              können darüber hinaus unbefristet aufbewahrt werden. Server-Logdateien werden nach{' '}
-              <span className="text-muted-foreground">[z. B. 90 Tagen]</span> automatisch gelöscht,
-              sofern sie nicht zur Aufklärung eines konkreten Sicherheitsvorfalls benötigt werden.
+              Die im Rahmen einer Lernsitzung erzeugten Daten werden im Zuge der wissenschaftlichen
+              Auswertung vollständig anonymisiert; die nicht anonymisierten Ausgangsdaten werden
+              anschließend gelöscht. Die anonymisierten Daten lassen keinen Rückschluss auf einzelne
+              Personen zu, unterliegen damit nicht mehr der DSGVO und können unbefristet aufbewahrt,
+              ausgewertet und im Sinne offener Wissenschaft anderen Forschenden zur Verfügung
+              gestellt werden. Server-Logdateien werden nach 14 Tagen automatisch gelöscht, sofern
+              sie nicht zur Aufklärung eines konkreten Sicherheitsvorfalls benötigt werden.
             </p>
           </section>
 
@@ -221,8 +225,8 @@ export default function DatenschutzPage() {
               eines ordnungsgemäßen und sicheren Betriebs der Plattform erforderlich.
             </p>
             <p className="text-base mb-6">
-              <span className="font-semibold">Speicherdauer:</span> Logdateien werden nach{' '}
-              <span className="text-muted-foreground">[z. B. 90 Tagen]</span> automatisch gelöscht.
+              <span className="font-semibold">Speicherdauer:</span> Logdateien werden nach 14 Tagen
+              automatisch gelöscht.
             </p>
 
             <h3 className="text-xl font-bold mb-3">Cookies</h3>
@@ -295,9 +299,10 @@ export default function DatenschutzPage() {
             <p className="text-base mb-3">
               Die in den Lernsitzungen erzeugten Daten werden zu wissenschaftlichen Zwecken
               ausgewertet, um die Anwendung und das Lernen mit ihr zu untersuchen und
-              weiterzuentwickeln. Eine Veröffentlichung von Forschungsergebnissen erfolgt
-              ausschließlich in anonymisierter und aggregierter Form, die keine Rückschlüsse auf
-              einzelne Personen zulässt.
+              weiterzuentwickeln. Die Daten werden hierzu vollständig anonymisiert. Die
+              anonymisierten Daten können im Sinne offener Wissenschaft anderen Forschenden zur
+              Verfügung gestellt und in anonymisierter, aggregierter Form veröffentlicht werden; ein
+              Rückschluss auf einzelne Personen ist dabei ausgeschlossen.
             </p>
             <p className="text-base mb-6">
               <span className="font-semibold">Rechtsgrundlage:</span> Art. 6 Abs. 1 lit. a DSGVO
