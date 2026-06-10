@@ -36,13 +36,14 @@ export class GenerateChatResponseService {
       dto.message,
     );
 
-    // Call chain 
+    // Call chain
     const chatResponse = await this.generateChatResponseChain.execute({
       topic: block.session.topic,
       learningGoal: block.session.learningGoal,
       bloomsLevel: block.session.learningGoalBloomsLevel,
       userMessage: dto.message,
       conversationHistory,
+      lang: block.session.lang,
     });
 
     // Persist both messages in database

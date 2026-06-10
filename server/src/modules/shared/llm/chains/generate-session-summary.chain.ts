@@ -20,6 +20,7 @@ export class GenerateSessionSummaryChain {
     bloomsLevel: string;
     informContent: string[];
     practiceResults: Array<{ question: string; isCorrect: boolean }>;
+    lang?: string | null;
   }): Promise<SessionSummaryParser> {
     if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-session-summary');
@@ -32,6 +33,7 @@ export class GenerateSessionSummaryChain {
       bloomsLevel: params.bloomsLevel,
       informContent: params.informContent,
       practiceResults: params.practiceResults,
+      lang: params.lang,
     });
 
     // Call LLM with prompt

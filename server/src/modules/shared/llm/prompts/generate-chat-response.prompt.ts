@@ -3,6 +3,8 @@ interface GenerateChatResponsePromptParams {
   learningGoal: string;
   bloomsLevel: string;
   currentBlockContext?: string;
+  /** Language of the session's learning material ('de' | 'en'); null/undefined = English */
+  lang?: string | null;
 }
 
 /** Prompt for generating a chat response to user follow-up question on inform block */
@@ -11,7 +13,9 @@ export const generateChatResponsePrompt = ({
   learningGoal,
   bloomsLevel,
   currentBlockContext,
+  lang,
 }: GenerateChatResponsePromptParams): string => {
+  const respondLang = lang === 'de' ? 'German' : 'English';
   const contextText = currentBlockContext
     ? `\n\nCurrent conversation in this block:\n${currentBlockContext}`
     : '';
@@ -28,7 +32,7 @@ Your role is to:
 - Stay focused on the learning goal
 - Be encouraging and supportive
 
-CRITICAL: All responses must be in English.
+CRITICAL: All responses must be in ${respondLang} — the language of the learning material.
 
 Keep your responses brief (2-4 sentences typically) but informative. Use **bold** for key terms.
 
