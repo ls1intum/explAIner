@@ -20,6 +20,7 @@ export class GenerateChatResponseChain {
     bloomsLevel: string;
     userMessage: string;
     conversationHistory?: string;
+    lang?: string | null;
   }): Promise<FollowUpAnswerMessage> {
     if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-chat-response');
@@ -30,9 +31,10 @@ export class GenerateChatResponseChain {
       topic: params.topic,
       learningGoal: params.learningGoal,
       bloomsLevel: params.bloomsLevel,
-      currentBlockContext: params.conversationHistory 
-        ? `${params.conversationHistory}\n\nUser: ${params.userMessage}` 
+      currentBlockContext: params.conversationHistory
+        ? `${params.conversationHistory}\n\nUser: ${params.userMessage}`
         : `User: ${params.userMessage}`,
+      lang: params.lang,
     });
 
     // Call LLM with prompt

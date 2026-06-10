@@ -48,6 +48,7 @@ export class CreateSigilSessionService {
         learningGoal,
         learningGoalBloomsLevel: sectionConfig.bloomsLevel,
         sigilMode: sigilModeEnum as any,
+        lang,
       }, tx);
 
       // Build inform block message: greeting + markdown content

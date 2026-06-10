@@ -59,6 +59,8 @@ model Session {
   startedAt               DateTime    @default(now()) @map("started_at") @db.Timestamptz(3)
   completedAt             DateTime?   @map("completed_at") @db.Timestamptz(3)
   sigilMode               SigilMode?  @map("sigil_mode")
+  // Language of the delivered learning material ('de' | 'en'); null = legacy/non-sigil session (English)
+  lang                    String?     @db.VarChar(5)
 
   blocks Block[]
 

@@ -34,6 +34,7 @@ export class GenerateSummaryBlockService {
       bloomsLevel: session.learningGoalBloomsLevel,
       informContent,
       practiceResults,
+      lang: session.lang,
     });
 
     // Increment total blocks counter
