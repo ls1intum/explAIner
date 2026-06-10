@@ -37,10 +37,23 @@ export default function ImpressumPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold mb-4 text-foreground">Verantwortlich für den Inhalt</h2>
-            {/* TODO: verantwortliche Person / Lehrstuhl bestätigen (Titel, Name, Lehrstuhl, Anschrift) */}
-            <p className="text-base text-foreground mb-1">[Titel Vorname Nachname]</p>
-            <p className="text-base text-foreground mb-1">[Lehrstuhl / Einrichtung]</p>
-            <p className="text-base text-foreground">[Anschrift]</p>
+            <p className="text-base text-foreground mb-1">Prof. Dr. Stephan Krusche</p>
+            <p className="text-base text-foreground mb-1">
+              Professur für Applied Education Technologies (TUS1322)
+            </p>
+            <p className="text-base text-foreground mb-1">
+              TUM School of Computation, Information and Technology
+            </p>
+            <p className="text-base text-foreground mb-1">
+              Boltzmannstraße 3, 85748 Garching b. München
+            </p>
+            <p className="text-base text-foreground mb-1">
+              E-Mail:{' '}
+              <a href="mailto:krusche@tum.de" className="text-primary hover:underline">
+                krusche(at)tum.de
+              </a>
+            </p>
+            <p className="text-base text-foreground">Telefon: +49 89 289 18233</p>
           </section>
 
           <section className="mb-8">

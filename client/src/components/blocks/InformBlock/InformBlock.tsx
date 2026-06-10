@@ -20,6 +20,8 @@ interface InformBlockProps {
   hideContinueButton?: boolean;
   /** Hide the Owlbert follow-up chat (input + quick chips), leaving reading material only. */
   hideChat?: boolean;
+  /** While true, the continue button is still hidden but a loading indicator is shown in its place. */
+  isPreparingContinue?: boolean;
 }
 
 /** InformBlock component */
@@ -29,6 +31,7 @@ export default function InformBlock({
   onContinue,
   hideContinueButton = false,
   hideChat = false,
+  isPreparingContinue = false,
 }: InformBlockProps) {
 
   // Refs used for auto-scroll behavior in chat window
@@ -152,7 +155,7 @@ export default function InformBlock({
           )}
         </div>
 
-        {/* Continue button */}
+        {/* Continue button (shown once practice blocks are ready) */}
         {!hideContinueButton && (
           <div className="flex justify-end">
             <span className="inline-block rounded-xl shadow-lg overflow-hidden">
@@ -163,6 +166,16 @@ export default function InformBlock({
                 <span>{t('informBlock.continue') as string}</span>
                 <ChevronRightIcon className="w-5 h-5" />
               </button>
+            </span>
+          </div>
+        )}
+
+        {/* Loading indicator (shown while practice blocks are generated in the background) */}
+        {hideContinueButton && isPreparingContinue && (
+          <div className="flex justify-end">
+            <span className="inline-flex items-center gap-3 text-base font-semibold text-muted-foreground py-3 px-8 rounded-xl border border-border bg-card">
+              <span className="w-5 h-5 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin" />
+              <span>{t('informBlock.preparingPractice') as string}</span>
             </span>
           </div>
         )}

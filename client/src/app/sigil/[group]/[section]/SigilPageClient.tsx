@@ -222,6 +222,7 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
               onContinue={handleContinue}
               hideContinueButton={!showContinueButton}
               hideChat={!hasChat}
+              isPreparingContinue={hasPractice && !practiceReady}
             />
           )}
 
