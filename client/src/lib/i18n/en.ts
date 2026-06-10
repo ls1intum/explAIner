@@ -56,6 +56,7 @@ const en: Translations = {
   'informBlock.continue': 'Continue',
   'informBlock.inputPlaceholder': 'Ask a follow-up question...',
   'informBlock.error.sendMessage': 'Could not send message. Please try again.',
+  'informBlock.preparingPractice': 'Preparing exercises…',
 
   // Quick action chips
   'quickChip.simplerExplanation': 'Try a simpler explanation',
