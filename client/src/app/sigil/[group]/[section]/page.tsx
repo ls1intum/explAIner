@@ -1,8 +1,11 @@
 import { notFound } from 'next/navigation';
 import SigilPageClient from './SigilPageClient';
-
-const VALID_GROUPS = ['explainer', 'chat', 'text'] as const;
-const VALID_SECTIONS = ['elements', 'details', 'all'] as const;
+import {
+  VALID_SIGIL_GROUPS,
+  VALID_SIGIL_SECTIONS,
+  type SigilGroup,
+  type SigilSection,
+} from '@/lib/sigil/groupConfig';
 
 export default function SigilPage({
   params,
@@ -11,15 +14,15 @@ export default function SigilPage({
   params: { group: string; section: string };
   searchParams: { lang?: string; session?: string };
 }) {
-  if (!VALID_GROUPS.includes(params.group as typeof VALID_GROUPS[number])) {
+  if (!VALID_SIGIL_GROUPS.includes(params.group as SigilGroup)) {
     notFound();
   }
-  if (!VALID_SECTIONS.includes(params.section as typeof VALID_SECTIONS[number])) {
+  if (!VALID_SIGIL_SECTIONS.includes(params.section as SigilSection)) {
     notFound();
   }
 
-  const group = params.group as typeof VALID_GROUPS[number];
-  const section = params.section as typeof VALID_SECTIONS[number];
+  const group = params.group as SigilGroup;
+  const section = params.section as SigilSection;
   const lang = (searchParams.lang === 'en' ? 'en' : 'de') as 'de' | 'en';
   const existingSessionId = searchParams.session ?? null;
 

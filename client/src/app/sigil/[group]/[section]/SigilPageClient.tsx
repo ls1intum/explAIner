@@ -19,9 +19,7 @@ import SummaryBlock from '@/components/blocks/SummaryBlock/SummaryBlock';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-
-type SigilGroup = 'explainer' | 'chat' | 'text';
-type SigilSection = 'elements' | 'details' | 'all';
+import { SIGIL_GROUP_CAPABILITIES, type SigilGroup, type SigilSection } from '@/lib/sigil/groupConfig';
 
 interface SigilPageClientProps {
   group: SigilGroup;
@@ -41,7 +39,7 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
   const [practiceReady, setPracticeReady] = useState(false);
   const creatingRef = useRef(false);
 
-  const hasPractice = group === 'explainer';
+  const { hasChat, hasPractice } = SIGIL_GROUP_CAPABILITIES[group];
 
   const [createSigilSession] = useCreateSigilSessionMutation();
   const [continueSigilSession] = useContinueSigilSessionMutation();
@@ -223,6 +221,7 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
               sessionId={activeSessionId!}
               onContinue={handleContinue}
               hideContinueButton={!showContinueButton}
+              hideChat={!hasChat}
               isPreparingContinue={hasPractice && !practiceReady}
             />
           )}

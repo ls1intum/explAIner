@@ -18,6 +18,8 @@ interface InformBlockProps {
   sessionId: string;
   onContinue: () => void;
   hideContinueButton?: boolean;
+  /** Hide the Owlbert follow-up chat (input + quick chips), leaving reading material only. */
+  hideChat?: boolean;
   /** While true, the continue button is still hidden but a loading indicator is shown in its place. */
   isPreparingContinue?: boolean;
 }
@@ -28,6 +30,7 @@ export default function InformBlock({
   sessionId,
   onContinue,
   hideContinueButton = false,
+  hideChat = false,
   isPreparingContinue = false,
 }: InformBlockProps) {
 
@@ -140,14 +143,16 @@ export default function InformBlock({
             <div ref={chatEndRef} />
           </div>
 
-          {/* Follow-up questions text input field and quick action chips */}
-          <FollowUpQuestionTextInputField
-            value={followUpQuestion}
-            onChange={setFollowUpQuestion}
-            onSend={() => handleSendQuestion()}
-            onQuickAction={handleQuickActionClick}
-            disabled={isLoading}
-          />
+          {/* Follow-up questions text input field and quick action chips (hidden for text-only groups) */}
+          {!hideChat && (
+            <FollowUpQuestionTextInputField
+              value={followUpQuestion}
+              onChange={setFollowUpQuestion}
+              onSend={() => handleSendQuestion()}
+              onQuickAction={handleQuickActionClick}
+              disabled={isLoading}
+            />
+          )}
         </div>
 
         {/* Continue button (shown once practice blocks are ready) */}
