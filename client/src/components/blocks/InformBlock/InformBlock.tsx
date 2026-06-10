@@ -18,6 +18,8 @@ interface InformBlockProps {
   sessionId: string;
   onContinue: () => void;
   hideContinueButton?: boolean;
+  /** Hide the Owlbert follow-up chat (input + quick chips), leaving reading material only. */
+  hideChat?: boolean;
 }
 
 /** InformBlock component */
@@ -26,6 +28,7 @@ export default function InformBlock({
   sessionId,
   onContinue,
   hideContinueButton = false,
+  hideChat = false,
 }: InformBlockProps) {
 
   // Refs used for auto-scroll behavior in chat window
@@ -137,14 +140,16 @@ export default function InformBlock({
             <div ref={chatEndRef} />
           </div>
 
-          {/* Follow-up questions text input field and quick action chips */}
-          <FollowUpQuestionTextInputField
-            value={followUpQuestion}
-            onChange={setFollowUpQuestion}
-            onSend={() => handleSendQuestion()}
-            onQuickAction={handleQuickActionClick}
-            disabled={isLoading}
-          />
+          {/* Follow-up questions text input field and quick action chips (hidden for text-only groups) */}
+          {!hideChat && (
+            <FollowUpQuestionTextInputField
+              value={followUpQuestion}
+              onChange={setFollowUpQuestion}
+              onSend={() => handleSendQuestion()}
+              onQuickAction={handleQuickActionClick}
+              disabled={isLoading}
+            />
+          )}
         </div>
 
         {/* Continue button */}
