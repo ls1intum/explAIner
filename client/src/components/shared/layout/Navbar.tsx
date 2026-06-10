@@ -24,6 +24,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const isLandingPage = pathname === '/';
   const isImpressumPage = pathname === '/impressum';
+  const isDatenschutzPage = pathname === '/datenschutz';
+  const isLegalPage = isImpressumPage || isDatenschutzPage;
   const isLearningGoalPage = pathname === '/learning-goal';
   const isSessionPage = pathname.startsWith('/session/');
 
@@ -55,8 +57,8 @@ export default function Navbar() {
     <nav className="w-full bg-brand-gradient px-6 py-4">
       <div className="w-full flex items-center gap-4 min-h-[2rem]">
 
-        {/* Back button when on impressum page */}
-        {isImpressumPage && (
+        {/* Back button when on a legal page (Impressum / Datenschutz) */}
+        {isLegalPage && (
           <button
             onClick={() => router.back()}
             className="text-white hover:text-gray-200 transition-colors flex items-center gap-2 text-sm font-medium"
@@ -81,17 +83,25 @@ export default function Navbar() {
           </>
         )}
 
-        {/* Spacer when not on impressum, learning goal, or session page */}
-        {!isImpressumPage && !isLearningGoalPage && !isSessionPage && <div className="flex-1"></div>}
+        {/* Spacer when not on a legal, learning goal, or session page */}
+        {!isLegalPage && !isLearningGoalPage && !isSessionPage && <div className="flex-1"></div>}
 
-        {/* Impressum link when on landing page */}
+        {/* Legal links when on landing page */}
         {isLandingPage && (
-          <Link
-            href="/impressum"
-            className="text-gray-300 hover:text-white transition-colors text-sm pr-0"
-          >
-            {t('navbar.impressum') as string}
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/impressum"
+              className="text-gray-300 hover:text-white transition-colors text-sm"
+            >
+              {t('navbar.impressum') as string}
+            </Link>
+            <Link
+              href="/datenschutz"
+              className="text-gray-300 hover:text-white transition-colors text-sm"
+            >
+              {t('navbar.datenschutz') as string}
+            </Link>
+          </div>
         )}
 
         {/* Exit button when on learning goal page or session page */}

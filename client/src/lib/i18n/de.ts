@@ -35,6 +35,7 @@ const de: Translations = {
   'navbar.sessionStart': 'Sitzungsstart',
   'navbar.endSession': 'Sitzung beenden',
   'navbar.impressum': 'Impressum',
+  'navbar.datenschutz': 'Datenschutz',
 
   // End session dialog
   'endSessionDialog.title': 'Sitzung beenden?',
