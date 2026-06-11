@@ -15,6 +15,8 @@ interface PracticeBlockProps {
   block: Block;
   sessionId: string;
   onContinue: () => void;
+  /** Embedded (iframe) mode: use the full available width. */
+  embedded?: boolean;
 }
 
 /** PracticeBlock component */
@@ -22,6 +24,7 @@ export default function PracticeBlock({
   block,
   sessionId,
   onContinue,
+  embedded = false,
 }: PracticeBlockProps) {
 
   // i18n
@@ -83,7 +86,7 @@ export default function PracticeBlock({
 
   return (
     <div className="flex justify-center">
-      <div className="w-full max-w-[80%] space-y-4">
+      <div className={`w-full ${embedded ? '' : 'max-w-[80%]'} space-y-4`}>
         {/* Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border p-6 space-y-6">
           {/* Question */}
