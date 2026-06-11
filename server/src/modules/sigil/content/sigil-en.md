@@ -11,11 +11,19 @@ The State Background shows **which federal state the city belongs to**.
    - Complex patterns are reduced.
 3. The colors of the flag are transferred as **horizontal stripes** into a circle, except for Hamburg.
 
-## Example
+## State Colors
 
-Baden-Württemberg → black on top, yellow on bottom
-Lower Saxony → black, red, yellow
-Schleswig-Holstein → blue, white, red
+| Federal State | Colors (top to bottom) |
+|-----|-----|
+| Berlin | Red – White – Red (red band on top, white center, red band on bottom) |
+| Hamburg | White with a red ring (white circle, red border) |
+| Bavaria | White – Blue |
+| North Rhine-Westphalia | Green – White – Red |
+| Hesse | Red – White |
+| Baden-Württemberg | Black – Yellow |
+| Saxony | White – Green |
+| Bremen | Red – White |
+| Lower Saxony | Black – Red – Gold |
 
 <!-- SECTION 2 -->
 # 2. Population Frame
