@@ -17,6 +17,12 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL=http://localhost:3001
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
+# Soft access-gate token. Middleware runs in the Edge runtime, which only sees
+# env vars present at build time, so the token must be inlined here (not at
+# runtime). Leave empty to disable the gate. See client/src/middleware.ts.
+ARG SITE_ACCESS_TOKEN
+ENV SITE_ACCESS_TOKEN=$SITE_ACCESS_TOKEN
+
 # Build the Next.js application
 RUN npm run build
 

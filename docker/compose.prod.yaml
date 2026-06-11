@@ -53,10 +53,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: ${CLIENT_PORT}
-      # Soft access gate: when set, the whole site is hidden behind this token
-      # (passed via ?token=... in embed URLs or typed on the access page).
-      # Read at runtime by client/src/middleware.ts. Leave unset to disable.
-      SITE_ACCESS_TOKEN: ${SITE_ACCESS_TOKEN:-}
+      # NOTE: the soft access gate (client/src/middleware.ts) runs in Next's
+      # Edge runtime and can only read SITE_ACCESS_TOKEN if it was inlined at
+      # *build* time. It is therefore passed as a build arg in
+      # .github/workflows/build-and-push.yml (vars.SITE_ACCESS_TOKEN), NOT here.
+      # A runtime value at this layer has no effect on the gate.
     # No published ports - reached via the proxy on the internal network.
     networks:
       - explainer-network-prd

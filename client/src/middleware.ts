@@ -19,16 +19,20 @@ import { NextRequest, NextResponse } from 'next/server';
  *
  * If SITE_ACCESS_TOKEN is unset (e.g. local dev) the gate is disabled.
  *
- * Note: bracket access (`process.env['…']`) is intentional — it prevents the
- * build-time inlining that would otherwise bake/empty the value, so the token
- * is read from the running container's environment.
+ * Note: middleware runs in Next's Edge runtime, which does NOT read non-public
+ * env vars from the running container at request time — it only sees values
+ * inlined at `next build`. The token is therefore (a) supplied as a build arg
+ * (see Dockerfile.prd / build-and-push.yml) and (b) inlined into the bundle via
+ * the `env` key in next.config.mjs. It must be read via plain dot access here
+ * (`process.env.SITE_ACCESS_TOKEN`) so Next's DefinePlugin can replace it with
+ * the literal — bracket access would not be substituted and would stay undefined.
  */
 
 const COOKIE_NAME = 'explainer_access';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 export function middleware(req: NextRequest) {
-  const expected = process.env['SITE_ACCESS_TOKEN'];
+  const expected = process.env.SITE_ACCESS_TOKEN;
 
   // Gate disabled when no token is configured.
   if (!expected) {
