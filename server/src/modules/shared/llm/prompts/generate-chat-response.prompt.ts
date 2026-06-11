@@ -5,6 +5,8 @@ interface GenerateChatResponsePromptParams {
   currentBlockContext?: string;
   /** Language of the session's learning material ('de' | 'en'); null/undefined = English */
   lang?: string | null;
+  /** Extra reference knowledge available only to the assistant (not shown in the material). */
+  referenceKnowledge?: string | null;
 }
 
 /** Prompt for generating a chat response to user follow-up question on inform block */
@@ -14,16 +16,20 @@ export const generateChatResponsePrompt = ({
   bloomsLevel,
   currentBlockContext,
   lang,
+  referenceKnowledge,
 }: GenerateChatResponsePromptParams): string => {
   const respondLang = lang === 'de' ? 'German' : 'English';
   const contextText = currentBlockContext
     ? `\n\nCurrent conversation in this block:\n${currentBlockContext}`
     : '';
+  const referenceText = referenceKnowledge
+    ? `\n\n${referenceKnowledge}`
+    : '';
 
   return `You are Owlbert, a friendly and knowledgeable learning assistant owl helping students learn about ${topic}.
 
 Learning Goal: ${learningGoal}
-Bloom's Level: ${bloomsLevel}${contextText}
+Bloom's Level: ${bloomsLevel}${contextText}${referenceText}
 
 Your role is to:
 - Answer questions about the learning material clearly and concisely

@@ -54,6 +54,37 @@ export const SIGIL_OWLBERT_GREETING: Record<SigilLang, string> = {
   en: 'Read through this information and feel free to ask me any questions.',
 };
 
+// Reference knowledge given ONLY to Owlbert (chat), not shown in the learning
+// material. Lets the assistant answer questions about the federal-state
+// background colors correctly when a student asks, without putting the table
+// into the displayed material (which would also reach the text-only group).
+export const SIGIL_STATE_COLORS_REFERENCE: Record<SigilLang, string> = {
+  de: `Referenzwissen – Farben der Bundeslandshintergründe (nutze dies, um Fragen korrekt zu beantworten):
+| Bundesland | Farben (von oben nach unten) |
+| --- | --- |
+| Berlin | Rot – Weiß – Rot (rotes Band oben, weiße Mitte, rotes Band unten) |
+| Hamburg | Weiß mit rotem Ring (weiße Kreisfläche, roter Rand) |
+| Bayern | Weiß – Blau |
+| Nordrhein-Westfalen | Grün – Weiß – Rot |
+| Hessen | Rot – Weiß |
+| Baden-Württemberg | Schwarz – Gelb |
+| Sachsen | Weiß – Grün |
+| Bremen | Rot – Weiß |
+| Niedersachsen | Schwarz – Rot – Gold |`,
+  en: `Reference knowledge – federal-state background colors (use this to answer questions correctly):
+| Federal State | Colors (top to bottom) |
+| --- | --- |
+| Berlin | Red – White – Red (red band on top, white center, red band on bottom) |
+| Hamburg | White with a red ring (white circle, red border) |
+| Bavaria | White – Blue |
+| North Rhine-Westphalia | Green – White – Red |
+| Hesse | Red – White |
+| Baden-Württemberg | Black – Yellow |
+| Saxony | White – Green |
+| Bremen | Red – White |
+| Lower Saxony | Black – Red – Gold |`,
+};
+
 // Legacy compatibility: map group+section to old mode key for DB storage
 export function toSigilModeEnum(group: SigilGroupKey, section: SigilSectionKey): string {
   if (group === 'chat') return 'Chat';

@@ -5,6 +5,7 @@ import { GenerateChatResponseResponseDto } from '../dto/response/generate-chat-r
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { buildChatHistory } from '../blocks.utils';
 import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
+import { SIGIL_STATE_COLORS_REFERENCE, type SigilLang } from '../../sigil/sigil.config';
 
 /** Service generating a chat response to user follow-up question on inform block */
 @Injectable()
@@ -36,6 +37,14 @@ export class GenerateChatResponseService {
       dto.message,
     );
 
+    // Sigil sessions: give the assistant the state-color reference knowledge
+    // (not shown in the material) so it can answer color questions correctly.
+    const lang = block.session.lang;
+    const referenceKnowledge =
+      block.session.sigilMode && (lang === 'de' || lang === 'en')
+        ? SIGIL_STATE_COLORS_REFERENCE[lang as SigilLang]
+        : undefined;
+
     // Call chain
     const chatResponse = await this.generateChatResponseChain.execute({
       topic: block.session.topic,
@@ -43,7 +52,8 @@ export class GenerateChatResponseService {
       bloomsLevel: block.session.learningGoalBloomsLevel,
       userMessage: dto.message,
       conversationHistory,
-      lang: block.session.lang,
+      lang,
+      referenceKnowledge,
     });
 
     // Persist both messages in database
