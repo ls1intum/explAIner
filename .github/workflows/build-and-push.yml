@@ -20,8 +20,10 @@ jobs:
       image-name: ls1intum/explainer/client
       docker-file: client/Dockerfile.prd
       docker-context: client
-      # NEXT_PUBLIC_* is baked into the Next.js bundle at build time,
-      # so the production API URL must be passed here, not via the deploy .env.
+      # NEXT_PUBLIC_* and the soft-gate token are baked into the Next.js bundle
+      # at build time (the Edge-runtime middleware can't read them at runtime),
+      # so they must be passed here, not via the deploy .env.
       build-args: |
         NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+        SITE_ACCESS_TOKEN=${{ vars.SITE_ACCESS_TOKEN }}
     secrets: inherit
