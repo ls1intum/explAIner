@@ -212,7 +212,8 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 flex items-center justify-center min-h-screen">
+      {/* Embedded in a SoSci Survey iframe: use the full iframe width/height, no container cap */}
+      <main className="w-full px-4 py-4 flex items-center justify-center min-h-screen">
         <div className="w-full">
 
           {displayBlock.type === BLOCK_TYPE.INFORM && (
@@ -223,6 +224,7 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
               hideContinueButton={!showContinueButton}
               hideChat={!hasChat}
               isPreparingContinue={hasPractice && !practiceReady}
+              embedded
             />
           )}
 
@@ -231,6 +233,7 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
               block={displayBlock}
               sessionId={activeSessionId!}
               onContinue={handleContinue}
+              embedded
             />
           )}
 
@@ -238,6 +241,7 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
             <SummaryBlock
               block={displayBlock}
               sessionInfo={summarySessionInfo}
+              embedded
             />
           )}
         </div>

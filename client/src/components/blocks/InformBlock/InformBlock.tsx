@@ -22,6 +22,8 @@ interface InformBlockProps {
   hideChat?: boolean;
   /** While true, the continue button is still hidden but a loading indicator is shown in its place. */
   isPreparingContinue?: boolean;
+  /** Embedded (iframe) mode: use the full available width and scale the content area with the viewport. */
+  embedded?: boolean;
 }
 
 /** InformBlock component */
@@ -32,6 +34,7 @@ export default function InformBlock({
   hideContinueButton = false,
   hideChat = false,
   isPreparingContinue = false,
+  embedded = false,
 }: InformBlockProps) {
 
   // Refs used for auto-scroll behavior in chat window
@@ -122,12 +125,12 @@ export default function InformBlock({
 
   return (
     <div className="flex justify-center">
-      <div className="w-full max-w-[80%] space-y-4">
+      <div className={`w-full ${embedded ? '' : 'max-w-[80%]'} space-y-4`}>
         {/* Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
           <div
             ref={chatContainerRef}
-            className="max-h-[500px] overflow-y-auto p-6 space-y-4"
+            className={`${embedded ? 'max-h-[calc(100vh-240px)]' : 'max-h-[500px]'} overflow-y-auto p-6 space-y-4`}
           >
             {/* All chat messages */}
             {chatMessages.map((msg) => (

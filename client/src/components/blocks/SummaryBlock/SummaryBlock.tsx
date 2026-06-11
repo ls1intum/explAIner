@@ -16,10 +16,12 @@ interface SummaryBlockProps {
     totalBlocks: number;
     sessionDuration: number;
   };
+  /** Embedded (iframe) mode: use the full available width. */
+  embedded?: boolean;
 }
 
 /** SummaryBlock component */
-export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) {
+export default function SummaryBlock({ block, sessionInfo, embedded = false }: SummaryBlockProps) {
 
   // Navigation
   const router = useRouter();
@@ -40,7 +42,7 @@ export default function SummaryBlock({ block, sessionInfo }: SummaryBlockProps) 
 
   return (
     <div className="flex justify-center">
-      <div className="w-full max-w-[80%] space-y-6">
+      <div className={`w-full ${embedded ? '' : 'max-w-[80%]'} space-y-6`}>
         <div className="bg-card rounded-2xl shadow-sm border border-border p-8 space-y-6">
           
           {/* Learning goal achievement message */}
