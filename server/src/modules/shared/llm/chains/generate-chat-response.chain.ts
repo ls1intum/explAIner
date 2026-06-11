@@ -21,6 +21,7 @@ export class GenerateChatResponseChain {
     userMessage: string;
     conversationHistory?: string;
     lang?: string | null;
+    referenceKnowledge?: string | null;
   }): Promise<FollowUpAnswerMessage> {
     if (isLogEnabled('ai-chain')) {
       this.logger.log('generate-chat-response');
@@ -35,6 +36,7 @@ export class GenerateChatResponseChain {
         ? `${params.conversationHistory}\n\nUser: ${params.userMessage}`
         : `User: ${params.userMessage}`,
       lang: params.lang,
+      referenceKnowledge: params.referenceKnowledge,
     });
 
     // Call LLM with prompt
