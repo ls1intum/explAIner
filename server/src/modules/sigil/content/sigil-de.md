@@ -11,11 +11,19 @@ Der Bundeslandshintergrund zeigt, **in welchem Bundesland die Stadt liegt**.
    - komplizierte Muster werden reduziert.
 3. Die Farben der Flagge werden, außer bei Hamburg, als **horizontale Streifen** in einen Kreis übertragen.
 
-## Beispiel
+## Farben der Bundesländer
 
-Baden-Württemberg → oben schwarz, unten gelb
-Niedersachsen → schwarz, rot, gelb
-Schleswig-Holstein → blau, weiß, rot
+| Bundesland | Farben (von oben nach unten) |
+|-----|-----|
+| Berlin | Rot – Weiß – Rot (rotes Band oben, weiße Mitte, rotes Band unten) |
+| Hamburg | Weiß mit rotem Ring (weiße Kreisfläche, roter Rand) |
+| Bayern | Weiß – Blau |
+| Nordrhein-Westfalen | Grün – Weiß – Rot |
+| Hessen | Rot – Weiß |
+| Baden-Württemberg | Schwarz – Gelb |
+| Sachsen | Weiß – Grün |
+| Bremen | Rot – Weiß |
+| Niedersachsen | Schwarz – Rot – Gold |
 
 <!-- SECTION 2 -->
 # 2. Bevölkerungsrahmen
