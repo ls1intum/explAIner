@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import {
   areAllPracticeBlocksAnswered,
-  areAllPracticeBlocksCorrect,
+  arePracticeBlocksPassed,
   findNextUnansweredPracticeBlock,
   mapToContinueSessionResponseDto,
 } from '../../sessions/sessions.utils';
@@ -30,14 +30,15 @@ export class ContinueSigilSessionService {
     const currentPracticeBlocks = getCurrentBlockSequencePracticeBlocks(session.blocks);
 
     const allAnswered = areAllPracticeBlocksAnswered(currentPracticeBlocks);
-    const allCorrect = areAllPracticeBlocksCorrect(currentPracticeBlocks);
+    const passed = arePracticeBlocksPassed(currentPracticeBlocks);
 
     if (!allAnswered) {
       const next = findNextUnansweredPracticeBlock(currentPracticeBlocks);
       if (next) return mapToContinueSessionResponseDto('navigate', next.orderIndex);
     }
 
-    if (allCorrect) return mapToContinueSessionResponseDto('summary');
+    // Passing at 2 of 3 correct (not a perfect score) completes the round.
+    if (passed) return mapToContinueSessionResponseDto('summary');
 
     if (blockSequenceCounter >= 2) return mapToContinueSessionResponseDto('prompt-user');
 

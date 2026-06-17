@@ -2,6 +2,7 @@
 
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface ChatMessageContentProps {
   message: string;
@@ -17,6 +18,13 @@ interface ChatMessageContentProps {
  */
 export default function ChatMessageContent({ message }: ChatMessageContentProps) {
 
+  const { t } = useTranslation();
+
+  // A subsequent (tailored) explanation is the only message that addresses
+  // KEY MISCONCEPTIONS. Show an explanatory title above it so the learner knows
+  // this is a fresh explanation generated in response to their answers.
+  const isTailoredExplanation = message.includes('KEY MISCONCEPTIONS');
+
   // Sigil inform blocks contain full markdown with headers — render with react-markdown
   if (/^#\s/m.test(message)) {
     return (
@@ -31,6 +39,12 @@ export default function ChatMessageContent({ message }: ChatMessageContentProps)
 
   return (
     <>
+      {/* Explanatory title above a tailored (subsequent) explanation */}
+      {isTailoredExplanation && (
+        <h2 className="text-lg font-semibold text-primary mb-3">
+          {t('informBlock.tailoredExplanationTitle') as string}
+        </h2>
+      )}
       {sections.map((section, sectionIndex) => {
 
         // KEY FACTS section - displays bullet points

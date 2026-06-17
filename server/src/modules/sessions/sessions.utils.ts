@@ -20,6 +20,24 @@ export function areAllPracticeBlocksCorrect(
   return blocks.every((b) => b.practiceBlock?.studentAnswerIsCorrect === true);
 }
 
+/**
+ * Pass threshold for a Sigil Explainer practice round: a student passes once at
+ * least two thirds of the questions are correct (i.e. 2 of 3), rather than
+ * needing a perfect score. Kept separate from areAllPracticeBlocksCorrect so the
+ * non-sigil flow keeps requiring all answers correct.
+ */
+export const SIGIL_PRACTICE_PASS_RATIO = 2 / 3;
+
+/** True if the share of correct practice blocks meets the pass ratio (default 2/3). */
+export function arePracticeBlocksPassed(
+  blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
+  passRatio: number = SIGIL_PRACTICE_PASS_RATIO,
+): boolean {
+  if (blocks.length === 0) return false;
+  const correctCount = blocks.filter((b) => b.practiceBlock?.studentAnswerIsCorrect === true).length;
+  return correctCount / blocks.length >= passRatio;
+}
+
 /** Finds first practice block in list that has not been answered yet by student */
 export function findNextUnansweredPracticeBlock(
   blocks: Array<{ type: BlockType; orderIndex: number; practiceBlock?: { studentAnswerIsCorrect: boolean | null } | null }>,
