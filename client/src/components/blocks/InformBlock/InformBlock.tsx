@@ -38,7 +38,6 @@ export default function InformBlock({
 }: InformBlockProps) {
 
   // Refs used for auto-scroll behavior in chat window
-  const chatEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousMessageCountRef = useRef(0);
 
@@ -64,20 +63,30 @@ export default function InformBlock({
     getRandomMessage(t('loading.chatMessages') as string[])
   );
 
-  // Auto-scroll behavior of chat window 
+  // Auto-scroll behavior of chat window.
+  // NOTE: We scroll the inner chat container directly instead of using
+  // scrollIntoView(). scrollIntoView() scrolls *all* scrollable ancestors,
+  // which in embedded (iframe) mode includes the host page (e.g. the
+  // questionnaire tool) — making it jump to the bottom and hide ExplAIner.
+  // scrollTo on the container keeps the scroll contained within the chat.
+  const scrollChatToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior });
+  };
+  const lastBlockIdRef = useRef<string | null>(null);
   useEffect(() => {
-    // Scroll to top of chat window when navigating back to this block from a different block
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = 0;
+    const isNewBlock = lastBlockIdRef.current !== block.id;
+    if (isNewBlock) {
+      // Initial load or navigating to another block: start at the top so the
+      // reader sees the beginning of the material — never auto-scroll here.
+      chatContainerRef.current?.scrollTo({ top: 0 });
+    } else if (chatMessages.length > previousMessageCountRef.current || isLoading) {
+      // Same block with genuinely new messages (follow-up Q&A) or a response
+      // being generated: keep the latest message in view inside the chat box.
+      scrollChatToBottom();
     }
-  }, [block.id]);
-  useEffect(() => {
-    // Scroll to bottom of chat window when new messages are added or while loading
-    if (chatMessages.length > previousMessageCountRef.current || isLoading) {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
+    lastBlockIdRef.current = block.id;
     previousMessageCountRef.current = chatMessages.length;
-  }, [chatMessages.length, isLoading]);
+  }, [block.id, chatMessages.length, isLoading]);
 
   // Follow-up question is sent (optimistic UI, then API)
   const handleSendQuestion = async (messageText?: string) => {
@@ -95,7 +104,7 @@ export default function InformBlock({
     if (!messageText) setFollowUpQuestion('');
     setLoadingMessage(getRandomMessage(t('loading.chatMessages') as string[]));
 
-    setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    setTimeout(() => scrollChatToBottom(), 100);
 
     try {
       const data = await generateChatResponse({
@@ -143,7 +152,6 @@ export default function InformBlock({
             ))}
             {/* Loading animation chat message while the answer is generated */}
             {isLoading && <ChatMessageLoadingBubble loadingMessage={loadingMessage} />}
-            <div ref={chatEndRef} />
           </div>
 
           {/* Follow-up questions text input field and quick action chips (hidden for text-only groups) */}
