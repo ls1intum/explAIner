@@ -12,8 +12,8 @@ installed locally — only Docker.
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed **and running**
   (verify with `docker version` and `docker compose version`).
-- An LLM API key for the SAIA / OpenAI-compatible endpoint
-  (e.g. from [SAIA – Academic Cloud](https://chat-ai.academiccloud.de/)).
+- An LLM API key for the logos / OpenAI-compatible endpoint
+  (the TUM AET chair's LLM service at `https://logos.aet.cit.tum.de`).
 
 ### 1. Configure environment variables
 
@@ -24,7 +24,7 @@ cp .env.dev.example .env.dev
 ```
 
 - **`LLM_API_KEY` is required** — the server will refuse to start without it.
-- `LLM_BASE_URL` and `LLM_MODEL` already have working defaults (SAIA).
+- `LLM_BASE_URL` and `LLM_MODEL` already have working defaults (logos).
 - `DB_USER` / `DB_PASSWORD` / `DB_NAME` can be any values you like; they are used
   to create the local Postgres container on first run.
 

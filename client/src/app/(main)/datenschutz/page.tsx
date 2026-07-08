@@ -110,11 +110,10 @@ export default function DatenschutzPage() {
                 Garching) betrieben.
               </li>
               <li>
-                <span className="font-semibold">KI-gestützte Inhaltsgenerierung:</span> Die von
-                Ihnen eingegebenen Texte werden zur Generierung der Lerninhalte an den Dienst SAIA
-                (Scalable Artificial Intelligence Accelerator) der Gesellschaft für
-                wissenschaftliche Datenverarbeitung mbH Göttingen (GWDG) übermittelt. Näheres siehe
-                Abschnitt „KI-gestützte Inhaltsgenerierung“.
+                <span className="font-semibold">KI-gestützte Inhaltsgenerierung:</span> Die
+                Generierung der Lerninhalte erfolgt durch ein KI-Modell, das auf der Infrastruktur
+                der TUM selbst betrieben wird; eine Übermittlung Ihrer Eingaben an Dritte findet
+                hierfür nicht statt. Näheres siehe Abschnitt „KI-gestützte Inhaltsgenerierung“.
               </li>
             </ul>
             <p className="text-base">
@@ -274,18 +273,19 @@ export default function DatenschutzPage() {
             <h3 className="text-xl font-bold mb-3">KI-gestützte Inhaltsgenerierung</h3>
             <p className="text-base mb-3">
               Zur Erzeugung der Lerninhalte (z. B. Erklärungen, Übungsfragen, Chat-Antworten) werden
-              die von Ihnen eingegebenen Texte an den Dienst SAIA der GWDG übermittelt und dort von
-              einem KI-Modell verarbeitet. Dabei gilt:
+              die von Ihnen eingegebenen Texte von einem KI-Modell verarbeitet, das auf der
+              Infrastruktur der TUM (Professur für Applied Education Technologies) betrieben wird.
+              Dabei gilt:
             </p>
             <ul className="list-disc pl-6 text-base mb-3 space-y-1">
               <li>
-                Das verwendete (quelloffene) KI-Modell wird auf der Infrastruktur der GWDG in
-                Deutschland betrieben. Eine Übermittlung in ein Drittland (z. B. die USA) findet
+                Das verwendete (quelloffene) KI-Modell wird auf Servern der TUM in Deutschland
+                betrieben. Eine Übermittlung an Dritte oder in ein Drittland (z. B. die USA) findet
                 nicht statt.
               </li>
               <li>
-                Die Inhalte werden ausschließlich zur Bearbeitung Ihrer Anfrage verarbeitet und von
-                der GWDG nicht dauerhaft gespeichert.
+                Die Inhalte werden ausschließlich zur Bearbeitung Ihrer Anfrage verarbeitet und
+                nicht dauerhaft gespeichert.
               </li>
               <li>Ihre Eingaben werden nicht zum Training von KI-Modellen verwendet.</li>
               <li>Alle Datenübertragungen sind verschlüsselt.</li>

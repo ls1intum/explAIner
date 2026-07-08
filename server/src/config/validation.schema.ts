@@ -13,7 +13,7 @@ export default Joi.object({
   CLIENT_URL: Joi.string().default('http://localhost:3000'),
   DATABASE_URL: Joi.string().required(),
   LLM_API_KEY: Joi.string().required(),
-  LLM_BASE_URL: Joi.string().default('https://chat-ai.academiccloud.de/v1'),
-  LLM_MODEL: Joi.string().default('llama-3.3-70b-instruct'),
+  LLM_BASE_URL: Joi.string().default('https://logos.aet.cit.tum.de/v1'),
+  LLM_MODEL: Joi.string().default('openai/gpt-oss-120b'),
   ALLOWED_ORIGINS: Joi.string().optional(),
 });
