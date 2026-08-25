@@ -5,6 +5,7 @@ export interface AppConfiguration {
   port: number;
   clientUrl: string;
   allowedOrigins?: string;
+  e2eTestToken?: string;
   database: {
     url: string;
   };
@@ -20,6 +21,7 @@ export default (): AppConfiguration => ({
   port: parseInt(process.env.PORT!, 10),
   clientUrl: process.env.CLIENT_URL!,
   allowedOrigins: process.env.ALLOWED_ORIGINS,
+  e2eTestToken: process.env.E2E_TEST_TOKEN,
   database: {
     url: process.env.DATABASE_URL!,
   },

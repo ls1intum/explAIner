@@ -133,12 +133,13 @@ export default function InformBlock({
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center" data-testid="inform-block">
       <div className={`w-full ${embedded ? '' : 'max-w-[80%]'} space-y-4`}>
         {/* Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
           <div
             ref={chatContainerRef}
+            data-testid="inform-block-material"
             className={`${embedded ? 'max-h-[calc(100vh-240px)]' : 'max-h-[500px]'} overflow-y-auto p-6 space-y-4`}
           >
             {/* All chat messages */}
@@ -172,6 +173,7 @@ export default function InformBlock({
             <span className="inline-block rounded-xl shadow-lg overflow-hidden">
               <button
                 onClick={onContinue}
+                data-testid="inform-block-continue"
                 className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
               >
                 <span>{t('informBlock.continue') as string}</span>
@@ -183,7 +185,7 @@ export default function InformBlock({
 
         {/* Loading indicator (shown while practice blocks are generated in the background) */}
         {hideContinueButton && isPreparingContinue && (
-          <div className="flex justify-end">
+          <div className="flex justify-end" data-testid="inform-block-preparing-practice">
             <span className="inline-flex items-center gap-3 text-base font-semibold text-muted-foreground py-3 px-8 rounded-xl border border-border bg-card">
               <span className="w-5 h-5 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin" />
               <span>{t('informBlock.preparingPractice') as string}</span>

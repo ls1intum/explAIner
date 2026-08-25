@@ -16,4 +16,7 @@ export default Joi.object({
   LLM_BASE_URL: Joi.string().default('https://logos.aet.cit.tum.de/v1'),
   LLM_MODEL: Joi.string().default('openai/gpt-oss-120b'),
   ALLOWED_ORIGINS: Joi.string().optional(),
+  // Shared secret used by the e2e smoke test to flag its sessions as test data.
+  // Unset = the marker can never be set (normal for local dev).
+  E2E_TEST_TOKEN: Joi.string().optional(),
 });

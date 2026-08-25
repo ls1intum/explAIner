@@ -61,6 +61,10 @@ model Session {
   sigilMode               SigilMode?  @map("sigil_mode")
   // Language of the delivered learning material ('de' | 'en'); null = legacy/non-sigil session (English)
   lang                    String?     @db.VarChar(5)
+  // Session was created by the automated smoke test (e2e/), not by a study
+  // participant. Set only when the request carries a valid E2E_TEST_TOKEN.
+  // Exclude these rows from any analysis: WHERE is_test_run = false
+  isTestRun               Boolean     @default(false) @map("is_test_run")
 
   blocks Block[]
 

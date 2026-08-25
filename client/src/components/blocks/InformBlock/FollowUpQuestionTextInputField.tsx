@@ -31,11 +31,12 @@ export default function FollowUpQuestionTextInputField({
   };
 
   return (
-    <div className="p-6 pt-4 bg-background/50">
+    <div className="p-6 pt-4 bg-background/50" data-testid="chat-area">
       <div className="flex gap-3 mb-3">
         {/* Text input field */}
         <input
           type="text"
+          data-testid="chat-input"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyPress={handleKeyPress}

@@ -31,7 +31,12 @@ export class CreateSigilSessionService {
   ) {}
 
   @LogService()
-  async create(group: SigilGroupKey, section: SigilSectionKey, lang: SigilLang) {
+  async create(
+    group: SigilGroupKey,
+    section: SigilSectionKey,
+    lang: SigilLang,
+    isTestRun = false,
+  ) {
     const groupConfig = SIGIL_GROUP_CONFIG[group];
     const sectionConfig = SIGIL_SECTION_CONFIG[section];
     const topic = SIGIL_TOPICS[lang];
@@ -49,6 +54,7 @@ export class CreateSigilSessionService {
         learningGoalBloomsLevel: sectionConfig.bloomsLevel,
         sigilMode: sigilModeEnum as any,
         lang,
+        isTestRun,
       }, tx);
 
       // Build inform block message: greeting + markdown content
@@ -88,6 +94,9 @@ export class CreateSigilSessionService {
       lang,
       hasPractice: groupConfig.hasPractice,
       hasChat: groupConfig.hasChat,
+      // Echoed back so the smoke test can verify its own sessions really were
+      // marked (a silently mistyped secret would otherwise go unnoticed).
+      isTestRun,
       informBlock: mapToBlockResponseDto(result.informBlock),
     };
   }

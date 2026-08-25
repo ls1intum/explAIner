@@ -34,6 +34,8 @@ services:
       LLM_API_KEY: ${LLM_API_KEY}
       LLM_BASE_URL: ${LLM_BASE_URL}
       LLM_MODEL: ${LLM_MODEL}
+      # Shared secret letting the e2e smoke test flag its sessions as test data.
+      E2E_TEST_TOKEN: ${E2E_TEST_TOKEN:-}
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     volumes:

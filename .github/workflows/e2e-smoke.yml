@@ -1,0 +1,80 @@
+name: E2E Smoke Test
+
+# Runs the Playwright smoke test (3 groups x 2 languages) against a deployed
+# instance:
+#   - automatically after a successful "Deploy to Production" run
+#   - manually via workflow_dispatch (e.g. against a different base URL)
+#
+# Configuration:
+#   vars.E2E_BASE_URL          optional, defaults to the production URL below
+#   vars.SITE_ACCESS_TOKEN     the soft access-gate token (same one the client
+#                              bundle is built with in build-and-push.yml)
+#   secrets.E2E_TEST_TOKEN     shared secret that makes the server store the
+#                              created sessions with is_test_run = true. The
+#                              SAME value must exist in the "Production"
+#                              environment so the server container gets it.
+#                              (Kept as a repository secret rather than an
+#                              environment one so this job never waits on an
+#                              environment approval gate.)
+
+on:
+  workflow_run:
+    workflows: ['Deploy to Production']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      base-url:
+        type: string
+        description: 'Base URL to test (defaults to the production URL)'
+        default: ''
+      section:
+        type: choice
+        description: 'Sigil section to test'
+        options: [elements, details, all]
+        default: elements
+
+jobs:
+  smoke:
+    # Skip when the deploy itself failed - there is nothing worth testing then.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: e2e
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke test
+        env:
+          E2E_BASE_URL: ${{ inputs.base-url || vars.E2E_BASE_URL || 'https://explainer.aet.cit.tum.de' }}
+          E2E_ACCESS_TOKEN: ${{ vars.SITE_ACCESS_TOKEN }}
+          E2E_TEST_TOKEN: ${{ secrets.E2E_TEST_TOKEN }}
+          E2E_SECTION: ${{ inputs.section || 'elements' }}
+          E2E_PRACTICE_TIMEOUT_MS: '120000'
+        run: npm test
+
+      # The report/traces contain the access token (it travels in the URL, the
+      # way the survey embeds it) and the request headers, so keep the artifact
+      # short-lived and only upload it when there is something to debug.
+      - name: Upload report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7

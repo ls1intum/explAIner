@@ -40,6 +40,9 @@ services:
       LLM_API_KEY: ${LLM_API_KEY}
       LLM_BASE_URL: ${LLM_BASE_URL}
       LLM_MODEL: ${LLM_MODEL}
+      # Shared secret letting the e2e smoke test flag its sessions as test data
+      # (set in the GitHub "Production" environment; unset = marking disabled).
+      E2E_TEST_TOKEN: ${E2E_TEST_TOKEN:-}
     # No published ports - reached via the proxy on the internal network.
     networks:
       - explainer-network-prd
