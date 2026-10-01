@@ -515,6 +515,11 @@ export interface components {
                     sessionSummary: string;
                 };
             })[];
+            /**
+             * @description Sigil only: why the async practice generation failed (null = no failure)
+             * @enum {string|null}
+             */
+            practiceGenerationError?: "llm_unavailable" | "failed" | null;
         };
         GetSessionResponseDto_Output: {
             /**
@@ -659,6 +664,11 @@ export interface components {
                     sessionSummary: string;
                 };
             })[];
+            /**
+             * @description Sigil only: why the async practice generation failed (null = no failure)
+             * @enum {string|null}
+             */
+            practiceGenerationError?: "llm_unavailable" | "failed" | null;
         };
         DeleteSessionResponseDto_Output: {
             /** @description Whether the operation succeeded */

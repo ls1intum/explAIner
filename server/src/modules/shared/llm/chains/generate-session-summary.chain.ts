@@ -37,9 +37,9 @@ export class GenerateSessionSummaryChain {
     });
 
     // Call LLM with prompt
-    const llmResponse = await this.llmService.callClaude(prompt);
+    const llmResponse = await this.llmService.callClaude(prompt, 'generate-session-summary');
 
     // Parse LLM output against schema and return response
-    return this.llmService.createParser(SessionSummaryParserSchema).parse(llmResponse);
+    return this.llmService.createParser(SessionSummaryParserSchema, 'generate-session-summary').parse(llmResponse);
   }
 }

@@ -4,9 +4,15 @@ import { extractJsonFromMarkdown } from '../shared.utils';
 // Maximum number of retries if LLM output does not match the schema
 export const MAX_RETRIES = 1;
 
-// Message added to LLM prompt if parse fails
-const RETRY_FIX_MESSAGE = (error: string) =>
-  `Your previous response failed validation with this error: ${error}. Please return a valid JSON response matching the required format.`;
+// Message sent to the LLM if parse fails. It carries the previous response so
+// the model can repair it (the retry call has no other conversation context).
+const RETRY_FIX_MESSAGE = (previousResponse: string, error: string) =>
+  `Your previous response failed validation with this error: ${error}
+
+Your previous response was:
+${previousResponse}
+
+Return the corrected response as a pure JSON object matching the required format. Do NOT wrap it in markdown code blocks and do NOT add any explanation.`;
 
 /** Generic parser for LLM output */
 export class Parser<T> {
@@ -32,7 +38,7 @@ export class Parser<T> {
         lastError = error instanceof Error ? error.message : 'Unknown error';
         if (attempt < maxRetries && this.llmCall) {
           // Request a fix from the LLM
-          const prompt_with_fix_request = RETRY_FIX_MESSAGE(lastError);
+          const prompt_with_fix_request = RETRY_FIX_MESSAGE(textToParse, lastError);
           textToParse = await this.llmCall(prompt_with_fix_request); 
         } else {
           break;

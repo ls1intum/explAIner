@@ -26,9 +26,9 @@ export class GenerateLearningGoalsChain {
     });
 
     // Call LLM with prompt
-    const llmResponse = await this.llmService.callClaude(prompt);
+    const llmResponse = await this.llmService.callClaude(prompt, 'generate-learning-goals');
 
     // Parse LLM output against schema and return response
-    return this.llmService.createParser(LearningGoalsSchema).parse(llmResponse);
+    return this.llmService.createParser(LearningGoalsSchema, 'generate-learning-goals').parse(llmResponse);
   }
 }

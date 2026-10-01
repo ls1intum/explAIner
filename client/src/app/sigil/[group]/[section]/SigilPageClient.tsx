@@ -47,9 +47,13 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
   const [generateSummaryBlock, { isLoading: isGeneratingSummary }] = useGenerateSummaryBlockMutation();
   const [updateCurrentBlockIndex] = useUpdateCurrentBlockIndexMutation();
 
+  // Set by the server when the async practice generation failed (e.g. logos not
+  // reachable) — stop polling and show an error instead of waiting forever.
+  const [practiceError, setPracticeError] = useState<'llm_unavailable' | 'failed' | null>(null);
+
   const { data: sessionData, isLoading: isLoadingSession } = useGetSessionQuery(
     { sessionId: activeSessionId! },
-    { skip: !activeSessionId, pollingInterval: !practiceReady && hasPractice ? 3000 : 0 }
+    { skip: !activeSessionId, pollingInterval: !practiceReady && !practiceError && hasPractice ? 3000 : 0 }
   );
 
   const { data: blockResponse, isLoading: isBlockLoading } = useGetBlockQuery(
@@ -61,6 +65,8 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
   useEffect(() => {
     if (sessionData && (sessionData.totalBlocks > 1 || !hasPractice)) {
       setPracticeReady(true);
+    } else if (sessionData?.practiceGenerationError) {
+      setPracticeError(sessionData.practiceGenerationError);
     }
   }, [sessionData, hasPractice]);
 
@@ -224,6 +230,13 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
               hideContinueButton={!showContinueButton}
               hideChat={!hasChat}
               isPreparingContinue={hasPractice && !practiceReady}
+              practiceErrorMessage={
+                practiceError
+                  ? (t(practiceError === 'llm_unavailable'
+                      ? 'informBlock.practiceError.llmUnavailable'
+                      : 'informBlock.practiceError.failed') as string)
+                  : undefined
+              }
               embedded
             />
           )}

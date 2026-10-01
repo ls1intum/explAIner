@@ -23,7 +23,7 @@ export class GenerateSigilSubsequentChain {
     }
 
     const prompt = generateSigilSubsequentPrompt(params);
-    const llmResponse = await this.llmService.callClaude(prompt);
-    return this.llmService.createParser(SubsequentBlockSequenceParserSchema).parse(llmResponse);
+    const llmResponse = await this.llmService.callClaude(prompt, 'generate-sigil-subsequent');
+    return this.llmService.createParser(SubsequentBlockSequenceParserSchema, 'generate-sigil-subsequent').parse(llmResponse);
   }
 }

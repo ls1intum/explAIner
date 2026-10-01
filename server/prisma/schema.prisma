@@ -65,6 +65,10 @@ model Session {
   // participant. Set only when the request carries a valid E2E_TEST_TOKEN.
   // Exclude these rows from any analysis: WHERE is_test_run = false
   isTestRun               Boolean     @default(false) @map("is_test_run")
+  // Why the async sigil practice generation (explainer group) failed, so the
+  // client shows an error instead of waiting forever. null = no failure.
+  // 'llm_unavailable' (LLM endpoint not reachable/timed out) | 'failed' (other)
+  practiceGenerationError String?     @map("practice_generation_error") @db.VarChar(32)
 
   blocks Block[]
 

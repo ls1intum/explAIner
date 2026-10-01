@@ -40,9 +40,9 @@ export class GenerateChatResponseChain {
     });
 
     // Call LLM with prompt
-    const llmResponse = await this.llmService.callClaude(prompt);
+    const llmResponse = await this.llmService.callClaude(prompt, 'generate-chat-response');
 
     // Parse LLM output against schema and return response
-    return this.llmService.createParser(FollowUpAnswerMessageDtoSchema).parse(llmResponse);
+    return this.llmService.createParser(FollowUpAnswerMessageDtoSchema, 'generate-chat-response').parse(llmResponse);
   }
 }

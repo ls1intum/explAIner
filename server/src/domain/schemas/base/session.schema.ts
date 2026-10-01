@@ -11,5 +11,6 @@ export const SessionSchema = z.object({
   totalBlocks: z.number().int().describe('Total number of blocks in the session'),
   currentBlockIndex: z.number().int().describe('Current block index (0-based)'),
   blocks: z.array(BlockSchema).describe('All blocks in the session'),
+  practiceGenerationError: z.enum(['llm_unavailable', 'failed']).nullable().optional().describe('Sigil only: why the async practice generation failed (null = no failure)'),
 });
 export type Session = z.infer<typeof SessionSchema>;

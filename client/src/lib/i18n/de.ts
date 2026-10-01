@@ -57,6 +57,9 @@ const de: Translations = {
   'informBlock.inputPlaceholder': 'Stelle eine Folgefrage...',
   'informBlock.error.sendMessage': 'Nachricht konnte nicht gesendet werden. Bitte versuche es erneut.',
   'informBlock.preparingPractice': 'Übungen werden vorbereitet…',
+  'informBlock.error.llmUnavailable': 'LOGOS (der KI-Dienst) ist gerade nicht erreichbar. Bitte versuche es später erneut.',
+  'informBlock.practiceError.llmUnavailable': 'LOGOS (der KI-Dienst) ist gerade nicht erreichbar – die Übungen konnten nicht erstellt werden.',
+  'informBlock.practiceError.failed': 'Die Übungen konnten nicht erstellt werden.',
   'informBlock.tailoredExplanationTitle': 'Neue Erklärung – auf deine Antworten zugeschnitten',
 
   // Quick action chips

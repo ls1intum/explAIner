@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
 import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
+import { LlmUnavailableError } from '../../shared/llm/llm.service';
 import { GenerateSigilPracticeChain } from '../llm/generate-sigil-practice.chain';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy';
 import type { BloomsLevel } from '../../../domain/schemas/enums.schema';
@@ -17,7 +18,28 @@ export class GenerateSigilInitialPracticeService {
     private generateSigilPracticeChain: GenerateSigilPracticeChain,
   ) {}
 
-  async generateAsync(
+  /**
+   * Fire-and-forget practice generation. On failure the reason is stored on the
+   * session (practiceGenerationError) so the polling client can show an error
+   * message instead of waiting forever.
+   */
+  start(
+    sessionId: string,
+    markdownContent: string,
+    learningGoal: string,
+    bloomsLevel: BloomsLevel,
+    lang: string,
+  ): void {
+    this.generate(sessionId, markdownContent, learningGoal, bloomsLevel, lang).catch(async (err) => {
+      this.logger.error(`Async practice generation failed for session ${sessionId}: ${err.message}`);
+      const practiceGenerationError = err instanceof LlmUnavailableError ? 'llm_unavailable' : 'failed';
+      await this.sessionsRepository
+        .update(sessionId, { practiceGenerationError })
+        .catch((e) => this.logger.error(`Could not store practice generation error for session ${sessionId}: ${e.message}`));
+    });
+  }
+
+  private async generate(
     sessionId: string,
     markdownContent: string,
     learningGoal: string,

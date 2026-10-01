@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { ChevronRightIcon } from '@radix-ui/react-icons';
+import { ChevronRightIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 import { useGenerateChatResponseMutation } from '@/store/api/blocksApi';
@@ -22,6 +22,8 @@ interface InformBlockProps {
   hideChat?: boolean;
   /** While true, the continue button is still hidden but a loading indicator is shown in its place. */
   isPreparingContinue?: boolean;
+  /** Shown instead of the loading indicator when the practice blocks could not be generated. */
+  practiceErrorMessage?: string;
   /** Embedded (iframe) mode: use the full available width and scale the content area with the viewport. */
   embedded?: boolean;
 }
@@ -34,6 +36,7 @@ export default function InformBlock({
   hideContinueButton = false,
   hideChat = false,
   isPreparingContinue = false,
+  practiceErrorMessage,
   embedded = false,
 }: InformBlockProps) {
 
@@ -122,7 +125,10 @@ export default function InformBlock({
       setChatMessages((prev) => [...prev, owlbertResponse]);
     } catch (error) {
       console.error('Error sending message:', error);
-      dispatch(addToast({ message: t('informBlock.error.sendMessage') as string, type: 'error' }));
+      // 503 = the LLM endpoint (logos) did not answer
+      const llmUnavailable = (error as { status?: unknown })?.status === 503;
+      const errorKey = llmUnavailable ? 'informBlock.error.llmUnavailable' : 'informBlock.error.sendMessage';
+      dispatch(addToast({ message: t(errorKey) as string, type: 'error' }));
       setChatMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
     }
   };
@@ -184,11 +190,21 @@ export default function InformBlock({
         )}
 
         {/* Loading indicator (shown while practice blocks are generated in the background) */}
-        {hideContinueButton && isPreparingContinue && (
+        {hideContinueButton && isPreparingContinue && !practiceErrorMessage && (
           <div className="flex justify-end" data-testid="inform-block-preparing-practice">
             <span className="inline-flex items-center gap-3 text-base font-semibold text-muted-foreground py-3 px-8 rounded-xl border border-border bg-card">
               <span className="w-5 h-5 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin" />
               <span>{t('informBlock.preparingPractice') as string}</span>
+            </span>
+          </div>
+        )}
+
+        {/* Error message (practice blocks could not be generated, e.g. logos not reachable) */}
+        {hideContinueButton && practiceErrorMessage && (
+          <div className="flex justify-end" data-testid="inform-block-practice-error">
+            <span role="alert" className="inline-flex items-center gap-3 text-base font-semibold text-destructive py-3 px-8 rounded-xl border border-destructive/30 bg-destructive/10">
+              <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
+              <span>{practiceErrorMessage}</span>
             </span>
           </div>
         )}

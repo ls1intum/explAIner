@@ -57,6 +57,9 @@ const en: Translations = {
   'informBlock.inputPlaceholder': 'Ask a follow-up question...',
   'informBlock.error.sendMessage': 'Could not send message. Please try again.',
   'informBlock.preparingPractice': 'Preparing exercises…',
+  'informBlock.error.llmUnavailable': 'LOGOS (the AI service) is currently not reachable. Please try again later.',
+  'informBlock.practiceError.llmUnavailable': 'LOGOS (the AI service) is currently not reachable – the exercises could not be created.',
+  'informBlock.practiceError.failed': 'The exercises could not be created.',
   'informBlock.tailoredExplanationTitle': 'A new explanation — tailored to your answers',
 
   // Quick action chips

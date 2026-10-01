@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
@@ -20,8 +20,6 @@ import { mapToBlockResponseDto } from '../../shared/shared.utils';
 
 @Injectable()
 export class CreateSigilSessionService {
-  private readonly logger = new Logger(CreateSigilSessionService.name);
-
   constructor(
     private atomicDbTx: AtomicDatabaseTransactionRunner,
     private sessionsRepository: SessionsRepository,
@@ -74,17 +72,16 @@ export class CreateSigilSessionService {
       return { session, informBlock };
     }, { timeout: 10_000 });
 
-    // Phase B: Async practice generation (explainer group only, fire-and-forget)
+    // Phase B: Async practice generation (explainer group only, fire-and-forget;
+    // a failure is stored on the session and surfaced to the polling client)
     if (groupConfig.hasPractice) {
-      this.generatePractice.generateAsync(
+      this.generatePractice.start(
         result.session.id,
         markdownContent,
         learningGoal,
         sectionConfig.bloomsLevel,
         lang,
-      ).catch((err) => {
-        this.logger.error(`Async practice generation failed for session ${result.session.id}: ${err.message}`);
-      });
+      );
     }
 
     return {

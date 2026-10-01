@@ -63,6 +63,7 @@ export function mapToGetSessionResponseDto(session: {
   totalBlocks: number;
   currentBlockIndex: number;
   blocks: Parameters<typeof mapToBlockResponseDto>[0][];
+  practiceGenerationError?: string | null;
 }) {
   return {
     id: session.id,
@@ -75,6 +76,7 @@ export function mapToGetSessionResponseDto(session: {
     totalBlocks: session.totalBlocks,
     currentBlockIndex: session.currentBlockIndex,
     blocks: session.blocks.map((b) => mapToBlockResponseDto(b)),
+    practiceGenerationError: (session.practiceGenerationError ?? null) as 'llm_unavailable' | 'failed' | null,
   };
 }
 

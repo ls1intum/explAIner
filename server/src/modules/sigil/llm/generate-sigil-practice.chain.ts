@@ -22,7 +22,7 @@ export class GenerateSigilPracticeChain {
     }
 
     const prompt = generateSigilPracticePrompt(params);
-    const llmResponse = await this.llmService.callClaude(prompt);
-    return this.llmService.createParser(SigilPracticeParserSchema).parse(llmResponse);
+    const llmResponse = await this.llmService.callClaude(prompt, 'generate-sigil-practice');
+    return this.llmService.createParser(SigilPracticeParserSchema, 'generate-sigil-practice').parse(llmResponse);
   }
 }
