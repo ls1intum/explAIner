@@ -23,27 +23,32 @@ export class GenerateSigilBlockSequenceService {
 
   @LogService()
   async generate(sessionId: string, lang: SigilLang) {
+    const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId);
+
+    // Only explainer sessions have practice, and they all use the single section.
+    const config = SIGIL_SECTION_CONFIG.elements;
+    const markdownContent = this.contentLoader.getSections(lang, ...config.sections);
+    const soloLevels = getSOLOLevelsForBlooms(config.bloomsLevel);
+
+    const wrongAnswers = extractWrongAnswersFromPracticeBlocks(session.blocks, 'lastSequence');
+
+    // The LLM call runs outside the transaction: under load logos can take
+    // longer than any sensible transaction timeout, which used to expire the
+    // transaction and answer with a 500 after the LLM had already responded.
+    const blockSequence = await this.generateSubsequentChain.execute({
+      markdownContent,
+      learningGoal: session.learningGoal,
+      bloomsLevel: config.bloomsLevel,
+      soloLevels: soloLevels.map((l) => l.toString()),
+      wrongAnswers,
+      lang,
+    });
+    const formattedMessage = formatInformBlockMessage(BlockSequenceMode.SUBSEQUENT, blockSequence.informBlock);
+
     return this.atomicDbTx.run(async (tx) => {
-      const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId, tx);
-
-      // Only explainer sessions have practice, and they all use the single section.
-      const config = SIGIL_SECTION_CONFIG.elements;
-      const markdownContent = this.contentLoader.getSections(lang, ...config.sections);
-      const soloLevels = getSOLOLevelsForBlooms(config.bloomsLevel);
-
-      const wrongAnswers = extractWrongAnswersFromPracticeBlocks(session.blocks, 'lastSequence');
-
-      const blockSequence = await this.generateSubsequentChain.execute({
-        markdownContent,
-        learningGoal: session.learningGoal,
-        bloomsLevel: config.bloomsLevel,
-        soloLevels: soloLevels.map((l) => l.toString()),
-        wrongAnswers,
-        lang,
-      });
-
-      const nextOrderIndexStart = session.blocks.length;
-      const formattedMessage = formatInformBlockMessage(BlockSequenceMode.SUBSEQUENT, blockSequence.informBlock);
+      // Re-read inside the transaction so the order indices and block count are current.
+      const current = await this.sessionsRepository.getSessionWithAllBlocks(sessionId, tx);
+      const nextOrderIndexStart = current.blocks.length;
 
       const informBlock = await this.blocksRepository.createInformBlock(
         sessionId,
@@ -60,13 +65,13 @@ export class GenerateSigilBlockSequenceService {
         tx,
       );
 
-      const newTotal = session.totalBlocks + 4;
+      const newTotal = current.totalBlocks + 4;
       await this.sessionsRepository.update(sessionId, { totalBlocks: newTotal }, tx);
 
       return {
         informBlock: mapToBlockResponseDto(informBlock),
         practiceBlocks: practiceBlocks.map(mapToBlockResponseDto),
       };
-    }, { timeout: 45_000 });
+    }, { timeout: 10_000 });
   }
 }
