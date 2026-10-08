@@ -11,6 +11,7 @@ import {
   getCurrentBlockSequencePracticeBlocks,
 } from '../../shared/shared.utils';
 import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
+import { SIGIL_MAX_PRACTICE_SEQUENCES } from '../sigil.config';
 
 @Injectable()
 export class ContinueSigilSessionService {
@@ -37,10 +38,12 @@ export class ContinueSigilSessionService {
       if (next) return mapToContinueSessionResponseDto('navigate', next.orderIndex);
     }
 
-    // Passing at 2 of 3 correct (not a perfect score) completes the round.
-    if (passed) return mapToContinueSessionResponseDto('summary');
-
-    if (blockSequenceCounter >= 2) return mapToContinueSessionResponseDto('prompt-user');
+    // Passing at 2 of 3 correct (not a perfect score) completes the round. A
+    // participant who also fails the remediation round goes to the summary too,
+    // so nobody gets stuck before returning to the survey.
+    if (passed || blockSequenceCounter >= SIGIL_MAX_PRACTICE_SEQUENCES) {
+      return mapToContinueSessionResponseDto('summary');
+    }
 
     return mapToContinueSessionResponseDto('next-sequence');
   }

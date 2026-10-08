@@ -39,10 +39,11 @@ export class CreateSigilSessionService {
     const sectionConfig = SIGIL_SECTION_CONFIG[section];
     const topic = SIGIL_TOPICS[lang];
     const learningGoal = SIGIL_LEARNING_GOALS[section][lang];
-    const [from, to] = sectionConfig.sections;
-    const markdownContent = this.contentLoader.getSections(lang, from, to);
+    const markdownContent = this.contentLoader.getSections(lang, ...sectionConfig.displaySections);
+    // Practice is built from the taught sections only, so no question targets the out-of-scope note.
+    const practiceContent = this.contentLoader.getSections(lang, ...sectionConfig.sections);
 
-    const sigilModeEnum = toSigilModeEnum(group, section);
+    const sigilModeEnum = toSigilModeEnum(group);
 
     // Phase A: Create session + verbatim inform block (no LLM, instant)
     const result = await this.atomicDbTx.run(async (tx) => {
@@ -77,7 +78,7 @@ export class CreateSigilSessionService {
     if (groupConfig.hasPractice) {
       this.generatePractice.start(
         result.session.id,
-        markdownContent,
+        practiceContent,
         learningGoal,
         sectionConfig.bloomsLevel,
         lang,

@@ -111,32 +111,7 @@ Das Gründungsjahr wird auf das **nächste Jahrhundert aufgerundet**.
 Die Zahl steht **in goldener Schrift im Gründungsmittelpunkt**.
 
 <!-- SECTION 6 -->
-# 6. Kurzkennzeichen
+# Weitere Elemente
 
-Links im Siegel wird das **Kurzkennzeichen** (Kfz-Kennzeichen der Stadt) angezeigt.
-
-## Darstellung
-
-- rechteckiges Feld
-- links ein **blauer Streifen**
-- rechts ein **weißes Feld**
-- darin das Kurzkennzeichen in schwarzer Schrift
-
-## Beispiel
-
-München → **M**
-
-<!-- SECTION 7 -->
-# 7. Koordinatenrechteck
-
-Rechts im Siegel steht das **Koordinatenrechteck** mit geografischen Koordinaten.
-
-## Darstellung
-
-- weißes Rechteck
-- hellblauer Rahmen
-- Format: **Breitengrad|Längengrad** (ganzzahlig gekürzt, getrennt durch einen senkrechten Strich)
-
-## Beispiel
-
-München (48.1371° N, 11.5755° E) → **48|11**
+Das Siegel zeigt außerdem ein **Kurzkennzeichen** (links) und ein **Koordinatenrechteck** (rechts).
+Diese beiden Elemente sind **nicht Teil dieser Lerneinheit** und werden für die Aufgaben nicht benötigt.

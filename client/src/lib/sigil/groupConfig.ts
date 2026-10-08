@@ -10,7 +10,7 @@
  */
 
 export const VALID_SIGIL_GROUPS = ['explainer', 'chat', 'text'] as const;
-export const VALID_SIGIL_SECTIONS = ['elements', 'details', 'all'] as const;
+export const VALID_SIGIL_SECTIONS = ['elements'] as const;
 
 export type SigilGroup = (typeof VALID_SIGIL_GROUPS)[number];
 export type SigilSection = (typeof VALID_SIGIL_SECTIONS)[number];

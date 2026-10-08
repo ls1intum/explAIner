@@ -41,7 +41,6 @@ E2E_BASE_URL=https://explainer.aet.cit.tum.de E2E_ACCESS_TOKEN=<token> npm test
 | --- | --- | --- |
 | `E2E_BASE_URL` | `http://localhost:3000` | Target instance |
 | `E2E_ACCESS_TOKEN` | *(empty)* | `SITE_ACCESS_TOKEN` for the soft access gate |
-| `E2E_SECTION` | `elements` | Section under test (`elements`/`details`/`all`) |
 | `E2E_PRACTICE_TIMEOUT_MS` | `120000` | Budget for the explainer practice button |
 | `E2E_ABSENCE_GRACE_MS` | `8000` | Wait before asserting an element is absent |
 | `E2E_TEST_TOKEN` | *(empty)* | Shared secret; makes the server store the sessions with `is_test_run = true` |

@@ -34,7 +34,7 @@ export class SigilController {
   }
 
   @Post('sessions')
-  @ApiOperation({ summary: 'Create a sigil session', description: 'Creates a sigil learning session with group (explainer/chat/text) and section (elements/details/all)' })
+  @ApiOperation({ summary: 'Create a sigil session', description: 'Creates a sigil learning session with group (explainer/chat/text) and section (elements)' })
   @ApiHeader({
     name: E2E_TEST_TOKEN_HEADER,
     required: false,

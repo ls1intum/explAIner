@@ -111,32 +111,7 @@ The founding year is **rounded up to the next century**.
 The number is displayed **in golden text inside the Founding Center**.
 
 <!-- SECTION 6 -->
-# 6. Short Registration Plate
+# Further Elements
 
-On the left side of the sigil, the **Short Registration Plate** (vehicle registration code of the city) is displayed.
-
-## Appearance
-
-- rectangular field
-- on the left a **blue stripe**
-- on the right a **white field**
-- the Short Registration Plate in black text inside
-
-## Example
-
-Munich → **M**
-
-<!-- SECTION 7 -->
-# 7. Coordinate Rectangle
-
-On the right side of the sigil sits the **Coordinate Rectangle** with geographic coordinates.
-
-## Appearance
-
-- white rectangle
-- light blue border
-- Format: **Latitude|Longitude** (truncated to integers, separated by a vertical bar)
-
-## Example
-
-Munich (48.1371° N, 11.5755° E) → **48|11**
+The sigil also shows a **Short Registration Plate** (left) and a **Coordinate Rectangle** (right).
+These two elements are **not part of this lesson** and are not needed for the tasks.

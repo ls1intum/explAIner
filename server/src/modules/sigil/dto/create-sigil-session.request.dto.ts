@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const CreateSigilSessionRequestDtoSchema = z.object({
   group: z.enum(['explainer', 'chat', 'text']),
-  section: z.enum(['elements', 'details', 'all']),
+  section: z.enum(['elements']),
   lang: z.enum(['de', 'en']).default('de'),
 });
 

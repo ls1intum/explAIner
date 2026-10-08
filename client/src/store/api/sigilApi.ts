@@ -8,7 +8,7 @@ import type {
 
 interface CreateSigilSessionRequest {
   group: "explainer" | "chat" | "text";
-  section: "elements" | "details" | "all";
+  section: "elements";
   lang?: "de" | "en";
 }
 

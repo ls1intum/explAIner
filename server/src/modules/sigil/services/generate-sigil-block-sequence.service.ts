@@ -5,7 +5,7 @@ import { BlocksRepository } from '../../shared/database/repositories/blocks.repo
 import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.transaction-runner';
 import { SigilContentLoader } from '../content/sigil-content.loader';
 import { GenerateSigilSubsequentChain } from '../llm/generate-sigil-subsequent.chain';
-import { SIGIL_MODE_CONFIG, type SigilLang, type SigilModeKey } from '../sigil.config';
+import { SIGIL_SECTION_CONFIG, type SigilLang } from '../sigil.config';
 import { getSOLOLevelsForBlooms } from '../../../domain/didactical-frameworks/solo-taxonomy';
 import { extractWrongAnswersFromPracticeBlocks, mapToBlockResponseDto } from '../../shared/shared.utils';
 import { formatInformBlockMessage } from '../../blocks/blocks.utils';
@@ -26,18 +26,17 @@ export class GenerateSigilBlockSequenceService {
     return this.atomicDbTx.run(async (tx) => {
       const session = await this.sessionsRepository.getSessionWithAllBlocks(sessionId, tx);
 
-      const modeKey = (session.sigilMode?.toLowerCase() ?? 'elements') as SigilModeKey;
-      const config = SIGIL_MODE_CONFIG[modeKey];
-      const [from, to] = config.sections;
-      const markdownContent = this.contentLoader.getSections(lang, from, to);
-      const soloLevels = getSOLOLevelsForBlooms(config.bloomsLevel!);
+      // Only explainer sessions have practice, and they all use the single section.
+      const config = SIGIL_SECTION_CONFIG.elements;
+      const markdownContent = this.contentLoader.getSections(lang, ...config.sections);
+      const soloLevels = getSOLOLevelsForBlooms(config.bloomsLevel);
 
       const wrongAnswers = extractWrongAnswersFromPracticeBlocks(session.blocks, 'lastSequence');
 
       const blockSequence = await this.generateSubsequentChain.execute({
         markdownContent,
         learningGoal: session.learningGoal,
-        bloomsLevel: config.bloomsLevel!,
+        bloomsLevel: config.bloomsLevel,
         soloLevels: soloLevels.map((l) => l.toString()),
         wrongAnswers,
         lang,

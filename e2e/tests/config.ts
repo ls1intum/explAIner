@@ -7,7 +7,7 @@
 
 export const GROUPS = ['text', 'chat', 'explainer'] as const;
 export const LANGS = ['de', 'en'] as const;
-export const SECTIONS = ['elements', 'details', 'all'] as const;
+export const SECTIONS = ['elements'] as const;
 
 export type SigilGroup = (typeof GROUPS)[number];
 export type SigilLang = (typeof LANGS)[number];
@@ -25,8 +25,8 @@ export const EXPECTED_CAPABILITIES: Record<SigilGroup, { hasChat: boolean; hasPr
   text: { hasChat: false, hasPractice: false },
 };
 
-/** Section under test (one section is enough for a smoke test). */
-export const SECTION = (process.env.E2E_SECTION ?? 'elements') as SigilSection;
+/** The study has a single learning round, so there is only one section to test. */
+export const SECTION: SigilSection = 'elements';
 
 /**
  * How long the explainer group may take to show the practice ("Weiter") button.
@@ -67,8 +67,6 @@ export const CLEANUP_ENABLED = process.env.E2E_CLEANUP !== '0';
  */
 export const MATERIAL_HEADING: Record<SigilSection, Record<SigilLang, string>> = {
   elements: { de: '1. Bundeslandshintergrund', en: '1. State Background' },
-  details: { de: '5. Gründungsmittelpunkt', en: '5. Founding Center' },
-  all: { de: '1. Bundeslandshintergrund', en: '1. State Background' },
 };
 
 /** Builds the study URL exactly the way the survey embeds it. */

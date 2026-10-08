@@ -1,11 +1,9 @@
 import type { BloomsLevel } from '../../domain/schemas/enums.schema';
 
 export type SigilGroupKey = 'explainer' | 'chat' | 'text';
-export type SigilSectionKey = 'elements' | 'details' | 'all';
+// The study runs a single learning round, so there is only one section.
+export type SigilSectionKey = 'elements';
 export type SigilLang = 'de' | 'en';
-
-// Legacy mode key for backward compatibility with DB enum
-export type SigilModeKey = 'elements' | 'details' | 'analysis' | 'chat';
 
 interface SigilGroupConfig {
   hasPractice: boolean;
@@ -13,7 +11,10 @@ interface SigilGroupConfig {
 }
 
 interface SigilSectionConfig {
+  /** Material sections that are taught: practice and remediation are built from these only. */
   sections: [number, number];
+  /** Material sections that are displayed: the taught ones plus the "further elements" note. */
+  displaySections: [number, number];
   bloomsLevel: BloomsLevel;
 }
 
@@ -24,9 +25,9 @@ export const SIGIL_GROUP_CONFIG: Record<SigilGroupKey, SigilGroupConfig> = {
 };
 
 export const SIGIL_SECTION_CONFIG: Record<SigilSectionKey, SigilSectionConfig> = {
-  elements: { sections: [1, 4], bloomsLevel: 'Understand' },
-  details:  { sections: [5, 7], bloomsLevel: 'Understand' },
-  all:      { sections: [1, 7], bloomsLevel: 'Analyze' },
+  // Elements 1–5 are taught. Section 6 only names the Short Registration Plate
+  // and Coordinate Rectangle (visible on the survey's sigil images) as out of scope.
+  elements: { sections: [1, 5], displaySections: [1, 6], bloomsLevel: 'Understand' },
 };
 
 export const SIGIL_TOPICS: Record<SigilLang, string> = {
@@ -36,16 +37,8 @@ export const SIGIL_TOPICS: Record<SigilLang, string> = {
 
 export const SIGIL_LEARNING_GOALS: Record<SigilSectionKey, Record<SigilLang, string>> = {
   elements: {
-    de: 'Ich kann die Verwendung der äußeren Elemente eines Stadtsiegels (Bundeslandshintergrund, Bevölkerungsrahmen, Hauptstadtkrone, Orientierungskreis) erklären.',
-    en: 'I can explain the use of the outer elements of a city sigil (State Background, Population Frame, Capital Crown, Orientation Disk).',
-  },
-  details: {
-    de: 'Ich kann die Verwendung der inneren Informationselemente eines Stadtsiegels (Gründungsmittelpunkt, Kurzkennzeichen, Koordinatenrechteck) erklären.',
-    en: 'I can explain the use of the inner information elements of a city sigil (Founding Center, Short Registration Plate, Coordinate Rectangle).',
-  },
-  all: {
-    de: 'Ich kann Städte auf Basis eines unvollständigen Siegels identifizieren.',
-    en: 'Based on an incomplete sigil I can assess which city a sigil belongs to.',
+    de: 'Ich kann die Verwendung der Elemente eines Stadtsiegels (Bundeslandshintergrund, Bevölkerungsrahmen, Hauptstadtkrone, Orientierungskreis, Gründungsmittelpunkt) erklären.',
+    en: 'I can explain the use of the elements of a city sigil (State Background, Population Frame, Capital Crown, Orientation Disk, Founding Center).',
   },
 };
 
@@ -85,19 +78,14 @@ export const SIGIL_STATE_COLORS_REFERENCE: Record<SigilLang, string> = {
 | Lower Saxony | Black – Red – Gold |`,
 };
 
-// Legacy compatibility: map group+section to old mode key for DB storage
-export function toSigilModeEnum(group: SigilGroupKey, section: SigilSectionKey): string {
+// Map group to the DB enum value. Explainer sessions are stored as 'Elements';
+// the enum's 'Details' and 'Analysis' values only remain for sessions from the
+// earlier three-round design.
+export function toSigilModeEnum(group: SigilGroupKey): string {
   if (group === 'chat') return 'Chat';
   if (group === 'text') return 'Text';
-  // explainer group
-  if (section === 'all') return 'Analysis';
-  return section.charAt(0).toUpperCase() + section.slice(1); // 'Elements' | 'Details'
+  return 'Elements';
 }
 
-// Legacy: resolve config from old mode key stored in DB
-export const SIGIL_MODE_CONFIG: Record<SigilModeKey, { sections: [number, number]; bloomsLevel: BloomsLevel | null; hasPractice: boolean }> = {
-  elements: { sections: [1, 4], bloomsLevel: 'Understand', hasPractice: true },
-  details:  { sections: [5, 7], bloomsLevel: 'Understand', hasPractice: true },
-  analysis: { sections: [1, 7], bloomsLevel: 'Analyze',    hasPractice: true },
-  chat:     { sections: [1, 7], bloomsLevel: null,          hasPractice: false },
-};
+/** Maximum practice rounds for the explainer group: the initial one plus one remediation. */
+export const SIGIL_MAX_PRACTICE_SEQUENCES = 2;
