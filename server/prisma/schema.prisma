@@ -62,16 +62,23 @@ model Session {
   // Language of the delivered learning material ('de' | 'en'); null = legacy/non-sigil session (English)
   lang                    String?     @db.VarChar(5)
   // Session was created by the automated smoke test (e2e/), not by a study
-  // participant. Set only when the request carries a valid E2E_TEST_TOKEN.
+  // participant, or by a survey pretest (?test=1). Set only when the request
+  // carries a valid E2E_TEST_TOKEN or the create request has isTestRun: true.
   // Exclude these rows from any analysis: WHERE is_test_run = false
   isTestRun               Boolean     @default(false) @map("is_test_run")
   // Why the async sigil practice generation (explainer group) failed, so the
   // client shows an error instead of waiting forever. null = no failure.
   // 'llm_unavailable' (LLM endpoint not reachable/timed out) | 'failed' (other)
   practiceGenerationError String?     @map("practice_generation_error") @db.VarChar(32)
+  // SoSci Survey case number (CASE) handed in by the survey iframe (?case=).
+  // Links the session to the questionnaire row and lets a reload of the survey
+  // page resume this session instead of starting a new one.
+  // null = not started from the survey (direct link, smoke test, legacy).
+  sosciCase               String?     @map("sosci_case") @db.VarChar(16)
 
   blocks Block[]
 
+  @@index([sosciCase])
   @@map("sessions")
 }
 
