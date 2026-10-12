@@ -20,6 +20,7 @@ import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { SIGIL_GROUP_CAPABILITIES, type SigilGroup, type SigilSection } from '@/lib/sigil/groupConfig';
+import { postToSurvey } from '@/lib/sigil/surveyBridge';
 
 interface SigilPageClientProps {
   group: SigilGroup;
@@ -74,6 +75,11 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
     }
   }, [sessionData, hasPractice]);
 
+  // Tell the survey that practice generation failed (it can then let the participant go on).
+  useEffect(() => {
+    if (practiceError) postToSurvey({ type: 'explainer:error', reason: practiceError });
+  }, [practiceError]);
+
   // Create session on mount if no existing session
   useEffect(() => {
     if (activeSessionId || creatingRef.current) return;
@@ -104,6 +110,7 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
       } catch (error) {
         console.error('Failed to create sigil session:', error);
         dispatch(addToast({ message: t('session.error.createSession') as string, type: 'error' }));
+        postToSurvey({ type: 'explainer:error', reason: 'create_failed' });
         creatingRef.current = false;
       }
     };
@@ -128,6 +135,16 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
   }, [sessionData, activeSessionId, sessionIdFromState, dispatch]);
 
   const displayBlock = blockResponse?.data;
+
+  // Tell the survey once that the participant reached the summary, i.e. finished
+  // the practice (also on resuming an already finished session).
+  const practiceDoneSentRef = useRef(false);
+  useEffect(() => {
+    if (!hasPractice || practiceDoneSentRef.current) return;
+    if (displayBlock?.type !== BLOCK_TYPE.SUMMARY) return;
+    practiceDoneSentRef.current = true;
+    postToSurvey({ type: 'explainer:practice-done' });
+  }, [displayBlock?.type, hasPractice]);
 
   const [summaryData, setSummaryData] = useState<{
     block: Block;
