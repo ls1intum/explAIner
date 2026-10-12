@@ -25,8 +25,10 @@ The Population Frame shows the **size of the city** based on its population.
 | Population | Class | Frame Type |
 |-----|-----|-----|
 | up to 500,000 | Medium City | uniform green border |
-| 500,001 – 1,000,000 | Large City | four markers on the border (top, bottom, left, right) |
-| over 1,000,000 | Megacity | four markers + significantly wider green border
+| 500,001 – 1,000,000 | Large City | narrow black ring with four rounded markers (top, bottom, left, right) |
+| over 1,000,000 | Megacity | wide black ring with four triangular markers (top, bottom, left, right) |
+
+All three frames have a green outer border.
 
 ## Example
 
@@ -81,7 +83,7 @@ It contains a **Location Disk** — a golden dot that shows **where the city is 
 For city-states (Berlin, Hamburg, Bremen) a special rule applies:
 
 - the Location Disk is **larger**
-- it is placed **centrally**
+- it **fills the Orientation Disk**
 
 This indicates that city and federal state are **identical**.
 
@@ -89,7 +91,7 @@ This indicates that city and federal state are **identical**.
 
 Munich (Location: South) → Location Disk at the bottom
 Dresden (Location: East) → Location Disk on the right
-Hamburg (City-State) → large Location Disk centered
+Hamburg (City-State) → large Location Disk filling the Orientation Disk
 
 <!-- SECTION 5 -->
 # 5. Founding Center

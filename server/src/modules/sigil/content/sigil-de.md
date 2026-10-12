@@ -25,8 +25,10 @@ Der Bevölkerungsrahmen zeigt die **Größe der Stadt** anhand der Einwohnerzahl
 | Einwohnerzahl | Klasse | Rahmenart |
 |-----|-----|-----|
 | bis 500.000 | Mittelstadt | gleichmäßiger grüner Rand |
-| 500.001 - 1.000.000 | Großstadt | vier Markierungen am Rand (oben, unten, links, rechts) |
-| über 1.000.000 | Megastadt | vier Markierungen + deutlich breiterer grüner Rand
+| 500.001 - 1.000.000 | Großstadt | schmaler schwarzer Ring mit vier abgerundeten Markierungen (oben, unten, links, rechts) |
+| über 1.000.000 | Megastadt | breiter schwarzer Ring mit vier dreieckigen Markierungen (oben, unten, links, rechts) |
+
+Alle drei Rahmen haben außen einen grünen Rand.
 
 ## Beispiel
 
@@ -81,7 +83,7 @@ Er enthält einen **Lagekreis** — einen goldenen Punkt, der zeigt, **wo die St
 Für Stadtstaaten (Berlin, Hamburg, Bremen) gilt eine Sonderregel:
 
 - der Lagekreis ist **größer**
-- er liegt **zentral**
+- er **füllt den Orientierungskreis aus**
 
 Dies zeigt, dass Stadt und Bundesland **identisch sind**.
 
@@ -89,7 +91,7 @@ Dies zeigt, dass Stadt und Bundesland **identisch sind**.
 
 München (Lage: Süd) → Lagekreis unten
 Dresden (Lage: Ost) → Lagekreis rechts
-Hamburg (Stadtstaat) → großer Lagekreis zentral
+Hamburg (Stadtstaat) → großer Lagekreis, der den Orientierungskreis ausfüllt
 
 <!-- SECTION 5 -->
 # 5. Gründungsmittelpunkt
