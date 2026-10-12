@@ -25,9 +25,12 @@ export default function SigilPage({
   const section = params.section as SigilSection;
   const lang = (searchParams.lang === 'en' ? 'en' : 'de') as 'de' | 'en';
   const existingSessionId = searchParams.session ?? null;
-  // Set by the SoSci Survey iframe: the survey case number (validated by the
-  // server) and the pretest marker (&test=1).
-  const sosciCase = typeof searchParams.case === 'string' && searchParams.case !== '' ? searchParams.case : null;
+  // Set by the SoSci Survey iframe: the survey case number and the pretest
+  // marker (&test=1). A malformed case is dropped rather than sent, so a survey
+  // misconfiguration costs the link to the survey data, not the participant's
+  // learning session (the server rejects anything but this pattern).
+  const sosciCase =
+    typeof searchParams.case === 'string' && /^[1-9][0-9]{0,11}$/.test(searchParams.case) ? searchParams.case : null;
   const isTestRun = searchParams.test === '1';
 
   return (
