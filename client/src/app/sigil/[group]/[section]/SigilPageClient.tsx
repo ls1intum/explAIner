@@ -26,9 +26,13 @@ interface SigilPageClientProps {
   section: SigilSection;
   lang: 'de' | 'en';
   existingSessionId: string | null;
+  /** SoSci Survey case number (?case=): a reload of the survey page resumes this case's session. */
+  sosciCase: string | null;
+  /** Survey pretest (?test=1): the session is stored as test data. */
+  isTestRun: boolean;
 }
 
-export default function SigilPageClient({ group, section, lang, existingSessionId }: SigilPageClientProps) {
+export default function SigilPageClient({ group, section, lang, existingSessionId, sosciCase, isTestRun }: SigilPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
@@ -77,12 +81,22 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
 
     const create = async () => {
       try {
-        const result = await createSigilSession({ group, section, lang }).unwrap();
+        const result = await createSigilSession({
+          group,
+          section,
+          lang,
+          ...(sosciCase ? { sosciCase } : {}),
+          ...(isTestRun ? { isTestRun: true } : {}),
+        }).unwrap();
         const newSessionId = result.sessionId;
         setActiveSessionId(newSessionId);
-        dispatch(setSessionId(newSessionId));
-        dispatch(setCurrentBlockIndex(0));
-        dispatch(setHighestAlreadyViewedBlockIndex(0));
+        // A resumed session (same survey case) keeps its position: Redux is
+        // hydrated from the server below, exactly like a ?session= reload.
+        if (!result.resumed) {
+          dispatch(setSessionId(newSessionId));
+          dispatch(setCurrentBlockIndex(0));
+          dispatch(setHighestAlreadyViewedBlockIndex(0));
+        }
 
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.set('session', newSessionId);
@@ -95,7 +109,7 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
     };
 
     create();
-  }, [activeSessionId, group, section, lang, createSigilSession, dispatch, router, searchParams]);
+  }, [activeSessionId, group, section, lang, sosciCase, isTestRun, createSigilSession, dispatch, router, searchParams]);
 
   // Hydrate Redux from session data
   useEffect(() => {

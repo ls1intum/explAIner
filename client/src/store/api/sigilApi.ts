@@ -10,6 +10,10 @@ interface CreateSigilSessionRequest {
   group: "explainer" | "chat" | "text";
   section: "elements";
   lang?: "de" | "en";
+  /** SoSci Survey case number (?case=); an existing session of this case is resumed. */
+  sosciCase?: string;
+  /** Survey pretest (?test=1): the session is stored as test data. */
+  isTestRun?: boolean;
 }
 
 interface CreateSigilSessionResponse {
@@ -19,6 +23,9 @@ interface CreateSigilSessionResponse {
   lang: string;
   hasPractice: boolean;
   hasChat: boolean;
+  isTestRun: boolean;
+  /** True when an existing session of the same SoSci case was returned. */
+  resumed: boolean;
   informBlock: {
     id: string;
     orderIndex: number;
