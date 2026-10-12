@@ -79,6 +79,7 @@ const en: Translations = {
   // Summary block
   'summaryBlock.heading': 'SUMMARY',
   'summaryBlock.startNewSession': 'Start New Session',
+  'summaryBlock.returnToSurvey': 'Done! You can now click “Next” below in the questionnaire.',
   'summaryBlock.learningGoalAchieved': 'LEARNING GOAL ACHIEVED',
   'summaryBlock.blocksCompleted': 'Blocks Completed',
   'summaryBlock.sessionDuration': 'Session Duration',

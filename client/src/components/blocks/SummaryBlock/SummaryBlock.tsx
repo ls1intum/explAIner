@@ -16,7 +16,10 @@ interface SummaryBlockProps {
     totalBlocks: number;
     sessionDuration: number;
   };
-  /** Embedded (iframe) mode: use the full available width. */
+  /**
+   * Embedded (iframe) mode, i.e. the survey study: use the full available width
+   * and point back to the questionnaire instead of offering a new session.
+   */
   embedded?: boolean;
 }
 
@@ -65,13 +68,23 @@ export default function SummaryBlock({ block, sessionInfo, embedded = false }: S
           <FeedbackRating sessionId={block.sessionId} />
         </div>
 
-        {/* "Start New Session" button */}
-        <button
-          onClick={handleStartNewSession}
-          className="w-full bg-brand-gradient text-white font-semibold text-lg py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg"
-        >
-          {t('summaryBlock.startNewSession') as string}
-        </button>
+        {embedded ? (
+          /* Survey study: no way out of the study, the questionnaire continues below */
+          <p
+            data-testid="summary-block-return-to-survey"
+            className="text-center text-base font-semibold text-foreground"
+          >
+            {t('summaryBlock.returnToSurvey') as string}
+          </p>
+        ) : (
+          /* "Start New Session" button */
+          <button
+            onClick={handleStartNewSession}
+            className="w-full bg-brand-gradient text-white font-semibold text-lg py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg"
+          >
+            {t('summaryBlock.startNewSession') as string}
+          </button>
+        )}
       </div>
     </div>
   );
