@@ -20,15 +20,20 @@ import type { Block } from '@/types/domain/block.types';
 import { BLOCK_TYPE } from '@/types/domain/enums';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { SIGIL_GROUP_CAPABILITIES, type SigilGroup, type SigilSection } from '@/lib/sigil/groupConfig';
+import { postToSurvey } from '@/lib/sigil/surveyBridge';
 
 interface SigilPageClientProps {
   group: SigilGroup;
   section: SigilSection;
   lang: 'de' | 'en';
   existingSessionId: string | null;
+  /** SoSci Survey case number (?case=): a reload of the survey page resumes this case's session. */
+  sosciCase: string | null;
+  /** Survey pretest (?test=1): the session is stored as test data. */
+  isTestRun: boolean;
 }
 
-export default function SigilPageClient({ group, section, lang, existingSessionId }: SigilPageClientProps) {
+export default function SigilPageClient({ group, section, lang, existingSessionId, sosciCase, isTestRun }: SigilPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
@@ -70,6 +75,11 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
     }
   }, [sessionData, hasPractice]);
 
+  // Tell the survey that practice generation failed (it can then let the participant go on).
+  useEffect(() => {
+    if (practiceError) postToSurvey({ type: 'explainer:error', reason: practiceError });
+  }, [practiceError]);
+
   // Create session on mount if no existing session
   useEffect(() => {
     if (activeSessionId || creatingRef.current) return;
@@ -77,12 +87,22 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
 
     const create = async () => {
       try {
-        const result = await createSigilSession({ group, section, lang }).unwrap();
+        const result = await createSigilSession({
+          group,
+          section,
+          lang,
+          ...(sosciCase ? { sosciCase } : {}),
+          ...(isTestRun ? { isTestRun: true } : {}),
+        }).unwrap();
         const newSessionId = result.sessionId;
         setActiveSessionId(newSessionId);
-        dispatch(setSessionId(newSessionId));
-        dispatch(setCurrentBlockIndex(0));
-        dispatch(setHighestAlreadyViewedBlockIndex(0));
+        // A resumed session (same survey case) keeps its position: Redux is
+        // hydrated from the server below, exactly like a ?session= reload.
+        if (!result.resumed) {
+          dispatch(setSessionId(newSessionId));
+          dispatch(setCurrentBlockIndex(0));
+          dispatch(setHighestAlreadyViewedBlockIndex(0));
+        }
 
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.set('session', newSessionId);
@@ -90,12 +110,13 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
       } catch (error) {
         console.error('Failed to create sigil session:', error);
         dispatch(addToast({ message: t('session.error.createSession') as string, type: 'error' }));
+        postToSurvey({ type: 'explainer:error', reason: 'create_failed' });
         creatingRef.current = false;
       }
     };
 
     create();
-  }, [activeSessionId, group, section, lang, createSigilSession, dispatch, router, searchParams]);
+  }, [activeSessionId, group, section, lang, sosciCase, isTestRun, createSigilSession, dispatch, router, searchParams]);
 
   // Hydrate Redux from session data
   useEffect(() => {
@@ -114,6 +135,16 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
   }, [sessionData, activeSessionId, sessionIdFromState, dispatch]);
 
   const displayBlock = blockResponse?.data;
+
+  // Tell the survey once that the participant reached the summary, i.e. finished
+  // the practice (also on resuming an already finished session).
+  const practiceDoneSentRef = useRef(false);
+  useEffect(() => {
+    if (!hasPractice || practiceDoneSentRef.current) return;
+    if (displayBlock?.type !== BLOCK_TYPE.SUMMARY) return;
+    practiceDoneSentRef.current = true;
+    postToSurvey({ type: 'explainer:practice-done' });
+  }, [displayBlock?.type, hasPractice]);
 
   const [summaryData, setSummaryData] = useState<{
     block: Block;

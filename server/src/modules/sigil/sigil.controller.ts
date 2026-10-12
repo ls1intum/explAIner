@@ -34,7 +34,7 @@ export class SigilController {
   }
 
   @Post('sessions')
-  @ApiOperation({ summary: 'Create a sigil session', description: 'Creates a sigil learning session with group (explainer/chat/text) and section (elements)' })
+  @ApiOperation({ summary: 'Create a sigil session', description: 'Creates a sigil learning session with group (explainer/chat/text) and section (elements). With sosciCase, an existing session of the same case, group and language is resumed instead.' })
   @ApiHeader({
     name: E2E_TEST_TOKEN_HEADER,
     required: false,
@@ -48,7 +48,9 @@ export class SigilController {
       dto.group,
       dto.section,
       dto.lang,
-      this.isTestRun(e2eTestToken),
+      // Survey pretests (?test=1) flag themselves; the smoke test uses the header.
+      dto.isTestRun === true || this.isTestRun(e2eTestToken),
+      dto.sosciCase,
     );
   }
 

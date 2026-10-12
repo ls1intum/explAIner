@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, SigilMode } from '@prisma/client';
 import type { DatabaseTransactionClient } from '../database.transaction-runner';
 
 /** Sessions Repository: Handles all session related database operations */
@@ -39,6 +39,22 @@ export class SessionsRepository {
     });
     if (!session) throw new NotFoundException(`Session with ID ${sessionId} not found`);
     return session;
+  }
+
+  /**
+   * Latest sigil session started from the survey with this case number, in
+   * the same group (sigil mode), language and test/real split — or null.
+   */
+  async findLatestSigilSessionBySosciCase(where: {
+    sosciCase: string;
+    sigilMode: SigilMode;
+    lang: string;
+    isTestRun: boolean;
+  }) {
+    return this.prisma.session.findFirst({
+      where,
+      orderBy: { startedAt: 'desc' },
+    });
   }
 
   async create(data: Prisma.SessionCreateInput, tx?: DatabaseTransactionClient) {
