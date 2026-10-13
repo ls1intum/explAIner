@@ -13,9 +13,9 @@ The State Background shows **which federal state the city belongs to**.
 
 ## Example
 
-Baden-Württemberg → black on top, yellow on bottom
-Lower Saxony → black, red, yellow
-Schleswig-Holstein → blue, white, red
+- Baden-Württemberg → black on top, yellow on bottom
+- Lower Saxony → black, red, yellow
+- Schleswig-Holstein → blue, white, red
 
 <!-- SECTION 2 -->
 # 2. Population Frame
@@ -32,9 +32,9 @@ All three frames have a green outer border.
 
 ## Example
 
-Münster (316,403 inhabitants) → Medium City
-Dortmund (587,696 inhabitants) → Large City
-Berlin (3,664,088 inhabitants) → Megacity
+- Münster (316,403 inhabitants) → Medium City
+- Dortmund (587,696 inhabitants) → Large City
+- Berlin (3,664,088 inhabitants) → Megacity
 
 <!-- SECTION 3 -->
 # 3. Capital Crown
@@ -52,10 +52,10 @@ The Capital Crown indicates the **political status of the city**.
 
 ## Example
 
-Berlin → Federal Capital Crown
-Munich → State Capital Crown
-Bonn → Special Case Crown
-Cologne → no crown
+- Berlin → Federal Capital Crown
+- Munich → State Capital Crown
+- Bonn → Special Case Crown
+- Cologne → no crown
 
 <!-- SECTION 4 -->
 # 4. Orientation Disk (Location within the Federal State)
@@ -89,9 +89,9 @@ This indicates that city and federal state are **identical**.
 
 ## Example
 
-Munich (Location: South) → Location Disk at the bottom
-Dresden (Location: East) → Location Disk on the right
-Hamburg (City-State) → large Location Disk filling the Orientation Disk
+- Munich (Location: South) → Location Disk at the bottom
+- Dresden (Location: East) → Location Disk on the right
+- Hamburg (City-State) → large Location Disk filling the Orientation Disk
 
 <!-- SECTION 5 -->
 # 5. Founding Center
