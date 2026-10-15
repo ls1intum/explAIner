@@ -13,9 +13,9 @@ Der Bundeslandshintergrund zeigt, **in welchem Bundesland die Stadt liegt**.
 
 ## Beispiel
 
-Baden-Württemberg → oben schwarz, unten gelb
-Niedersachsen → schwarz, rot, gelb
-Schleswig-Holstein → blau, weiß, rot
+- Baden-Württemberg → oben schwarz, unten gelb
+- Niedersachsen → schwarz, rot, gelb
+- Schleswig-Holstein → blau, weiß, rot
 
 <!-- SECTION 2 -->
 # 2. Bevölkerungsrahmen
@@ -32,9 +32,9 @@ Alle drei Rahmen haben außen einen grünen Rand.
 
 ## Beispiel
 
-Münster (316.403 Einwohner) → Mittelstadt
-Dortmund (587.696 Einwohner) → Großstadt
-Berlin (3.664.088 Einwohner) → Megastadt
+- Münster (316.403 Einwohner) → Mittelstadt
+- Dortmund (587.696 Einwohner) → Großstadt
+- Berlin (3.664.088 Einwohner) → Megastadt
 
 <!-- SECTION 3 -->
 # 3. Hauptstadtkrone
@@ -52,10 +52,10 @@ Die Hauptstadtkrone zeigt den **politischen Status der Stadt**.
 
 ## Beispiel
 
-Berlin → Bundeshauptstadt-Krone
-München → Landeshauptstadt-Krone
-Bonn → Sonderfall-Krone
-Köln → keine Krone
+- Berlin → Bundeshauptstadt-Krone
+- München → Landeshauptstadt-Krone
+- Bonn → Sonderfall-Krone
+- Köln → keine Krone
 
 <!-- SECTION 4 -->
 # 4. Orientierungskreis (Lage im Bundesland)
@@ -89,9 +89,9 @@ Dies zeigt, dass Stadt und Bundesland **identisch sind**.
 
 ## Beispiel
 
-München (Lage: Süd) → Lagekreis unten
-Dresden (Lage: Ost) → Lagekreis rechts
-Hamburg (Stadtstaat) → großer Lagekreis, der den Orientierungskreis ausfüllt
+- München (Lage: Süd) → Lagekreis unten
+- Dresden (Lage: Ost) → Lagekreis rechts
+- Hamburg (Stadtstaat) → großer Lagekreis, der den Orientierungskreis ausfüllt
 
 <!-- SECTION 5 -->
 # 5. Gründungsmittelpunkt

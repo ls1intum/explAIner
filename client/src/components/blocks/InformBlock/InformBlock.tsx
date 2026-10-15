@@ -182,7 +182,7 @@ export default function InformBlock({
                 data-testid="inform-block-continue"
                 className="bg-success-gradient text-white font-semibold text-base py-3 px-8 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 border-0 appearance-none"
               >
-                <span>{t('informBlock.continue') as string}</span>
+                <span>{t(embedded ? 'informBlock.continueEmbedded' : 'informBlock.continue') as string}</span>
                 <ChevronRightIcon className="w-5 h-5" />
               </button>
             </span>

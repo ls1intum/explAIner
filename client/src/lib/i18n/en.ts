@@ -54,6 +54,8 @@ const en: Translations = {
 
   // Inform block
   'informBlock.continue': 'Continue',
+  // Embedded in SoSci: must not read like the survey's own “Next” button
+  'informBlock.continueEmbedded': 'Go to exercises',
   'informBlock.inputPlaceholder': 'Ask a follow-up question...',
   'informBlock.error.sendMessage': 'Could not send message. Please try again.',
   'informBlock.preparingPractice': 'Preparing exercises…',
@@ -72,6 +74,7 @@ const en: Translations = {
   'practiceBlock.checkAnswer': 'Check Answer',
   'practiceBlock.checking': 'Checking...',
   'practiceBlock.continue': 'Continue',
+  'practiceBlock.continueEmbedded': 'Continue',
   'practiceBlock.error.submitAnswer': 'Could not submit answer. Please try again.',
   'practiceBlock.feedback.correct': 'Correct! Well done.',
   'practiceBlock.feedback.incorrect': 'Not quite right. Check the correct answer above.',
