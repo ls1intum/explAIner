@@ -64,6 +64,12 @@ export class LlmService {
     const startedAt = Date.now();
     this.logger.log(`#${callId} ${label} start (model=${this.model.trim()}, promptChars=${prompt.length})`);
 
+    // Only set overrides that are given: the SDK rejects an explicit `timeout: undefined`
+    // ("timeout must be an integer") instead of falling back to the client default.
+    const requestOptions: { timeout?: number; maxRetries?: number } = {};
+    if (options.timeoutMs !== undefined) requestOptions.timeout = options.timeoutMs;
+    if (options.maxRetries !== undefined) requestOptions.maxRetries = options.maxRetries;
+
     try {
       const response = await this.client.chat.completions.create(
         {
@@ -71,7 +77,7 @@ export class LlmService {
           max_tokens: 4096,
           messages: [{ role: 'user', content: prompt }],
         },
-        { timeout: options.timeoutMs, maxRetries: options.maxRetries },
+        requestOptions,
       );
 
       const choice = response.choices[0];
