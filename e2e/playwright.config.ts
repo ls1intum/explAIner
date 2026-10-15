@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { PRACTICE_TIMEOUT_MS } from './tests/config';
+import { CHAT_TIMEOUT_MS, PRACTICE_TIMEOUT_MS } from './tests/config';
 
 /**
  * Playwright config for the ExplAIner smoke tests.
@@ -20,8 +20,9 @@ export default defineConfig({
   // Each explainer test waits for a real LLM practice generation, so keep the
   // worker count low enough not to hammer the LLM endpoint with parallel runs.
   workers: process.env.CI ? 2 : 3,
-  // The per-test budget must cover the practice wait plus page load and asserts.
-  timeout: PRACTICE_TIMEOUT_MS + 60_000,
+  // The per-test budget must cover the slowest LLM wait (practice or chat answer)
+  // plus page load and asserts.
+  timeout: Math.max(PRACTICE_TIMEOUT_MS, CHAT_TIMEOUT_MS) + 60_000,
   expect: { timeout: 15_000 },
   reporter: process.env.CI
     ? [['github'], ['list'], ['html', { open: 'never' }]]

@@ -14,7 +14,11 @@ export default function ChatMessageBubble({ sender, message }: ChatMessageBubble
   const isUser = sender === 'User';
 
   return (
-    <div className={`flex gap-3 items-start ${isUser ? 'flex-row-reverse' : ''}`}>
+    <div
+      className={`flex gap-3 items-start ${isUser ? 'flex-row-reverse' : ''}`}
+      data-testid="chat-message"
+      data-sender={sender}
+    >
       {/* Owlbert avatar */}
       {!isUser && (
         <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center">

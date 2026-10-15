@@ -36,6 +36,23 @@ export const SECTION: SigilSection = 'elements';
 export const PRACTICE_TIMEOUT_MS = Number(process.env.E2E_PRACTICE_TIMEOUT_MS ?? 120_000);
 
 /**
+ * One real chat round trip: the chat group sends this question in this language
+ * and expects an Owlbert answer. Only one combination, to keep LLM load per
+ * deploy low - it is enough to prove that chat calls reach the LLM at all.
+ */
+export const CHAT_PROBE = {
+  group: 'chat',
+  lang: 'de',
+  question: 'Was zeigt der Bevölkerungsrahmen?',
+} as const satisfies { group: SigilGroup; lang: SigilLang; question: string };
+
+/**
+ * How long Owlbert may take to answer the chat probe. The server waits up to
+ * 150 s per LLM attempt, and logos can be that slow under load.
+ */
+export const CHAT_TIMEOUT_MS = Number(process.env.E2E_CHAT_TIMEOUT_MS ?? 180_000);
+
+/**
  * Grace period before asserting that something is *absent* (chat for the text
  * group, practice button for text/chat). Without it we'd assert on an element
  * that simply hasn't rendered yet and pass for the wrong reason.

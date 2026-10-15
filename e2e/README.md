@@ -4,7 +4,9 @@ Playwright smoke test for the sigil study pages: **3 groups × 2 languages**.
 For every combination it asserts
 
 1. the learning material loaded and rendered,
-2. the Owlbert chat is present in `chat` / `explainer` and absent in `text`,
+2. the Owlbert chat is present in `chat` / `explainer` and absent in `text`;
+   for `chat` / `de` (`CHAT_PROBE` in `tests/config.ts`) one real question is
+   sent and Owlbert must answer, so a broken LLM call fails the check,
 3. the practice button appears in `explainer` within N seconds and never in the
    other two groups.
 
@@ -42,6 +44,7 @@ E2E_BASE_URL=https://explainer.aet.cit.tum.de E2E_ACCESS_TOKEN=<token> npm test
 | `E2E_BASE_URL` | `http://localhost:3000` | Target instance |
 | `E2E_ACCESS_TOKEN` | *(empty)* | `SITE_ACCESS_TOKEN` for the soft access gate |
 | `E2E_PRACTICE_TIMEOUT_MS` | `120000` | Budget for the explainer practice button |
+| `E2E_CHAT_TIMEOUT_MS` | `180000` | Budget for Owlbert's answer to the chat probe |
 | `E2E_ABSENCE_GRACE_MS` | `8000` | Wait before asserting an element is absent |
 | `E2E_TEST_TOKEN` | *(empty)* | Shared secret; makes the server store the sessions with `is_test_run = true` |
 | `E2E_CLEANUP` | `1` | Set to `0` to keep the created sessions instead of deleting them |
@@ -55,7 +58,8 @@ report is uploaded as an artifact when the run fails.
 ## Test data: marked and cleaned up
 
 Each run creates one real session per combination in the target database, plus
-two real LLM practice generations (explainer × 2 languages). Two mechanisms
+two real LLM practice generations (explainer × 2 languages) and one real LLM
+chat answer (chat probe). Two mechanisms
 keep that out of the study data:
 
 1. **Marked** — every browser request carries `E2E_TEST_TOKEN` as the
@@ -83,6 +87,7 @@ server environment.
 ## Selectors
 
 The test uses `data-testid` hooks in the client, not visible text:
-`inform-block`, `inform-block-material`, `chat-input`,
+`inform-block`, `inform-block-material`, `chat-input`, `chat-send`,
+`chat-message` (with `data-sender="User"` / `"Owlbert"`),
 `inform-block-continue`, `inform-block-preparing-practice`. Keep them in place
 when refactoring those components.
