@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { GenerateSessionSummaryChain } from '../../shared/llm/chains/generate-session-summary.chain';
 import { LogService } from '../../../common/decorators/service-logging.decorator';
 import { GenerateSummaryBlockResponseDto } from '../dto/response/generate-summary-block.response.dto';
-import { buildContextForSessionSummary } from '../blocks.utils';
+import { buildContextForSessionSummary, buildFallbackSessionSummary } from '../blocks.utils';
 import { mapToBlockResponseDto, calculateSessionDurationMinutes } from '../../shared/shared.utils';
 import { SessionsRepository } from '../../shared/database/repositories/sessions.repository';
 import { BlocksRepository } from '../../shared/database/repositories/blocks.repository';
@@ -11,6 +11,8 @@ import { AtomicDatabaseTransactionRunner } from '../../shared/database/database.
 /** Service generating a session summary block and marking the session as completed */
 @Injectable()
 export class GenerateSummaryBlockService {
+  private readonly logger = new Logger(GenerateSummaryBlockService.name);
+
   constructor(
     private atomicDbTx: AtomicDatabaseTransactionRunner,
     private sessionsRepository: SessionsRepository,
@@ -27,15 +29,22 @@ export class GenerateSummaryBlockService {
     // Build context for session summary text
     const { informContent, practiceResults } = buildContextForSessionSummary(session.blocks);
 
-    // Call chain
-    const summaryBlock = await this.generateSessionSummaryChain.execute({
-      topic: session.topic,
-      learningGoal: session.learningGoal,
-      bloomsLevel: session.learningGoalBloomsLevel,
-      informContent,
-      practiceResults,
-      lang: session.lang,
-    });
+    // Call chain; if the LLM fails, use a fixed summary so the learner is never stuck at the end
+    let sessionSummary: string;
+    try {
+      const summaryBlock = await this.generateSessionSummaryChain.execute({
+        topic: session.topic,
+        learningGoal: session.learningGoal,
+        bloomsLevel: session.learningGoalBloomsLevel,
+        informContent,
+        practiceResults,
+        lang: session.lang,
+      });
+      sessionSummary = summaryBlock.sessionSummary;
+    } catch (error) {
+      this.logger.warn(`Summary generation failed for session ${sessionId}, using fallback: ${error.message}`);
+      sessionSummary = buildFallbackSessionSummary(session.learningGoal, practiceResults, session.lang);
+    }
 
     // Increment total blocks counter
     const newTotalBlocks = session.totalBlocks + 1;
@@ -45,7 +54,7 @@ export class GenerateSummaryBlockService {
       const block = await this.blocksRepository.createSummaryBlock(
         sessionId,
         session.blocks.length,
-        summaryBlock.sessionSummary,
+        sessionSummary,
         tx,
       );
       await this.sessionsRepository.update(sessionId, {

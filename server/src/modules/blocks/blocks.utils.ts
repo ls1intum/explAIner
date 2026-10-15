@@ -34,6 +34,25 @@ export function buildContextForSessionSummary(
   return { informContent, practiceResults };
 }
 
+/**
+ * Fixed summary text used when the LLM cannot generate one (e.g. logos does not
+ * answer), so the learner still reaches the end of the session.
+ */
+export function buildFallbackSessionSummary(
+  learningGoal: string,
+  practiceResults: Array<{ isCorrect: boolean }>,
+  lang?: string | null,
+): string {
+  const correct = practiceResults.filter((p) => p.isCorrect).length;
+  const total = practiceResults.length;
+  if (lang === 'de') {
+    const practice = total > 0 ? ` Du hast **${correct} von ${total}** Übungsfragen richtig beantwortet.` : '';
+    return `Geschafft – du hast die Lerneinheit abgeschlossen!${practice}\n\n**Lernziel:** ${learningGoal}`;
+  }
+  const practice = total > 0 ? ` You answered **${correct} of ${total}** practice questions correctly.` : '';
+  return `Well done – you have completed the learning session!${practice}\n\n**Learning goal:** ${learningGoal}`;
+}
+
 /** Format inform block message: explanation + label + key points + summary */
 export function formatInformBlockMessage(
   mode: BlockSequenceMode,

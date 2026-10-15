@@ -4,9 +4,16 @@ import OpenAI, { APIConnectionError, APIError } from 'openai';
 import { z } from 'zod';
 import { Parser } from './llm.parser';
 
-// Per-request timeout and SDK-level retries (on timeouts/5xx) for LLM calls
-const LLM_TIMEOUT_MS = 90_000;
+// Per-request timeout and SDK-level retries (on timeouts/5xx) for LLM calls.
+// 150 s: under study load (20 participants) logos answered some calls only after 90-110 s.
+const LLM_TIMEOUT_MS = 150_000;
 const LLM_MAX_RETRIES = 1;
+
+/** Per-call overrides of the default timeout and retries. */
+export interface LlmCallOptions {
+  timeoutMs?: number;
+  maxRetries?: number;
+}
 
 /**
  * The LLM endpoint (logos) did not answer: timeout, connection error or 5xx.
@@ -52,17 +59,20 @@ export class LlmService {
    * Logs a start and an end/failure line per call with the elapsed time, so a
    * hanging call shows up as a `#id start` without a matching `#id done`.
    */
-  async callClaude(prompt: string, label = 'llm'): Promise<string> {
+  async callClaude(prompt: string, label = 'llm', options: LlmCallOptions = {}): Promise<string> {
     const callId = ++this.callCounter;
     const startedAt = Date.now();
     this.logger.log(`#${callId} ${label} start (model=${this.model.trim()}, promptChars=${prompt.length})`);
 
     try {
-      const response = await this.client.chat.completions.create({
-        model: this.model,
-        max_tokens: 4096,
-        messages: [{ role: 'user', content: prompt }],
-      });
+      const response = await this.client.chat.completions.create(
+        {
+          model: this.model,
+          max_tokens: 4096,
+          messages: [{ role: 'user', content: prompt }],
+        },
+        { timeout: options.timeoutMs, maxRetries: options.maxRetries },
+      );
 
       const choice = response.choices[0];
       const usage = response.usage;

@@ -117,7 +117,8 @@ configs:
           proxy_set_header X-Real-IP $$remote_addr;
           proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $$scheme;
-          proxy_read_timeout 300s;
+          # LLM calls may take up to 2 x 150 s (timeout + one retry), plus margin
+          proxy_read_timeout 360s;
         }
 
         # Everything else -> Next.js client

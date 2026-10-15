@@ -36,8 +36,12 @@ export class GenerateSessionSummaryChain {
       lang: params.lang,
     });
 
-    // Call LLM with prompt
-    const llmResponse = await this.llmService.callClaude(prompt, 'generate-session-summary');
+    // Call LLM with prompt. Short budget without retry: the caller falls back to a
+    // fixed summary, so a slow logos must not keep the learner waiting at the end.
+    const llmResponse = await this.llmService.callClaude(prompt, 'generate-session-summary', {
+      timeoutMs: 60_000,
+      maxRetries: 0,
+    });
 
     // Parse LLM output against schema and return response
     return this.llmService.createParser(SessionSummaryParserSchema, 'generate-session-summary').parse(llmResponse);
