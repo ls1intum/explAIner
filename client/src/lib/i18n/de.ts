@@ -130,6 +130,7 @@ const de: Translations = {
   'session.error.continue': 'Fortfahren fehlgeschlagen. Bitte versuche es erneut.',
   'session.error.generateSequence': 'Nächste Sequenz konnte nicht generiert werden. Bitte versuche es erneut.',
   'session.error.generateSummary': 'Zusammenfassung konnte nicht generiert werden. Bitte versuche es erneut.',
+  'session.error.sequenceSkipped': 'Die zusätzliche Übungsrunde konnte nicht geladen werden. Es geht direkt weiter zur Zusammenfassung.',
   'session.error.generateEasierGoals': 'Einfachere Lernziele konnten nicht generiert werden. Bitte versuche es erneut.',
   'session.error.createSession': 'Sitzung konnte nicht erstellt werden. Bitte lade die Seite neu.',
 

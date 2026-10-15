@@ -166,16 +166,19 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
         }
       : null;
 
-  const handleGenerateNextSequence = useCallback(async () => {
-    if (!activeSessionId) return;
+  /** Returns false when the remediation round could not be generated. */
+  const handleGenerateNextSequence = useCallback(async (): Promise<boolean> => {
+    if (!activeSessionId) return false;
     try {
       const result = await generateSigilBlockSequence({ sessionId: activeSessionId, lang }).unwrap();
       const newIndex = result.informBlock.orderIndex;
       dispatch(setCurrentBlockIndex(newIndex));
       await updateCurrentBlockIndex({ sessionId: activeSessionId, currentBlockIndex: newIndex }).unwrap();
+      return true;
     } catch (error) {
       console.error('Failed to generate next sequence:', error);
-      dispatch(addToast({ message: t('session.error.generateSequence') as string, type: 'error' }));
+      dispatch(addToast({ message: t('session.error.sequenceSkipped') as string, type: 'warning' }));
+      return false;
     }
   }, [activeSessionId, lang, generateSigilBlockSequence, dispatch, updateCurrentBlockIndex]);
 
@@ -219,7 +222,9 @@ export default function SigilPageClient({ group, section, lang, existingSessionI
           }
           break;
         case 'next-sequence':
-          await handleGenerateNextSequence();
+          // If logos cannot deliver the remediation round, skip it so the participant
+          // still reaches the summary (which releases the survey's Weiter button).
+          if (!(await handleGenerateNextSequence())) await handleGenerateSummary();
           break;
         case 'summary':
           await handleGenerateSummary();

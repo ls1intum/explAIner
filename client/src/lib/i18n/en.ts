@@ -130,6 +130,7 @@ const en: Translations = {
   'session.error.continue': 'Failed to continue. Please try again.',
   'session.error.generateSequence': 'Failed to generate next sequence. Please try again.',
   'session.error.generateSummary': 'Failed to generate summary. Please try again.',
+  'session.error.sequenceSkipped': 'The additional practice round could not be loaded. Continuing directly to the summary.',
   'session.error.generateEasierGoals': 'Failed to generate easier learning goals. Please try again.',
   'session.error.createSession': 'Failed to create session. Please reload.',
 
