@@ -46,6 +46,7 @@ export default function FollowUpQuestionTextInputField({
         />
         {/* Send button */}
         <button
+          data-testid="chat-send"
           onClick={() => onSend()}
           disabled={!value.trim() || disabled}
           className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity flex items-center justify-center"
