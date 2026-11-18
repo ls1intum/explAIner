@@ -7,13 +7,14 @@ import {
   type SigilSection,
 } from '@/lib/sigil/groupConfig';
 
-export default function SigilPage({
-  params,
-  searchParams,
-}: {
-  params: { group: string; section: string };
-  searchParams: { lang?: string; session?: string; case?: string; test?: string };
-}) {
+export default async function SigilPage(
+  props: {
+    params: Promise<{ group: string; section: string }>;
+    searchParams: Promise<{ lang?: string; session?: string; case?: string; test?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   if (!VALID_SIGIL_GROUPS.includes(params.group as SigilGroup)) {
     notFound();
   }

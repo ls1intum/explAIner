@@ -56,7 +56,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
       NODE_ENV: development
-      # Optional soft access gate (see client/src/middleware.ts). Unset = open.
+      # Optional soft access gate (see client/src/proxy.ts). Unset = open.
       SITE_ACCESS_TOKEN: ${SITE_ACCESS_TOKEN:-}
     ports:
       - "${CLIENT_PORT}:${CLIENT_PORT}"
