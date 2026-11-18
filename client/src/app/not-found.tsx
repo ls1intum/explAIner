@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -14,12 +15,12 @@ export default function NotFound() {
         </div>
         <h2 className="mb-4 text-5xl font-bold">404</h2>
         <p className="mb-6 text-xl text-muted-foreground">Page not found</p>
-        <a
+        <Link
           href="/"
           className="rounded-xl bg-brand-gradient px-6 py-3 text-white transition-opacity hover:opacity-90"
         >
           Go back home
-        </a>
+        </Link>
       </div>
     </div>
   );

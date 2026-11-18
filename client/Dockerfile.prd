@@ -1,6 +1,6 @@
 # Multi-stage build for production
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -17,9 +17,8 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL=http://localhost:3001
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
-# Soft access-gate token. Middleware runs in the Edge runtime, which only sees
-# env vars present at build time, so the token must be inlined here (not at
-# runtime). Leave empty to disable the gate. See client/src/middleware.ts.
+# Soft access-gate token, inlined into the bundle at build time via the `env`
+# key in next.config.mjs. Leave empty to disable the gate. See client/src/proxy.ts.
 ARG SITE_ACCESS_TOKEN
 ENV SITE_ACCESS_TOKEN=$SITE_ACCESS_TOKEN
 
@@ -27,7 +26,7 @@ ENV SITE_ACCESS_TOKEN=$SITE_ACCESS_TOKEN
 RUN npm run build
 
 # Stage 2: Production
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -38,7 +37,7 @@ ENV NODE_ENV=production
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy built application from builder stage
 COPY --from=builder /app/.next ./.next

@@ -21,7 +21,7 @@ jobs:
       docker-file: client/Dockerfile.prd
       docker-context: client
       # NEXT_PUBLIC_* and the soft-gate token are baked into the Next.js bundle
-      # at build time (the Edge-runtime middleware can't read them at runtime),
+      # at build time (next.config.mjs inlines them via its `env` key),
       # so they must be passed here, not via the deploy .env.
       build-args: |
         NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
