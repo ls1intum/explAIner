@@ -1,4 +1,4 @@
-# Use Node.js version 20 with Alpine Linux (lightweight base image)
+# Use Node.js version 22 with Alpine Linux (lightweight base image)
 FROM node:22-alpine
 
 # Set the working directory inside the container to /app
